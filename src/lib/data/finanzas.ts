@@ -1,6 +1,6 @@
 import "server-only";
 import type { CuentaPorPagar, MovimientoFinanciero } from "@/lib/finanzas";
-import { montoConSigno } from "@/lib/finanzas";
+import { montoConSigno, META_MENSUAL_MXN } from "@/lib/finanzas";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
@@ -67,6 +67,47 @@ export async function resumenFinanciero(): Promise<ResumenFinanciero> {
     egresosMes,
     netoMes: ingresosMes - egresosMes,
     capitalAtrapado,
+  };
+}
+
+export type MetricasMes = {
+  ingresoBridal: number;
+  ingresoConcierge: number;
+  ingresoTotal: number;
+  pctConcierge: number; // % de ingresos del mes que es Concierge
+  avanceMeta: number; // % de la meta mensual alcanzado
+  ticketPromedio: number; // total promedio por pedido activo/entregado
+};
+
+/** Métricas del mes: ingresos por línea, % Concierge, avance de meta, ticket. Solo-admin. */
+export async function metricasMes(): Promise<MetricasMes> {
+  const [movimientos, pedidos] = await Promise.all([
+    listarMovimientos(),
+    listarPedidos(),
+  ]);
+  const mes = new Date().toISOString().slice(0, 7);
+  const ingresosMes = movimientos.filter(
+    (m) => m.categoria === "ingreso" && m.fecha.startsWith(mes),
+  );
+  const ingresoBridal = ingresosMes
+    .filter((m) => m.linea_negocio === "bridal")
+    .reduce((s, m) => s + m.monto, 0);
+  const ingresoConcierge = ingresosMes
+    .filter((m) => m.linea_negocio === "concierge")
+    .reduce((s, m) => s + m.monto, 0);
+  const ingresoTotal = ingresosMes.reduce((s, m) => s + m.monto, 0);
+
+  const vivos = pedidos.filter((p) => p.estado !== "cancelado");
+  const ticketPromedio =
+    vivos.length > 0 ? vivos.reduce((s, p) => s + p.total, 0) / vivos.length : 0;
+
+  return {
+    ingresoBridal,
+    ingresoConcierge,
+    ingresoTotal,
+    pctConcierge: ingresoTotal > 0 ? Math.round((ingresoConcierge / ingresoTotal) * 100) : 0,
+    avanceMeta: Math.round((ingresoTotal / META_MENSUAL_MXN) * 100),
+    ticketPromedio,
   };
 }
 

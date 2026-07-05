@@ -39,6 +39,9 @@ export const CATEGORIA_MOVIMIENTO: Record<
   pago_deuda: { etiqueta: "Pago de deuda", clase: "bg-muted text-muted-foreground", signo: -1 },
 };
 
+/** Meta de ventas mensual (el trigger de la marca de plata, §3.9). */
+export const META_MENSUAL_MXN = 100000;
+
 export const CATEGORIAS: CategoriaMovimiento[] = [
   "ingreso",
   "costo",

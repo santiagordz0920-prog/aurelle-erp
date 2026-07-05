@@ -9,8 +9,8 @@ import { MovimientoForm } from "@/components/finanzas/movimiento-form";
 import { CxpPagarBoton } from "@/components/finanzas/cxp-pagar-boton";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
-import { listarCxP, listarMovimientos, resumenFinanciero } from "@/lib/data/finanzas";
-import { CATEGORIA_MOVIMIENTO, ESTADO_CXP, montoConSigno } from "@/lib/finanzas";
+import { listarCxP, listarMovimientos, metricasMes, resumenFinanciero } from "@/lib/data/finanzas";
+import { CATEGORIA_MOVIMIENTO, ESTADO_CXP, META_MENSUAL_MXN, montoConSigno } from "@/lib/finanzas";
 import { pesos } from "@/lib/inventario";
 
 export const metadata = { title: "Dinero" };
@@ -29,10 +29,11 @@ export default async function DineroPage() {
     );
   }
 
-  const [movimientos, resumen, cxp] = await Promise.all([
+  const [movimientos, resumen, cxp, metricas] = await Promise.all([
     listarMovimientos(),
     resumenFinanciero(),
     listarCxP(),
+    metricasMes(),
   ]);
   const cxpPendientes = cxp.filter((c) => c.estado === "pendiente");
   const cxpTotal = cxpPendientes.reduce((s, c) => s + c.monto, 0);
@@ -66,6 +67,54 @@ export default async function DineroPage() {
           sub={`${cxpPendientes.length} pendiente${cxpPendientes.length === 1 ? "" : "s"}`}
         />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">P&amp;L del mes por línea</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Bridal</p>
+              <p className="text-lg font-semibold text-foreground">
+                {pesos(metricas.ingresoBridal)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Concierge</p>
+              <p className="text-lg font-semibold text-foreground">
+                {pesos(metricas.ingresoConcierge)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">
+                Concierge sobre ingresos
+              </p>
+              <p className="text-lg font-semibold text-accent">
+                {metricas.pctConcierge}%
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>
+                Meta del mes ({pesos(META_MENSUAL_MXN)}) · ticket promedio{" "}
+                {pesos(metricas.ticketPromedio)}
+              </span>
+              <span className="font-medium text-foreground">
+                {metricas.avanceMeta}%
+              </span>
+            </div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${Math.min(metricas.avanceMeta, 100)}%` }}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {cxp.length > 0 ? (
         <Card>
