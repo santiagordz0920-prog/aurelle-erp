@@ -34,4 +34,4 @@ Construido en Fase 1. Última modificación: 2026-07-05.
 - Reglas de margen por categoría configurables (§3.3) — hoy el costo se captura por cotización.
 - Feed automático de precios de metal (API) + expiración automática de cotizaciones vía cron.
 - PDF binario con tipografías de marca + envío por WhatsApp (Fase 3).
-- Convertir cotización → pedido (se hace en el módulo Pedidos).
+- ~~Convertir cotización → pedido~~ HECHO (2026-07-05): botón en `/ventas/cotizaciones/[id]` cuando estado='aceptada'; lógica en el módulo Pedidos.

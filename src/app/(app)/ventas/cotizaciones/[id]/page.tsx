@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Printer } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CotizacionEstado } from "@/components/cotizaciones/cotizacion-estado";
+import { ConvertirBoton } from "@/components/pedidos/convertir-boton";
 import { Button } from "@/components/ui/button";
 import { getCotizacion } from "@/lib/data/cotizaciones";
 import { METAL } from "@/lib/cotizaciones";
@@ -64,6 +65,15 @@ export default async function CotizacionPage({
               Ver / imprimir
             </Link>
           </Button>
+          {c.pedido_id ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`/ventas/pedidos/${c.pedido_id}`}>
+                Ver pedido
+              </Link>
+            </Button>
+          ) : c.estado === "aceptada" ? (
+            <ConvertirBoton cotizacionId={c.id} />
+          ) : null}
         </div>
       </div>
 

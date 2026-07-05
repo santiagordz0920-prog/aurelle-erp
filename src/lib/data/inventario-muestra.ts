@@ -61,6 +61,7 @@ export const ITEMS_MUESTRA: ItemInventario[] = [
     propiedad: "propio",
     ubicacion: "Vitrina 1",
     estado: "reservado",
+    pedido_id: "f2000000-0000-0000-0000-000000000001",
     costo: 42000,
   },
   {
