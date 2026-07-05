@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/*
+  Sistema de diseño Aurelle — v1 (solo modo claro, por consistencia de marca).
+  Paleta base:
+    crema  #F5F2EB  → fondo
+    bosque #08221B  → primario (navegación, botones, texto)
+    dorado #B77321  → acento escaso (estados activos, highlights)
+  Fuente de interfaz: Inter (var --font-inter, cargada en layout.tsx).
+  Nunca usar hex sueltos en componentes: siempre tokens semánticos de abajo.
+*/
+
+:root {
+  /* Colores base de marca */
+  --crema: #f5f2eb;
+  --bosque: #08221b;
+  --dorado: #b77321;
+
+  /* Tokens semánticos (superficie / texto / estado) */
+  --background: #f5f2eb;
+  --foreground: #08221b;
+
+  --card: #fbfaf6;
+  --card-foreground: #08221b;
+
+  --popover: #ffffff;
+  --popover-foreground: #08221b;
+
+  --primary: #08221b;
+  --primary-foreground: #f5f2eb;
+
+  --secondary: #ece7dc;
+  --secondary-foreground: #08221b;
+
+  --muted: #ece7dc;
+  --muted-foreground: #5b6660;
+
+  --accent: #b77321;
+  --accent-foreground: #ffffff;
+  --accent-soft: #f3e6d3;
+
+  --destructive: #9a3412;
+  --destructive-foreground: #ffffff;
+
+  --success: #166534;
+  --warning: #b45309;
+
+  --border: #e3ddce;
+  --input: #e3ddce;
+  --ring: #b77321;
+
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-crema: var(--crema);
+  --color-bosque: var(--bosque);
+  --color-dorado: var(--dorado);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Área táctil cómoda en móvil: nada tocable por debajo de 44px */
+@media (pointer: coarse) {
+  button,
+  a[role="button"],
+  [data-touch] {
+    min-height: 44px;
+  }
+}

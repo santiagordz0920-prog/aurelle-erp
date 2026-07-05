@@ -1,0 +1,18 @@
+{
+  "name": "Aurelle ERP",
+  "short_name": "Aurelle",
+  "description": "ERP interno de Aurelle & Co.",
+  "start_url": "/hoy",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#08221b",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
