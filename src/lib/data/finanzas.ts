@@ -1,10 +1,10 @@
 import "server-only";
-import type { MovimientoFinanciero } from "@/lib/finanzas";
+import type { CuentaPorPagar, MovimientoFinanciero } from "@/lib/finanzas";
 import { montoConSigno } from "@/lib/finanzas";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
-import { MOVIMIENTOS_MUESTRA } from "./finanzas-muestra";
+import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "./finanzas-muestra";
 import { listarPedidos } from "./pedidos";
 
 /*
@@ -68,4 +68,32 @@ export async function resumenFinanciero(): Promise<ResumenFinanciero> {
     netoMes: ingresosMes - egresosMes,
     capitalAtrapado,
   };
+}
+
+/** Cuentas por pagar (consignantes y futuros proveedores). Solo-admin. */
+export async function listarCxP(): Promise<CuentaPorPagar[]> {
+  const usuario = await getUsuarioActual();
+  if (usuario.rol !== "admin") return [];
+
+  if (!supabaseConfigurado()) {
+    return CXP_MUESTRA.slice().sort((a, b) => {
+      if (a.estado !== b.estado) return a.estado === "pendiente" ? -1 : 1;
+      return b.created_at.localeCompare(a.created_at);
+    });
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("cuenta_por_pagar")
+    .select("*, consignante(nombre)")
+    .order("estado")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((r: any) => ({
+    ...r,
+    consignante_nombre: Array.isArray(r.consignante)
+      ? (r.consignante[0]?.nombre ?? null)
+      : (r.consignante?.nombre ?? null),
+  })) as CuentaPorPagar[];
 }

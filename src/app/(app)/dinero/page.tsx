@@ -5,10 +5,11 @@ import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MovimientoForm } from "@/components/finanzas/movimiento-form";
+import { CxpPagarBoton } from "@/components/finanzas/cxp-pagar-boton";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
-import { listarMovimientos, resumenFinanciero } from "@/lib/data/finanzas";
-import { CATEGORIA_MOVIMIENTO, montoConSigno } from "@/lib/finanzas";
+import { listarCxP, listarMovimientos, resumenFinanciero } from "@/lib/data/finanzas";
+import { CATEGORIA_MOVIMIENTO, ESTADO_CXP, montoConSigno } from "@/lib/finanzas";
 import { pesos } from "@/lib/inventario";
 
 export const metadata = { title: "Dinero" };
@@ -27,10 +28,13 @@ export default async function DineroPage() {
     );
   }
 
-  const [movimientos, resumen] = await Promise.all([
+  const [movimientos, resumen, cxp] = await Promise.all([
     listarMovimientos(),
     resumenFinanciero(),
+    listarCxP(),
   ]);
+  const cxpPendientes = cxp.filter((c) => c.estado === "pendiente");
+  const cxpTotal = cxpPendientes.reduce((s, c) => s + c.monto, 0);
 
   return (
     <div className="space-y-6">
@@ -48,11 +52,50 @@ export default async function DineroPage() {
           acento={resumen.netoMes >= 0}
         />
         <Kpi
-          etiqueta="Capital de trabajo atrapado"
-          valor={pesos(resumen.capitalAtrapado)}
-          sub="Costos incurridos − pagos recibidos"
+          etiqueta="Cuentas por pagar"
+          valor={pesos(cxpTotal)}
+          sub={`${cxpPendientes.length} pendiente${cxpPendientes.length === 1 ? "" : "s"}`}
         />
       </div>
+
+      {cxp.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">
+              Cuentas por pagar{" "}
+              <span className="text-muted-foreground">(consignantes)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ul className="divide-y divide-border">
+              {cxp.map((c) => (
+                <li
+                  key={c.id}
+                  className="flex items-center justify-between gap-3 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {c.consignante_nombre ?? "Consignante"}
+                    </p>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <Badge className={ESTADO_CXP[c.estado].clase}>
+                        {ESTADO_CXP[c.estado].etiqueta}
+                      </Badge>
+                      <span className="truncate">{c.concepto}</span>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <span className="text-sm font-semibold text-foreground">
+                      {pesos(c.monto)}
+                    </span>
+                    {c.estado === "pendiente" ? <CxpPagarBoton id={c.id} /> : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <MovimientoForm />
 

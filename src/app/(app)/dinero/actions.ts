@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
 import type { MovimientoFinanciero } from "@/lib/finanzas";
-import { MOVIMIENTOS_MUESTRA } from "@/lib/data/finanzas-muestra";
+import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "@/lib/data/finanzas-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -76,6 +76,32 @@ export async function crearMovimiento(
     sucursal_id: usuario.sucursalId,
   });
   if (error) return { ok: false, error: "No se pudo guardar el movimiento." };
+  revalidatePath("/dinero");
+  return { ok: true };
+}
+
+/** Marca una cuenta por pagar como pagada (registra egreso opcional a futuro). */
+export async function marcarPagadaCxP(id: string): Promise<ResultadoAccion> {
+  const usuario = await getUsuarioActual();
+  if (usuario.rol !== "admin") return { ok: false, error: "Solo admin." };
+  const ahora = new Date().toISOString();
+
+  if (!supabaseConfigurado()) {
+    const c = CXP_MUESTRA.find((x) => x.id === id);
+    if (c) {
+      c.estado = "pagada";
+      c.pagada_at = ahora;
+    }
+    revalidatePath("/dinero");
+    return { ok: true };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("cuenta_por_pagar")
+    .update({ estado: "pagada", pagada_at: ahora })
+    .eq("id", id);
+  if (error) return { ok: false, error: "No se pudo marcar como pagada." };
   revalidatePath("/dinero");
   return { ok: true };
 }

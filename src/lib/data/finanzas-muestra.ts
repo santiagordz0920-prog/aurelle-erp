@@ -1,4 +1,4 @@
-import type { MovimientoFinanciero } from "@/lib/finanzas";
+import type { CuentaPorPagar, MovimientoFinanciero } from "@/lib/finanzas";
 
 /* Datos de muestra — solo modo local. NUNCA en producción. */
 const S = "00000000-0000-0000-0000-000000000001";
@@ -73,5 +73,23 @@ export const MOVIMIENTOS_MUESTRA: MovimientoFinanciero[] = [
     sucursal_id: S,
     created_at: fecha(6),
     updated_at: fecha(6),
+  },
+];
+
+export const CXP_MUESTRA: CuentaPorPagar[] = [
+  {
+    id: "b0000000-0000-0000-0000-000000000001",
+    consignante_id: "c1",
+    consignante_nombre: "Consignante A1",
+    item_id: "e1000000-0000-0000-0000-000000000002",
+    pedido_id: "f2000000-0000-0000-0000-000000000001",
+    concepto: "Consignación reservada: MON-014",
+    monto: 12000,
+    estado: "pendiente",
+    fecha_vencimiento: null,
+    pagada_at: null,
+    sucursal_id: S,
+    created_at: fecha(1),
+    updated_at: fecha(1),
   },
 ];

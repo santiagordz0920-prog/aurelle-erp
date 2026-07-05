@@ -6,21 +6,24 @@
 Iniciado en Fase 2. Última modificación: 2026-07-05. Migración 0010. v1: ledger +
 asiento automático al pagar + P&L del mes + capital de trabajo. Falta el resto (abajo).
 
-## Tablas (migración 0010)
-- `movimiento_financiero` — **SOLO-ADMIN** (RLS `es_admin()`). categoria (enum: deuda/gasto/capital/ingreso/costo/pago_deuda),
-  concepto, monto (siempre ≥0; el signo lo da la categoría), linea_negocio, origen (text), pedido_id/pago_id (vínculo),
-  folio_factura (reconciliación con contador; CFDI fuera del ERP).
+## Tablas
+- `movimiento_financiero` (0010) — **SOLO-ADMIN**. categoria (enum), concepto, monto (≥0; signo por categoría),
+  linea_negocio, origen (text: pago/manual/…), pedido_id/pago_id, folio_factura (CFDI fuera del ERP).
+- `cuenta_por_pagar` (0011) — **SOLO-ADMIN**. CxP a consignante (y futuros proveedores): consignante_id, item_id,
+  pedido_id, concepto, monto, estado (enum pendiente/pagada/cancelada), fecha_vencimiento, pagada_at.
 
 ## Rutas / pantallas
-- `/dinero` — KPIs (ingresos/egresos/neto del mes, capital de trabajo atrapado) + ledger de movimientos recientes. Solo-admin (doble puerta: UI + RLS).
+- `/dinero` — KPIs (ingresos/egresos/neto del mes, capital atrapado, cuentas por pagar) + sección CxP (marcar pagada) + captura manual + ledger. Solo-admin (doble puerta: UI + RLS).
 
 ## Capa de datos
 - `src/lib/finanzas.ts`: constantes + `montoConSigno`.
 - `src/lib/data/finanzas.ts`: `listarMovimientos` (vacío si no admin), `resumenFinanciero` (P&L del mes + capital atrapado = Σ por pedido activo de costo_real − pagado, solo positivo).
 
 ## Eventos que emite / consume
-- **Consume Pedidos/Pagos**: trigger de BD `trg_pago_asiento` → `asiento_de_pago()` (SECURITY DEFINER) inserta el ingreso al registrar un pago. Primer evento de la matriz §4. Patrón documentado en CONVENCIONES.
-- Pendiente consumir: Inventario (consumos/valor), Proveedores (CxP), Gastos recurrentes, Comisiones, Postventa.
+- **Consume Pagos**: trigger `trg_pago_asiento` → `asiento_de_pago()` (SECURITY DEFINER) crea el ingreso al pagar.
+- **Consume Inventario**: trigger `trg_item_cxp` → `cxp_de_consignacion()` (SECURITY DEFINER) crea la CxP al consignante cuando una pieza de consignación pasa a `reservado` (monto = su costo). Sin duplicar.
+- Ambos son de la matriz §4. Patrón documentado en CONVENCIONES.
+- Pendiente consumir: costos de producción (Fase 4), Proveedores, Gastos recurrentes, Comisiones, Postventa.
 
 ## Lógica no obvia / trampas
 - `monto` se guarda positivo; usar `montoConSigno()` para netos/P&L (ingreso/capital/deuda = +, costo/gasto/pago_deuda = −).

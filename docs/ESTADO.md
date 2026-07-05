@@ -4,10 +4,10 @@
 > Última actualización: 2026-07-05 por sesión de Fase 1 (Claude Code).
 
 ## Fase actual
-**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar (primer evento de la matriz §4) + P&L del mes + capital de trabajo + **captura manual de movimientos**. Migraciones 0004–0010 aplicadas en prod (confirmado por Santiago). Siguiente: **CxP a consignante** al reservar/vender consignación (Inventario/Pedidos→Finanzas) — necesita tabla `cuenta_por_pagar` + trigger; luego costos de producción (dependen de Fase 4). Leer §3.9, §3.10 y matriz §4.
+**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar + captura manual + P&L del mes + capital de trabajo + **CxP a consignante** (migración 0011: al reservar consignación nace la cuenta por pagar, marcable como pagada). Dos eventos de la matriz §4 implementados (pago→ingreso, consignación→CxP). Siguiente: métricas/P&L por línea y proyección de flujo (§3.9), o arrancar Proveedores (§3.10). Los costos de producción dependen de Fase 4.
 
 ## Acción de Santiago (producción)
-Migraciones al día (0004–0010 aplicadas). El próximo slice de CxP traerá una 0011 nueva.
+Aplicar en el SQL Editor **0011_cuentas_por_pagar.sql** (0004–0010 ya están).
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.

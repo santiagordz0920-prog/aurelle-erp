@@ -45,3 +45,4 @@
 2026-07-05 | Archivos SQL acumulativos en supabase/ (aplicar_0004_a_0008, aplicar_0005_a_0008) para SQL Editor | Santiago aplica sin CLI; 0004 ya estaba en prod, de ahí la variante
 2026-07-05 | Finanzas: ledger movimiento_financiero solo-admin; monto positivo + signo por categoría | Simplifica netos/P&L y mantiene RLS solo-admin
 2026-07-05 | Asiento al pagar vía trigger de BD (SECURITY DEFINER), no en el Server Action | Efecto en misma transacción; ventas registra el pago pero Finanzas es solo-admin
+2026-07-05 | CxP a consignante vía trigger sobre item_inventario al reservar; monto = costo (item_costo) | Segundo evento matriz §4; SECURITY DEFINER lee costo solo-admin; guard anti-duplicado
