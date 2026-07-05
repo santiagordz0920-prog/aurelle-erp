@@ -80,7 +80,9 @@ create trigger trg_<tabla>_auditoria
 - **Auth**: `getUsuarioActual()` (`src/lib/session.ts`) da el usuario/rol/sucursal; middleware (`src/middleware.ts`) refresca sesión y protege rutas. La seguridad real es RLS; estos helpers solo alimentan la UI.
 
 ## Eventos entre módulos
-- Patrón: **TBD Fase 1**. Al implementar el primer evento de la matriz (§4 del plan) decidir triggers de BD vs. lógica en Server Actions y documentar aquí un ejemplo completo. Recomendación inicial: efectos dentro de la misma transacción (p.ej. CxP al vender consignación) como triggers; efectos con I/O externo (WhatsApp, IA) como jobs disparados desde Server Actions / Vercel Cron.
+- **Patrón (definido en Fase 2):** efectos en la **misma transacción** = **trigger de BD**; efectos con **I/O externo** (WhatsApp, IA, PDFs) = jobs disparados desde Server Actions / Vercel Cron.
+- Ejemplo real (matriz §4, "pago → asiento en Finanzas"): trigger `trg_pago_asiento` sobre `insert` en `pago` llama `asiento_de_pago()` (`SECURITY DEFINER`, `search_path=public`) que inserta el ingreso en `movimiento_financiero` (tabla solo-admin) derivando línea y sucursal del pedido. Ver `supabase/migrations/0010_finanzas.sql`.
+- **SECURITY DEFINER** cuando el efecto escribe en una tabla con RLS más restrictiva que quien dispara el evento (p.ej. ventas registra un pago pero Finanzas es solo-admin). Siempre fijar `search_path = public`.
 
 ## Componentes UI
 - shadcn/ui como base; componente propio reutilizable en `components/` antes de duplicar.
