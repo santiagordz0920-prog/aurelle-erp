@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { areasVisibles } from "@/lib/nav";
 import type { Rol } from "@/lib/roles";
 import { ROLES } from "@/lib/roles";
+import { LogOut } from "lucide-react";
 import { BrandWordmark } from "./brand-wordmark";
 import { GlobalSearch } from "./global-search";
 import { cn } from "@/lib/utils";
@@ -67,12 +68,21 @@ export function AppShell({
           <div className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
             {usuario.nombre.slice(0, 1).toUpperCase()}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">
               {usuario.nombre}
             </p>
             <p className="text-xs text-muted-foreground">{ROLES[rol].etiqueta}</p>
           </div>
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              aria-label="Cerrar sesión"
+              className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </form>
         </div>
       </aside>
 
