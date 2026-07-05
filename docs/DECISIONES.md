@@ -23,3 +23,7 @@
 2026-07-05 | Auth: @supabase/ssr con middleware + /login email-password; getUsuarioActual lee perfil de public.usuario | Patrón oficial Supabase para App Router; RLS sigue siendo la seguridad real
 2026-07-05 | Pipeline de lead como enum estado_pipeline; cambio de etapa manual desde la ficha en v1 | El arrastre kanban y el auto-avance por eventos (Citas) llegan después
 2026-07-05 | Datos de muestra de clientes viven en archivo aparte marcado como solo-local | Evita cualquier riesgo de que lleguen a producción
+2026-07-05 | Costos de inventario en tabla aparte item_costo con RLS solo-admin (no columna) | RLS es por fila, no por columna; separar la tabla es la forma correcta de ocultar costo a ventas/taller
+2026-07-05 | Trigger de auditoría deriva la PK del catálogo (0006), no asume columna 'id' | item_costo usa item_id; el trigger genérico de 0003 fallaba
+2026-07-05 | Consignante como tabla ligera propia en Fase 1; se liga a Proveedores/CxP en Fase 2 | Inventario no debe esperar a Proveedores; buscar-o-crear por nombre
+2026-07-05 | Áreas con submódulos (Taller, Ventas) usan landing con tarjetas + rutas hijas | Escala a Producción/Biblioteca/Cotizaciones/Pedidos sin romper navegación
