@@ -4,10 +4,10 @@
 > Última actualización: 2026-07-05 por sesión de Fase 1 (Claude Code).
 
 ## Fase actual
-**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1 arrancado: ledger solo-admin + asiento automático al pagar (primer evento de la matriz §4) + P&L del mes + capital de trabajo. Migración 0010 lista (aplicar en prod). Siguiente: seguir Finanzas (CxP consignación, costos de producción, captura manual) — leer §3.9 y matriz §4.
+**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar (primer evento de la matriz §4) + P&L del mes + capital de trabajo + **captura manual de movimientos**. Migraciones 0004–0010 aplicadas en prod (confirmado por Santiago). Siguiente: **CxP a consignante** al reservar/vender consignación (Inventario/Pedidos→Finanzas) — necesita tabla `cuenta_por_pagar` + trigger; luego costos de producción (dependen de Fase 4). Leer §3.9, §3.10 y matriz §4.
 
 ## Acción de Santiago (producción)
-Aplicar en el SQL Editor las migraciones **0009_tareas.sql** y **0010_finanzas.sql** (en ese orden). 0004–0008 ya están.
+Migraciones al día (0004–0010 aplicadas). El próximo slice de CxP traerá una 0011 nueva.
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.
