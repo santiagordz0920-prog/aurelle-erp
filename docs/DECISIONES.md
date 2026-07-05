@@ -34,3 +34,4 @@
 2026-07-05 | Candado de anticipo 2 en pedido: override booleano admin + auditado (override_por/at) | §3.4 exige bloquear compra de materiales sin anticipo 2, con override explícito
 2026-07-05 | Costo/margen real del pedido en tabla pedido_costo solo-admin; margen se sella al entregar | Mismo patrón de aislamiento de costos; margen real solo visible a admin
 2026-07-05 | pago.registrado_por = auth.uid() forzado por RLS (anti-suplantación) | Trazabilidad de quién registró cada pago
+2026-07-05 | Utilidades operativas en supabase/scripts/ (no migraciones); admins se promueven por correo con promover_admins.sql idempotente | Promover por uuid a mano es propenso a error; por correo es repetible y verificable

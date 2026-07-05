@@ -29,7 +29,8 @@ Construir, siguiendo el patrón de Clientes/Cotizador (capa de datos server-only
 **Luego:** Tareas v1 (§3.15) y Dashboard v1 (§3.16) para cerrar Fase 1. Leer §3.4, §3.15, §3.16.
 
 ## Acción de Santiago (producción)
-Aplicar en el SQL Editor de Supabase las migraciones **0004 a 0008** (archivo cumulativo que la sesión dejó, o los .sql en orden). Sin esto, los módulos nuevos no tienen tablas en prod.
+1. Aplicar en el SQL Editor de Supabase las migraciones **0004 a 0008** (archivo cumulativo que la sesión dejó, o los .sql en orden). Sin esto, los módulos nuevos no tienen tablas en prod.
+2. Crear los usuarios admin en Authentication → Users → Add user (fgzz01@outlook.com y santiagordz0920@gmail.com, con Auto Confirm) y luego correr `supabase/scripts/promover_admins.sql` en el SQL Editor.
 
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: Postgres local + capturas. No bloquea.
