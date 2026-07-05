@@ -1,0 +1,122 @@
+import type { Cliente, NotaCliente } from "@/lib/clientes";
+
+/*
+  DATOS DE MUESTRA — solo modo local (sin Supabase). Sirven para desarrollar y
+  ver la interfaz con contenido realista. En producción NUNCA se usan: el flag
+  supabaseConfigurado() enruta a la base real, que arranca vacía y se llena a
+  medida que el equipo captura clientes.
+*/
+const S = "00000000-0000-0000-0000-000000000001";
+
+export const CLIENTES_MUESTRA: Cliente[] = [
+  {
+    id: "10000000-0000-0000-0000-000000000001",
+    nombre: "Ana López",
+    telefono: "+52 81 8111 1111",
+    fecha_nacimiento: "1995-03-14",
+    fecha_boda: "2026-11-21",
+    pareja_nombre: "Diego",
+    fuente_canal: "ads",
+    fuente_detalle: "Fase 1 · SPGG",
+    referido_por_cliente_id: null,
+    referido_por_externo: null,
+    etiquetas: ["2ct+", "vip"],
+    estado_pipeline: "cotizado",
+    motivo_perdida: null,
+    sucursal_id: S,
+    created_at: "2026-06-28T18:00:00Z",
+    updated_at: "2026-07-02T18:00:00Z",
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000002",
+    nombre: "Beto Ruiz",
+    telefono: "+52 81 8222 2222",
+    fecha_nacimiento: null,
+    fecha_boda: "2027-02-14",
+    pareja_nombre: "Sofía",
+    fuente_canal: "referido",
+    fuente_detalle: "Ana López",
+    referido_por_cliente_id: "10000000-0000-0000-0000-000000000001",
+    referido_por_externo: null,
+    etiquetas: [],
+    estado_pipeline: "cita_agendada",
+    motivo_perdida: null,
+    sucursal_id: S,
+    created_at: "2026-07-01T18:00:00Z",
+    updated_at: "2026-07-03T18:00:00Z",
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000003",
+    nombre: "Carla Mendoza",
+    telefono: "+52 81 8333 3333",
+    fecha_nacimiento: "1992-09-02",
+    fecha_boda: null,
+    pareja_nombre: null,
+    fuente_canal: "expo",
+    fuente_detalle: "Expo Novias MTY",
+    referido_por_cliente_id: null,
+    referido_por_externo: null,
+    etiquetas: ["expo"],
+    estado_pipeline: "conversando",
+    motivo_perdida: null,
+    sucursal_id: S,
+    created_at: "2026-07-04T18:00:00Z",
+    updated_at: "2026-07-04T18:00:00Z",
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000004",
+    nombre: "Daniela Torres",
+    telefono: "+52 81 8444 4444",
+    fecha_nacimiento: null,
+    fecha_boda: null,
+    pareja_nombre: null,
+    fuente_canal: "organico",
+    fuente_detalle: null,
+    referido_por_cliente_id: null,
+    referido_por_externo: null,
+    etiquetas: [],
+    estado_pipeline: "nuevo",
+    motivo_perdida: null,
+    sucursal_id: S,
+    created_at: "2026-07-05T15:00:00Z",
+    updated_at: "2026-07-05T15:00:00Z",
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000005",
+    nombre: "Emilia Cavazos",
+    telefono: "+52 81 8555 5555",
+    fecha_nacimiento: "1990-12-20",
+    fecha_boda: "2025-12-06",
+    pareja_nombre: "Marcelo",
+    fuente_canal: "ads",
+    fuente_detalle: "Fase 2 · San Jerónimo",
+    referido_por_cliente_id: null,
+    referido_por_externo: null,
+    etiquetas: ["vip"],
+    estado_pipeline: "cerrado",
+    motivo_perdida: null,
+    sucursal_id: S,
+    created_at: "2026-05-10T18:00:00Z",
+    updated_at: "2026-06-20T18:00:00Z",
+  },
+];
+
+export const NOTAS_MUESTRA: NotaCliente[] = [
+  {
+    id: "20000000-0000-0000-0000-000000000001",
+    cliente_id: "10000000-0000-0000-0000-000000000001",
+    autor_id: null,
+    autor_nombre: "Santiago",
+    texto:
+      "Busca solitario ovalado 2.2ct, oro blanco. Presupuesto flexible. Boda en noviembre, no hay prisa pero está muy interesada.",
+    created_at: "2026-06-29T18:00:00Z",
+  },
+  {
+    id: "20000000-0000-0000-0000-000000000002",
+    cliente_id: "10000000-0000-0000-0000-000000000001",
+    autor_id: null,
+    autor_nombre: "Fernanda",
+    texto: "Se le envió cotización v1. Quedó de confirmar con Diego el fin.",
+    created_at: "2026-07-02T18:00:00Z",
+  },
+];
