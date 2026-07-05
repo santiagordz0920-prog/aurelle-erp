@@ -1,0 +1,6 @@
+# Configuración de Supabase CLI. project_id es la referencia LOCAL del proyecto
+# (no es un secreto). Al enlazar con el proyecto real: `supabase link --project-ref <ref>`.
+project_id = "aurelle-erp"
+
+[db]
+major_version = 16
