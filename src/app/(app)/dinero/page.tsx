@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { MovimientoForm } from "@/components/finanzas/movimiento-form";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
 import { listarMovimientos, resumenFinanciero } from "@/lib/data/finanzas";
@@ -52,6 +53,8 @@ export default async function DineroPage() {
           sub="Costos incurridos − pagos recibidos"
         />
       </div>
+
+      <MovimientoForm />
 
       <Card>
         <CardHeader>
