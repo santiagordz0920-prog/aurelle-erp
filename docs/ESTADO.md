@@ -4,7 +4,10 @@
 > Última actualización: 2026-07-05 por sesión de Fase 1 (Claude Code).
 
 ## Fase actual
-**Fase 1 — Núcleo comercial: COMPLETA.** Auth, Clientes, Inventario, Cotizador, Pedidos, Tareas v1 y Dashboard v1 construidos. Migraciones 0004–0009 aplicadas en producción (0004 se aplicó suelto antes; 0005–0009 esta sesión). Siguiente: **arrancar Fase 2 — Finanzas** (leer §3.7 y la matriz §4).
+**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1 arrancado: ledger solo-admin + asiento automático al pagar (primer evento de la matriz §4) + P&L del mes + capital de trabajo. Migración 0010 lista (aplicar en prod). Siguiente: seguir Finanzas (CxP consignación, costos de producción, captura manual) — leer §3.9 y matriz §4.
+
+## Acción de Santiago (producción)
+Aplicar en el SQL Editor las migraciones **0009_tareas.sql** y **0010_finanzas.sql** (en ese orden). 0004–0008 ya están.
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.

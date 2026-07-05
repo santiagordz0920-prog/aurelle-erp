@@ -43,3 +43,5 @@
 2026-07-05 | Dashboard "Hoy" v1 agrega en lectura de Cotizador/Pedidos/Tareas; sin costo/margen | Pulso real sin exponer datos solo-admin; vista por rol y push llegan después
 2026-07-05 | Directorio de usuarios en src/lib/data/usuarios.ts (listarUsuarios) | Reutilizable para selectores (responsable de tarea, futuros asignados)
 2026-07-05 | Archivos SQL acumulativos en supabase/ (aplicar_0004_a_0008, aplicar_0005_a_0008) para SQL Editor | Santiago aplica sin CLI; 0004 ya estaba en prod, de ahí la variante
+2026-07-05 | Finanzas: ledger movimiento_financiero solo-admin; monto positivo + signo por categoría | Simplifica netos/P&L y mantiene RLS solo-admin
+2026-07-05 | Asiento al pagar vía trigger de BD (SECURITY DEFINER), no en el Server Action | Efecto en misma transacción; ventas registra el pago pero Finanzas es solo-admin
