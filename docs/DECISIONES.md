@@ -27,3 +27,7 @@
 2026-07-05 | Trigger de auditoría deriva la PK del catálogo (0006), no asume columna 'id' | item_costo usa item_id; el trigger genérico de 0003 fallaba
 2026-07-05 | Consignante como tabla ligera propia en Fase 1; se liga a Proveedores/CxP en Fase 2 | Inventario no debe esperar a Proveedores; buscar-o-crear por nombre
 2026-07-05 | Áreas con submódulos (Taller, Ventas) usan landing con tarjetas + rutas hijas | Escala a Producción/Biblioteca/Cotizaciones/Pedidos sin romper navegación
+2026-07-05 | Precio de metal: captura manual con histórico en Fase 1; API (MetalpriceAPI/GoldAPI) después | No bloquear el cotizador por elegir/pagar proveedor de API
+2026-07-05 | Cotización de marca como página web imprimible (/imprimir/...), no PDF binario en v1 | Evita dep pesada + faltan archivos de fuentes de marca; browser guarda como PDF
+2026-07-05 | Margen de cotización en tabla cotizacion_margen solo-admin (mismo patrón que item_costo) | Ventas ve total y líneas, nunca el costo/margen
+2026-07-05 | Total de cotización se recalcula en el server action, no se confía en el cliente | Integridad del precio
