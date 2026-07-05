@@ -73,6 +73,12 @@ create trigger trg_<tabla>_auditoria
   for each row execute function public.registrar_auditoria();
 ```
 
+## Datos y acciones (establecido en Fase 1)
+- **Lectura**: capa por módulo en `src/lib/data/<modulo>.ts`, marcada `import "server-only"`. Cada función consulta Supabase en producción y cae a datos de muestra en local (interruptor `supabaseConfigurado()` en `src/lib/supabase/config.ts`). Los datos de muestra viven en `src/lib/data/<modulo>-muestra.ts` y NUNCA se usan en producción.
+- **Escritura**: Server Actions en `src/app/(app)/<area>/actions.ts` (`"use server"`), validando con **zod** (`src/lib/validaciones.ts`). Devuelven `{ ok, error }` para formularios; usan `revalidatePath` y `redirect`. Formularios cliente con `useActionState` + `useFormStatus`.
+- **Constantes de dominio** (etiquetas es-MX, órdenes, colores por estado) centralizadas en `src/lib/<modulo>.ts` para que UI y datos coincidan.
+- **Auth**: `getUsuarioActual()` (`src/lib/session.ts`) da el usuario/rol/sucursal; middleware (`src/middleware.ts`) refresca sesión y protege rutas. La seguridad real es RLS; estos helpers solo alimentan la UI.
+
 ## Eventos entre módulos
 - Patrón: **TBD Fase 1**. Al implementar el primer evento de la matriz (§4 del plan) decidir triggers de BD vs. lógica en Server Actions y documentar aquí un ejemplo completo. Recomendación inicial: efectos dentro de la misma transacción (p.ej. CxP al vender consignación) como triggers; efectos con I/O externo (WhatsApp, IA) como jobs disparados desde Server Actions / Vercel Cron.
 

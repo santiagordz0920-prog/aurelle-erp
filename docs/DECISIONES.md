@@ -18,3 +18,8 @@
 2026-07-05 | Ellion con id fijo 00000000-…-0001 como sucursal por defecto | Referenciable desde seeds y triggers
 2026-07-05 | Auth en session.ts es stub (admin fijo) hasta provisionar Supabase | Permite construir y ver la UI sin nube; punto de integración documentado
 2026-07-05 | zod para validación de formularios (Fase 1) | Recomendado en CONVENCIONES; estándar con TS
+2026-07-05 | Interruptor supabaseConfigurado(): sin llaves usa datos de muestra + admin de prueba; con llaves va a Supabase real | Permite desarrollar y capturar pantallas sin acceso a la nube desde el sandbox
+2026-07-05 | Capa de datos server-only por módulo + Server Actions con zod para escrituras | Patrón estándar Next 16 App Router; separa lectura/escritura y valida en servidor
+2026-07-05 | Auth: @supabase/ssr con middleware + /login email-password; getUsuarioActual lee perfil de public.usuario | Patrón oficial Supabase para App Router; RLS sigue siendo la seguridad real
+2026-07-05 | Pipeline de lead como enum estado_pipeline; cambio de etapa manual desde la ficha en v1 | El arrastre kanban y el auto-avance por eventos (Citas) llegan después
+2026-07-05 | Datos de muestra de clientes viven en archivo aparte marcado como solo-local | Evita cualquier riesgo de que lleguen a producción

@@ -26,7 +26,7 @@ Construido en Fase 0. Última modificación: 2026-07-05.
 - Ninguno todavía. El patrón de eventos de la matriz (§4) se define en Fase 1.
 
 ## Lógica no obvia / trampas
-- **Auth es un stub**: `src/lib/session.ts::getUsuarioActual()` devuelve un admin fijo ("Santiago") porque aún no hay proyecto Supabase provisionado. Al conectar Supabase Auth, reemplazar el cuerpo por la consulta real (el código está comentado ahí mismo) y añadir middleware de refresco de sesión + página `/login`.
+- **Auth ya conectado (Fase 1)**: `getUsuarioActual()` lee el usuario real de Supabase; hay middleware y `/login`. En local sin llaves cae a un admin de prueba (ver `supabaseConfigurado()`). Detalle en `docs/modulos/clientes.md`.
 - Tailwind v4 **no** usa `tailwind.config.js`; los tokens viven en `globals.css` bajo `@theme`. Editar colores ahí.
 - Los helpers de RLS son `SECURITY DEFINER` a propósito (evitan recursión de RLS al leer `public.usuario`). No quitar ese atributo.
 - El trigger de auditoría es `SECURITY DEFINER` para poder escribir en `auditoria` saltando su RLS. Por eso nadie necesita policy de INSERT en `auditoria`.
