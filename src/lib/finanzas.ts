@@ -52,3 +52,28 @@ export const CATEGORIAS: CategoriaMovimiento[] = [
 export function montoConSigno(m: MovimientoFinanciero): number {
   return m.monto * CATEGORIA_MOVIMIENTO[m.categoria].signo;
 }
+
+/* ── Cuentas por pagar (§3.9/§3.10) ─────────────────────────────────────────*/
+export type EstadoCxP = "pendiente" | "pagada" | "cancelada";
+
+export type CuentaPorPagar = {
+  id: string;
+  consignante_id: string | null;
+  consignante_nombre?: string | null;
+  item_id: string | null;
+  pedido_id: string | null;
+  concepto: string;
+  monto: number;
+  estado: EstadoCxP;
+  fecha_vencimiento: string | null;
+  pagada_at: string | null;
+  sucursal_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export const ESTADO_CXP: Record<EstadoCxP, { etiqueta: string; clase: string }> = {
+  pendiente: { etiqueta: "Pendiente", clase: "bg-warning/15 text-warning" },
+  pagada: { etiqueta: "Pagada", clase: "bg-success/15 text-success" },
+  cancelada: { etiqueta: "Cancelada", clase: "bg-muted text-muted-foreground line-through" },
+};
