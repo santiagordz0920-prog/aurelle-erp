@@ -31,3 +31,6 @@
 2026-07-05 | Cotización de marca como página web imprimible (/imprimir/...), no PDF binario en v1 | Evita dep pesada + faltan archivos de fuentes de marca; browser guarda como PDF
 2026-07-05 | Margen de cotización en tabla cotizacion_margen solo-admin (mismo patrón que item_costo) | Ventas ve total y líneas, nunca el costo/margen
 2026-07-05 | Total de cotización se recalcula en el server action, no se confía en el cliente | Integridad del precio
+2026-07-05 | Candado de anticipo 2 en pedido: override booleano admin + auditado (override_por/at) | §3.4 exige bloquear compra de materiales sin anticipo 2, con override explícito
+2026-07-05 | Costo/margen real del pedido en tabla pedido_costo solo-admin; margen se sella al entregar | Mismo patrón de aislamiento de costos; margen real solo visible a admin
+2026-07-05 | pago.registrado_por = auth.uid() forzado por RLS (anti-suplantación) | Trazabilidad de quién registró cada pago
