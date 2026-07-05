@@ -15,18 +15,16 @@ Aplicar en el SQL Editor **0012_proveedores.sql** (0004–0011 ya están).
 - **Inventario** (0005/0006) — items + item_costo (solo-admin) + consignante. `docs/modulos/inventario.md`.
 - **Cotizador** (0007) — precio_metal, cotización + líneas + margen (solo-admin), cotización imprimible. `docs/modulos/cotizador.md`.
 - **Pedidos** (0008) — lista/detalle, plan de pagos, candado anticipo 2 + override auditado, reserva de inventario, costo/margen real solo-admin, entregar (sella margen), conversión desde cotización. `docs/modulos/pedidos.md`.
-- **Tareas v1 + Dashboard "Hoy"** (0009) — tareas manuales + vinculadas a entidad (con alta en 2 toques desde la ficha de cliente); `/hoy` con KPIs reales (pipeline, por cobrar, entregas por vencer), tareas del día y alertas. `docs/modulos/tareas.md`.
-- **Producción**: migraciones 0004–0009 aplicadas en Supabase (Santiago, 2026-07-05). Build + lint OK; probado con Postgres local + datos de muestra.
+- **Tareas v1 + Dashboard "Hoy"** (0009) — tareas manuales + vinculadas a entidad; `/hoy` con KPIs reales, tareas del día y alertas. `docs/modulos/tareas.md`.
+- **Finanzas v1** (0010/0011) — ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. `docs/modulos/finanzas.md`.
+- **Proveedores v1** (0012) — directorio en `/dinero/proveedores`. 
+- **Producción**: migraciones 0004–0011 aplicadas en Supabase (Santiago); 0012 pendiente. Build + lint OK; probado con Postgres local + muestra.
 
-## Siguiente tarea exacta (arrancar Fase 2 — Finanzas)
-Leer §3.7 (Finanzas) y la matriz §4 del PLAN_MAESTRO. Empezar cerrando las **reacciones de la matriz que ya tienen su origen construido**:
-1. **Asiento en Finanzas al registrar un pago** (Pedidos→Finanzas): diseñar tabla de movimientos/ingresos, migración 0010, y disparar el asiento desde `registrarPago` (o trigger de BD — decidir y documentar en CONVENCIONES §"Eventos entre módulos", que sigue TBD).
-2. **CxP a consignante al reservar/vender consignación** (Pedidos/Inventario→Finanzas).
-3. Capital de trabajo atrapado por pedido (ya hay saldo/costo; falta el rollup financiero).
-Todo Finanzas es **solo-admin** (regla dura). Revisar `docs/DECISIONES.md` antes de decidir el patrón de eventos.
+## Siguiente tarea exacta
+Continuar Fase 2. Opciones (elegir con Santiago): **compras de proveedor** (registrar compra → alta de inventario o gasto + CxP a proveedor, ya existe `cuenta_por_pagar.proveedor_id`); **métricas/P&L por línea** y proyección de flujo 30/60/90 (§3.9); **gastos recurrentes** (§3.11, postean solos). Costos de producción y comisiones dependen de Fases 4/6.
 
-## Reacciones de la matriz §4 pendientes (registradas)
-Comentarios TODO en `src/app/(app)/ventas/pedidos/actions.ts`: asiento en Finanzas al pagar (Fase 2, siguiente), CxP consignación (Fase 2), consumo de material en producción (Fase 4), contrato al confirmar (Fase 4), Postventa/Comisiones/lifecycle al entregar (Fases 4/6). Tareas sugeridas por IA + Dashboard por rol + push (fases posteriores).
+## Reacciones de la matriz §4 (estado)
+Implementadas: pago→ingreso (0010), consignación→CxP (0011). Pendientes (TODO en `pedidos/actions.ts`): consumo de material en producción (Fase 4), contrato al confirmar (Fase 4), Postventa/Comisiones/lifecycle al entregar (Fases 4/6). Tareas sugeridas por IA + Dashboard por rol + push (fases posteriores).
 
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza Supabase/Vercel (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra.
