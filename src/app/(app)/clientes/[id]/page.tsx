@@ -11,6 +11,7 @@ import {
   FileText,
   ShoppingBag,
   Image as ImageIcon,
+  ListTodo,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, type Tab } from "@/components/ui/tabs";
@@ -18,7 +19,11 @@ import { EmptyState } from "@/components/empty-state";
 import { CanalBadge } from "@/components/clientes/estado-badge";
 import { EstadoSelector } from "@/components/clientes/estado-selector";
 import { NotaForm } from "@/components/clientes/nota-form";
+import { TareaForm } from "@/components/tareas/tarea-form";
+import { TareaItem } from "@/components/tareas/tarea-item";
 import { getCliente, getNotas } from "@/lib/data/clientes";
+import { listarTareas } from "@/lib/data/tareas";
+import { listarUsuarios } from "@/lib/data/usuarios";
 import { CANAL_FUENTE } from "@/lib/clientes";
 
 export async function generateMetadata({
@@ -40,7 +45,12 @@ export default async function FichaClientePage({
   const cliente = await getCliente(id);
   if (!cliente) notFound();
 
-  const notas = await getNotas(id);
+  const [notas, tareas, usuarios] = await Promise.all([
+    getNotas(id),
+    listarTareas({ entidad_tipo: "cliente", entidad_id: id }),
+    listarUsuarios(),
+  ]);
+  const tareasPendientes = tareas.filter((t) => t.estado === "pendiente").length;
 
   const tabs: Tab[] = [
     { id: "resumen", label: "Resumen", content: <Resumen cliente={cliente} /> },
@@ -67,6 +77,33 @@ export default async function FichaClientePage({
                     {n.autor_nombre ?? "Equipo"} · {formatearFechaHora(n.created_at)}
                   </p>
                 </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: "tareas",
+      label: "Tareas",
+      badge: tareasPendientes,
+      content: (
+        <div className="space-y-4">
+          <TareaForm
+            usuarios={usuarios.map((u) => ({ id: u.id, nombre: u.nombre }))}
+            entidad={{ tipo: "cliente", id: cliente.id }}
+          />
+          {tareas.length === 0 ? (
+            <EmptyState
+              icono={ListTodo}
+              titulo="Sin tareas para este cliente"
+              descripcion="Crea una en dos toques: “Nueva tarea”. Quedará vinculada a esta ficha."
+              className="border-0 bg-transparent py-8"
+            />
+          ) : (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+              {tareas.map((t) => (
+                <TareaItem key={t.id} tarea={t} ocultarEntidad />
               ))}
             </ul>
           )}

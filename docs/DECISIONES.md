@@ -38,3 +38,8 @@
 2026-07-05 | Conversión cotización→pedido arranca en línea 'bridal' y se ajusta en el pedido | Un clic sin fricción; la línea es editable en el detalle
 2026-07-05 | Reacciones de la matriz §4 de Pedidos quedan como comentarios TODO en actions.ts + ESTADO | Dependen de Finanzas/Producción/Postventa (Fases 2/4/6); no bloquear Fase 1
 2026-07-05 | cambiarEstado('entregado') delega en entregarPedido para no saltarse el sellado de margen | El sellado debe correr sí o sí al entregar
+2026-07-05 | Vínculo de tarea a entidad es polimórfico (entidad_tipo enum + entidad_id, sin FK) | Apunta a varias tablas, algunas de fases futuras; se resuelve la ruta en la UI
+2026-07-05 | Tareas con RLS por sucursal (no solo-admin) | El equipo comparte pendientes; enum origen deja gancho para sugeridas por IA
+2026-07-05 | Dashboard "Hoy" v1 agrega en lectura de Cotizador/Pedidos/Tareas; sin costo/margen | Pulso real sin exponer datos solo-admin; vista por rol y push llegan después
+2026-07-05 | Directorio de usuarios en src/lib/data/usuarios.ts (listarUsuarios) | Reutilizable para selectores (responsable de tarea, futuros asignados)
+2026-07-05 | Archivos SQL acumulativos en supabase/ (aplicar_0004_a_0008, aplicar_0005_a_0008) para SQL Editor | Santiago aplica sin CLI; 0004 ya estaba en prod, de ahí la variante
