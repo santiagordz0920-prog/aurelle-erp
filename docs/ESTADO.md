@@ -4,10 +4,10 @@
 > Última actualización: 2026-07-05 por sesión de Fase 1 (Claude Code).
 
 ## Fase actual
-**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar + captura manual + P&L del mes + capital de trabajo + **CxP a consignante** (migración 0011: al reservar consignación nace la cuenta por pagar, marcable como pagada). Dos eventos de la matriz §4 implementados (pago→ingreso, consignación→CxP). Siguiente: métricas/P&L por línea y proyección de flujo (§3.9), o arrancar Proveedores (§3.10). Los costos de producción dependen de Fase 4.
+**Fase 2 — Finanzas: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar + captura manual + P&L del mes + capital de trabajo + **CxP a consignante** (migración 0011: al reservar consignación nace la cuenta por pagar, marcable como pagada). Dos eventos de la matriz §4 implementados (pago→ingreso, consignación→CxP). **Proveedores v1** (0012): directorio en /dinero/proveedores (alta con categorías + condiciones). Siguiente: compras de proveedor (alta de inventario/gasto + CxP a proveedor, ya hay cuenta_por_pagar.proveedor_id), o métricas/P&L por línea (§3.9). Costos de producción dependen de Fase 4.
 
 ## Acción de Santiago (producción)
-Aplicar en el SQL Editor **0011_cuentas_por_pagar.sql** (0004–0010 ya están).
+Aplicar en el SQL Editor **0012_proveedores.sql** (0004–0011 ya están).
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.

@@ -46,3 +46,4 @@
 2026-07-05 | Finanzas: ledger movimiento_financiero solo-admin; monto positivo + signo por categoría | Simplifica netos/P&L y mantiene RLS solo-admin
 2026-07-05 | Asiento al pagar vía trigger de BD (SECURITY DEFINER), no en el Server Action | Efecto en misma transacción; ventas registra el pago pero Finanzas es solo-admin
 2026-07-05 | CxP a consignante vía trigger sobre item_inventario al reservar; monto = costo (item_costo) | Segundo evento matriz §4; SECURITY DEFINER lee costo solo-admin; guard anti-duplicado
+2026-07-05 | Proveedores bajo área Dinero → tabla proveedor solo-admin; categorías como text[] libre | Consistente con Finanzas solo-admin; text[]+gin como cliente.etiquetas

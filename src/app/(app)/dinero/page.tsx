@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Wallet, Lock } from "lucide-react";
+import { Wallet, Lock, Truck } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,14 @@ export default async function DineroPage() {
       <PageHeader
         titulo="Dinero"
         descripcion="Ledger con asientos automáticos, P&L del mes y capital de trabajo — solo admin."
+        accion={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dinero/proveedores">
+              <Truck className="size-4" />
+              Proveedores
+            </Link>
+          </Button>
+        }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
