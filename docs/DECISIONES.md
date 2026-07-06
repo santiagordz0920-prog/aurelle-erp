@@ -53,3 +53,4 @@
 2026-07-06 | Corregidos los 3 errores de lint (<a> → <Link> en cliente-form, cotizacion-builder, item-form); lint queda en cero | Higiene: dejar de arrastrar deuda conocida; navegación cliente correcta de Next
 2026-07-06 | Gastos recurrentes: posteo mensual vía función SECURITY DEFINER idempotente (ultimo_posteo por mes) + Vercel Cron (vercel.json, 1° de mes) protegido con CRON_SECRET + botón manual de respaldo | §3.11; el cron no tiene sesión → cliente service_role; idempotencia evita duplicar si corre de más
 2026-07-06 | Cliente service_role en src/lib/supabase/admin.ts SOLO para rutas server protegidas por secreto (crons/webhooks) | Salta RLS; jamás en navegador ni flujos de usuario
+2026-07-06 | Compra a proveedor genera asiento (costo/gasto) siempre y CxP solo a crédito, vía trigger | El costo se reconoce al incurrirse; al contado no hay pasivo; evita doble conteo (la CxP pagada es el egreso)

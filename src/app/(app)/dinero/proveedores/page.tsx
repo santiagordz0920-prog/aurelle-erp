@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, Truck, Lock } from "lucide-react";
+import { ArrowLeft, Truck, Lock, ShoppingCart } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ProveedorForm } from "@/components/finanzas/proveedor-form";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
@@ -37,6 +38,14 @@ export default async function ProveedoresPage() {
       <PageHeader
         titulo="Proveedores"
         descripcion="Directorio de a quién le compra Aurelle: contacto, categorías y condiciones."
+        accion={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dinero/compras">
+              <ShoppingCart className="size-4" />
+              Compras
+            </Link>
+          </Button>
+        }
       />
 
       <ProveedorForm />

@@ -14,8 +14,8 @@
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). Gastos recurrentes ya está. Pendientes, a elegir:
-- **Compras a proveedor** (§3.10): registrar compra → alta de items en Inventario **o** gasto, + CxP a proveedor (la columna `cuenta_por_pagar.proveedor_id` ya existe). Cierra el ciclo Proveedores↔Inventario↔Finanzas + histórico de precios por proveedor.
+Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). **Compras a proveedor v1 ya está** (0014): compra→asiento (costo/gasto) + CxP a crédito. Pendientes, a elegir:
+- **Alta de items desde la compra** (§3.10): que una compra de inventario dé de alta `item_inventario` + `item_costo` automáticamente (hoy la compra es solo cabecera). Cierra la otra mitad del ciclo Proveedores↔**Inventario**.
 - **Proyección de flujo 30/60/90** (§3.9): parcialidades por cobrar + pipeline ponderado − gastos conocidos (el burn fijo ya lo da Gastos recurrentes).
 - **Comisiones** (§3.9/§3.17): devengadas al cierre del pedido (planner/referidor), % sobre utilidad real. Devengado depende de "pedido entregado" (ya sella margen).
 - **Reporte al socio** (PDF mensual, §3.9) — reusar el patrón de cotización imprimible.
@@ -27,7 +27,7 @@ Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurren
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (rama `supabase-admin-emails` dejó un script; confirmar que ya puede entrar).
-- **Pendiente aplicar en prod:** `0013_gastos_recurrentes.sql` + definir `CRON_SECRET` en Vercel (si no, el posteo mensual no corre; el botón manual sí). Ver `docs/modulos/gastos-recurrentes.md`.
+- **Pendiente aplicar en prod:** `0013_gastos_recurrentes.sql` (+ `CRON_SECRET` en Vercel para el posteo mensual; el botón manual funciona sin él) y `0014_compras.sql`. Ver `docs/modulos/gastos-recurrentes.md` y `docs/modulos/compras.md`.
 
 ## Notas para la siguiente sesión
 - **El hook `SessionStart` ya te muestra el estado y las ramas al arrancar. Léelo.** Si hay una rama `claude/*` más nueva que la tuya, reconcilia antes de codear.
