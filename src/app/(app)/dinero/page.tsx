@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Wallet, Lock, Truck, Repeat } from "lucide-react";
+import { Wallet, Lock, Truck, Repeat, Percent } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
@@ -51,11 +51,17 @@ export default async function DineroPage() {
         titulo="Dinero"
         descripcion="Ledger con asientos automáticos, P&L del mes y capital de trabajo — solo admin."
         accion={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button asChild variant="outline" size="sm">
               <Link href="/dinero/gastos">
                 <Repeat className="size-4" />
                 Gastos
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dinero/comisiones">
+                <Percent className="size-4" />
+                Comisiones
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">

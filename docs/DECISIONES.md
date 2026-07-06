@@ -55,3 +55,4 @@
 2026-07-06 | Cliente service_role en src/lib/supabase/admin.ts SOLO para rutas server protegidas por secreto (crons/webhooks) | Salta RLS; jamás en navegador ni flujos de usuario
 2026-07-06 | Compra a proveedor genera asiento (costo/gasto) siempre y CxP solo a crédito, vía trigger | El costo se reconoce al incurrirse; al contado no hay pasivo; evita doble conteo (la CxP pagada es el egreso)
 2026-07-06 | Proyección de flujo = neto proyectado (cobros − CxP − burn·n), sin saldo de caja inicial | No trackeamos saldo bancario; honesto llamarlo flujo neto. Buckets acumulados 30/60/90; vencido y CxP sin fecha cuentan en ≤30
+2026-07-06 | Comisión = % sobre utilidad real (total − costo_real), calculado en el server; requiere costo capturado | Nunca sobre el total; utilidad depende de pedido_costo (solo-admin), por eso el módulo es admin y el monto no se confía al cliente

@@ -9,15 +9,15 @@
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.
 - **Fase 1 completa** — Clientes (0004), Inventario+costos solo-admin (0005/0006), Cotizador+margen solo-admin (0007), Pedidos: candado anticipo 2 + pagos + reserva + costo/margen real + conversión (0008), Tareas+Dashboard "Hoy" (0009). Cada uno con su `docs/modulos/*.md`.
-- **Fase 2 en curso** — Finanzas v1 (0010/0011): ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. Proveedores v1 (0012): directorio en `/dinero/proveedores`. **Gastos recurrentes (0013):** alta + posteo mensual idempotente (función SECURITY DEFINER) + Vercel Cron protegido + botón manual; burn fijo en `/dinero/gastos`. Tercer evento §4 automático. **Compras a proveedor v1 (0014):** registrar compra en `/dinero/compras` → asiento (costo/gasto) + CxP a crédito (4º evento §4). **Proyección de flujo 30/60/90** en `/dinero` (neto por cobrar − CxP − burn, solo lectura). `docs/modulos/finanzas.md`, `docs/modulos/gastos-recurrentes.md`, `docs/modulos/compras.md`.
+- **Fase 2 en curso** — Finanzas v1 (0010/0011): ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. Proveedores v1 (0012): directorio en `/dinero/proveedores`. **Gastos recurrentes (0013):** alta + posteo mensual idempotente (función SECURITY DEFINER) + Vercel Cron protegido + botón manual; burn fijo en `/dinero/gastos`. Tercer evento §4 automático. **Compras a proveedor v1 (0014):** registrar compra en `/dinero/compras` → asiento (costo/gasto) + CxP a crédito (4º evento §4). **Proyección de flujo 30/60/90** en `/dinero`. **Comisiones v1 (0015):** `/dinero/comisiones`, % sobre utilidad real, registro manual + marcar pagada. `docs/modulos/finanzas.md`, `docs/modulos/gastos-recurrentes.md`, `docs/modulos/compras.md`, `docs/modulos/comisiones.md`.
 - **Producción verificada:** las 19 tablas y el esquema de `tarea` (`entidad_tipo`/`estado`) confirmados en el Supabase de Santiago; migraciones 0004–0012 aplicadas. La bifurcación de dos ramas paralelas (2026-07-06) quedó reconciliada; el tronco oficial es `claude/business-erp-plan-kqb9uk`.
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
 Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). Compras a proveedor v1 (0014) y **proyección de flujo 30/60/90** (solo lectura, en `/dinero`) ya están. Pendientes, a elegir:
 - **Alta de items desde la compra** (§3.10): que una compra de inventario dé de alta `item_inventario` + `item_costo` automáticamente (hoy la compra es solo cabecera). Cierra la otra mitad del ciclo Proveedores↔**Inventario**. OJO: requiere decidir costo-vs-activo (la compra de inventario ya postea un movimiento `costo`; evitar doble conteo al consumir en un pedido).
-- **Comisiones** (§3.9/§3.17): devengadas al cierre del pedido (planner/referidor), % sobre utilidad real. Devengado depende de "pedido entregado" (ya sella margen).
-- **Reporte al socio** (PDF mensual, §3.9) — reusar el patrón de cotización imprimible.
+- **Reporte al socio** (PDF mensual, §3.9) — reusar el patrón de la cotización imprimible (`/imprimir/...`): ventas, tendencia, pipeline, % Concierge, vs meta.
+- **Devengo automático de comisión al entregar** + **asiento del pago de comisión** (cierra el módulo Comisiones, ver su doc).
 Seguir el patrón: migración → probar en Postgres local → dominio → datos+muestra → acciones → páginas → docs. Costos/finanzas SIEMPRE en tabla solo-admin.
 
 ## Reacciones de la matriz §4 (estado)
@@ -26,7 +26,7 @@ Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurren
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (rama `supabase-admin-emails` dejó un script; confirmar que ya puede entrar).
-- **Pendiente aplicar en prod:** `0013_gastos_recurrentes.sql` (+ `CRON_SECRET` en Vercel para el posteo mensual; el botón manual funciona sin él) y `0014_compras.sql`. Ver `docs/modulos/gastos-recurrentes.md` y `docs/modulos/compras.md`.
+- **Pendiente aplicar en prod:** `0013_gastos_recurrentes.sql` (+ `CRON_SECRET` en Vercel para el posteo mensual; el botón manual funciona sin él) `0014_compras.sql` y `0015_comisiones.sql`. Ver `docs/modulos/gastos-recurrentes.md`, `docs/modulos/compras.md`, `docs/modulos/comisiones.md`.
 
 ## Notas para la siguiente sesión
 - **El hook `SessionStart` ya te muestra el estado y las ramas al arrancar. Léelo.** Si hay una rama `claude/*` más nueva que la tuya, reconcilia antes de codear.
