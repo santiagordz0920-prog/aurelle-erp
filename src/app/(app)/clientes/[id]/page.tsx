@@ -6,7 +6,6 @@ import {
   Heart,
   Cake,
   Users,
-  MessageSquareText,
   CalendarClock,
   FileText,
   ShoppingBag,
@@ -23,6 +22,7 @@ import { TareaForm } from "@/components/tareas/tarea-form";
 import { TareaItem } from "@/components/tareas/tarea-item";
 import { CitaForm } from "@/components/citas/cita-form";
 import { CitaItem } from "@/components/citas/cita-item";
+import { EnviarWhatsApp } from "@/components/clientes/enviar-whatsapp";
 import { getCliente, getNotas } from "@/lib/data/clientes";
 import { listarTareas } from "@/lib/data/tareas";
 import { listarCitas } from "@/lib/data/citas";
@@ -121,10 +121,10 @@ export default async function FichaClientePage({
       id: "conversacion",
       label: "Conversación",
       content: (
-        <EmptyState
-          icono={MessageSquareText}
-          titulo="El inbox de WhatsApp llega en Fase 3"
-          descripcion="Aquí vivirá todo el historial de mensajes con el cliente, con respuestas de la IA marcadas."
+        <EnviarWhatsApp
+          nombre={cliente.nombre}
+          pareja={cliente.pareja_nombre}
+          telefono={cliente.telefono}
         />
       ),
     },
