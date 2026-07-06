@@ -21,8 +21,11 @@ import { EstadoSelector } from "@/components/clientes/estado-selector";
 import { NotaForm } from "@/components/clientes/nota-form";
 import { TareaForm } from "@/components/tareas/tarea-form";
 import { TareaItem } from "@/components/tareas/tarea-item";
+import { CitaForm } from "@/components/citas/cita-form";
+import { CitaItem } from "@/components/citas/cita-item";
 import { getCliente, getNotas } from "@/lib/data/clientes";
 import { listarTareas } from "@/lib/data/tareas";
+import { listarCitas } from "@/lib/data/citas";
 import { listarUsuarios } from "@/lib/data/usuarios";
 import { CANAL_FUENTE } from "@/lib/clientes";
 
@@ -45,11 +48,15 @@ export default async function FichaClientePage({
   const cliente = await getCliente(id);
   if (!cliente) notFound();
 
-  const [notas, tareas, usuarios] = await Promise.all([
+  const [notas, tareas, usuarios, citas] = await Promise.all([
     getNotas(id),
     listarTareas({ entidad_tipo: "cliente", entidad_id: id }),
     listarUsuarios(),
+    listarCitas({ cliente_id: id }),
   ]);
+  const citasProximas = citas.filter(
+    (c) => c.estado !== "completada" && c.estado !== "cancelada",
+  ).length;
   const tareasPendientes = tareas.filter((t) => t.estado === "pendiente").length;
 
   const tabs: Tab[] = [
@@ -124,12 +131,25 @@ export default async function FichaClientePage({
     {
       id: "citas",
       label: "Citas",
+      badge: citasProximas,
       content: (
-        <EmptyState
-          icono={CalendarClock}
-          titulo="Citas en Fase 3"
-          descripcion="Primeras visitas, entregas y servicios agendados aparecerán aquí."
-        />
+        <div className="space-y-4">
+          <CitaForm cliente={{ id: cliente.id, nombre: cliente.nombre }} />
+          {citas.length === 0 ? (
+            <EmptyState
+              icono={CalendarClock}
+              titulo="Sin citas"
+              descripcion="Agenda la primera visita, un cierre o una entrega para este cliente."
+              className="border-0 bg-transparent py-8"
+            />
+          ) : (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+              {citas.map((c) => (
+                <CitaItem key={c.id} cita={c} ocultarCliente />
+              ))}
+            </ul>
+          )}
+        </div>
       ),
     },
     {

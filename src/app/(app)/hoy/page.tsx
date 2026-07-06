@@ -10,8 +10,10 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
 import { TareaItem } from "@/components/tareas/tarea-item";
+import { CitaItem } from "@/components/citas/cita-item";
 import { getUsuarioActual } from "@/lib/session";
 import { tareasDeHoy } from "@/lib/data/tareas";
+import { citasDeHoy } from "@/lib/data/citas";
 import { listarCotizaciones } from "@/lib/data/cotizaciones";
 import { listarPedidos } from "@/lib/data/pedidos";
 import { pesos } from "@/lib/inventario";
@@ -29,11 +31,12 @@ const PEDIDO_ACTIVO = (e: string) => e !== "entregado" && e !== "cancelado";
   (sin costos ni márgenes, que son solo-admin en su propio módulo).
 */
 export default async function HoyPage() {
-  const [usuario, tareas, cotizaciones, pedidos] = await Promise.all([
+  const [usuario, tareas, cotizaciones, pedidos, citas] = await Promise.all([
     getUsuarioActual(),
     tareasDeHoy(),
     listarCotizaciones(),
     listarPedidos(),
+    citasDeHoy(),
   ]);
   const saludo = obtenerSaludo();
 
@@ -88,6 +91,39 @@ export default async function HoyPage() {
           alerta={vencidos.length > 0}
         />
       </div>
+
+      {/* Citas de hoy */}
+      <Card>
+        <CardHeader className="flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CalendarClock className="size-4 text-accent" />
+            Citas de hoy
+          </CardTitle>
+          <Link
+            href="/clientes/citas"
+            className="inline-flex items-center gap-1 text-xs text-accent hover:underline"
+          >
+            Ver agenda
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {citas.length === 0 ? (
+            <EmptyState
+              icono={CalendarClock}
+              titulo="Sin citas hoy"
+              descripcion="Las visitas, cierres y entregas del día aparecerán aquí. Agenda desde “Ver agenda”."
+              className="border-0 bg-transparent py-8"
+            />
+          ) : (
+            <ul className="divide-y divide-border">
+              {citas.map((c) => (
+                <CitaItem key={c.id} cita={c} />
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Tareas del día */}
