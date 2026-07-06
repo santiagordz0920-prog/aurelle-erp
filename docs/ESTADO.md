@@ -1,53 +1,35 @@
 # ESTADO — ERP Aurelle
 
 > Bastón de relevo entre sesiones. Se SOBREESCRIBE (no se acumula). Máx. ~1 página.
-> Última actualización: 2026-07-06 tras reconciliar dos ramas bifurcadas (Claude Code).
-
-## Nota de reconciliación (leer antes de nada)
-Dos sesiones trabajaron en paralelo desde el mismo punto del repo sin coordinarse
-y bifurcaron. Se adoptó la rama más completa (con Finanzas + Proveedores) como
-tronco oficial de `claude/business-erp-plan-kqb9uk`. El esquema de Pedidos
-resultó idéntico entre ambas; el único conflicto de esquema fue `tarea` (dos
-diseños distintos — este documento y el código reflejan el que quedó vigente:
-`entidad_tipo`/`estado` enum, no `vinculo_tipo`/`completada` booleano). Detalle
-en `docs/DECISIONES.md` (2026-07-06). **Estamos verificando con Santiago qué
-quedó realmente aplicado en su Supabase** antes de indicar el siguiente SQL a
-correr — no asumir, confirmar con `select table_name from information_schema.tables
-where table_schema='public'` primero.
+> Última actualización: 2026-07-06 (Claude Code).
 
 ## Fase actual
-**Fase 2 — Dinero: EN CURSO.** Fase 1 completa. Finanzas v1: ledger solo-admin + asiento automático al pagar + captura manual + P&L del mes + capital de trabajo + **CxP a consignante** (migración 0011). Dos eventos de la matriz §4 implementados (pago→ingreso, consignación→CxP). **Proveedores v1** (0012): directorio en /dinero/proveedores.
-
-## Acción de Santiago (producción) — EN VERIFICACIÓN
-1. Correr el query de verificación (arriba) y confirmar qué tablas existen.
-2. Si falta `proveedor` o la columna `cuenta_por_pagar.proveedor_id`: correr `0012_proveedores.sql` (hay una versión idempotente seguro-de-repetir, pedirla si no la tienes a la mano).
-3. Si algo del bloque de `tarea` quedó a medias o con el esquema viejo (columnas `vinculo_tipo`/`completada` en vez de `entidad_tipo`/`estado`): avisar en la próxima sesión antes de seguir — puede necesitar un `DROP TABLE tarea CASCADE` + reaplicar 0009 limpio (es tabla nueva de hoy, sin datos reales que perder).
+**Fase 2 — Dinero: EN CURSO.** Fase 1 completa y verificada en producción.
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.
-- **Clientes v1** (0004) — `docs/modulos/clientes.md`.
-- **Inventario** (0005/0006) — items + item_costo (solo-admin) + consignante. `docs/modulos/inventario.md`.
-- **Cotizador** (0007) — precio_metal, cotización + líneas + margen (solo-admin), cotización imprimible. `docs/modulos/cotizador.md`.
-- **Pedidos** (0008) — lista/detalle, plan de pagos, candado anticipo 2 + override auditado, reserva de inventario, costo/margen real solo-admin, entregar (sella margen), conversión desde cotización. `docs/modulos/pedidos.md`.
-- **Tareas v1 + Dashboard "Hoy"** (0009) — tareas manuales + vinculadas a entidad; `/hoy` con KPIs reales, tareas del día y alertas. `docs/modulos/tareas.md`.
-- **Finanzas v1** (0010/0011) — ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. `docs/modulos/finanzas.md`.
-- **Proveedores v1** (0012) — directorio en `/dinero/proveedores`.
-- Build limpio en el tronco reconciliado (`npm install && npm run build` verificado tras el reset).
+- **Fase 1 completa** — Clientes (0004), Inventario+costos solo-admin (0005/0006), Cotizador+margen solo-admin (0007), Pedidos: candado anticipo 2 + pagos + reserva + costo/margen real + conversión (0008), Tareas+Dashboard "Hoy" (0009). Cada uno con su `docs/modulos/*.md`.
+- **Fase 2 en curso** — Finanzas v1 (0010/0011): ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. Proveedores v1 (0012): directorio en `/dinero/proveedores`. `docs/modulos/finanzas.md`.
+- **Producción verificada:** las 19 tablas y el esquema de `tarea` (`entidad_tipo`/`estado`) confirmados en el Supabase de Santiago; migraciones 0004–0012 aplicadas. La bifurcación de dos ramas paralelas (2026-07-06) quedó reconciliada; el tronco oficial es `claude/business-erp-plan-kqb9uk`.
+- **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-1. **Cerrar la verificación de producción** (ver arriba) antes de escribir código nuevo.
-2. Continuar Fase 2, a elegir con Santiago: **compras de proveedor** (registrar compra → alta de inventario o gasto + CxP a proveedor, ya existe `cuenta_por_pagar.proveedor_id`); **gastos recurrentes** (§3.11, postean solos); **proyección de flujo 30/60/90** (§3.9). Costos de producción y comisiones dependen de Fases 4/6.
+Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). A elegir con Santiago:
+- **Compras a proveedor** (§3.10): registrar compra → alta de items en Inventario **o** gasto, + CxP a proveedor (la columna `cuenta_por_pagar.proveedor_id` ya existe). Cierra el ciclo Proveedores↔Inventario↔Finanzas.
+- **Gastos recurrentes** (§3.11): alta con periodicidad + posteo mensual automático (necesita decidir infra de cron — Vercel Cron; buscar en DECISIONES antes de elegir) + burn fijo para la proyección.
+- **Proyección de flujo 30/60/90** (§3.9): parcialidades por cobrar + pipeline ponderado − gastos conocidos.
+Seguir el patrón: migración → probar en Postgres local → dominio → datos+muestra → acciones → páginas → docs. Costos/finanzas SIEMPRE en tabla solo-admin.
 
 ## Reacciones de la matriz §4 (estado)
-Implementadas: pago→ingreso (0010), consignación→CxP (0011). Pendientes: consumo de material en producción (Fase 4), contrato al confirmar (Fase 4), Postventa/Comisiones/lifecycle al entregar (Fases 4/6). Tareas sugeridas por IA + Dashboard por rol + push (fases posteriores).
+Implementadas: pago→ingreso (0010), consignación→CxP (0011). Pendientes (fases posteriores): consumo de material en producción y contrato al confirmar (Fase 4); Postventa/Comisiones/lifecycle al entregar (Fases 4/6); tareas sugeridas por IA + Dashboard por rol + push.
 
 ## Problemas conocidos / bloqueos
-- El sandbox de Claude no alcanza Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago.
-- Estado exacto de Supabase en producción **por confirmar** (ver nota de reconciliación arriba) — no dar por hecho qué migraciones quedaron aplicadas hasta ver el resultado del query de verificación.
-- 3 errores de lint preexistentes (uso de `<a>` en cliente-form, cotizacion-builder, item-form) — fuera de alcance.
+- El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
+- Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (rama `supabase-admin-emails` dejó un script; confirmar que ya puede entrar).
 
 ## Notas para la siguiente sesión
-- **Antes de tocar código de Fase 2**, confirmar con Santiago el resultado de la verificación de Supabase (nota arriba). Si el estado real difiere de lo que este documento asume, corregir aquí primero.
-- Si se abre otra sesión en paralelo sobre este repo: coordinarse explícitamente sobre qué módulo toca cada una (regla de higiene de `CLAUDE.md` §8: un solo frente de trabajo por módulo). La bifurcación de 2026-07-06 fue exactamente por no hacer esto.
-- Postgres local para probar SQL: usuario `postgres` (no root) desde `/var/tmp`; stub de `auth` (roles authenticated/anon/service_role, auth.users, auth.uid()) + aplicar `supabase/migrations/00*.sql` en orden con `ON_ERROR_STOP=1`.
+- **El hook `SessionStart` ya te muestra el estado y las ramas al arrancar. Léelo.** Si hay una rama `claude/*` más nueva que la tuya, reconcilia antes de codear.
+- Postgres local para probar SQL: usuario `postgres` (no root) desde `/var/tmp`; stub de `auth` (roles authenticated/anon/service_role, `auth.users`, `auth.uid()`) + aplicar `supabase/migrations/00*.sql` en orden con `ON_ERROR_STOP=1`. No hacer pipe de `pgboot.sh` a `grep` o se pierde `$PSQL`.
+- Capturas: `npm run build && npm run start` (sin llaves = datos de muestra) + Playwright `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`.
 - Patrón firme: costo/margen/finanzas SIEMPRE en tabla aparte solo-admin (`item_costo`, `cotizacion_margen`, `pedido_costo`, `movimiento_financiero`, `proveedor`), nunca columna en la tabla principal — RLS es por fila, no por columna.
+- Al crear formularios reusados en tarjetas angostas: `flex-wrap`, no `sm:flex-row` (breakpoints Tailwind son por viewport, no por contenedor).

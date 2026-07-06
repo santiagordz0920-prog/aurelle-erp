@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 import { crearCliente, type ResultadoAccion } from "@/app/(app)/clientes/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,7 +92,7 @@ export function ClienteForm() {
       <div className="flex items-center gap-3 pt-1">
         <Guardar />
         <Button asChild variant="ghost">
-          <a href="/clientes">Cancelar</a>
+          <Link href="/clientes">Cancelar</Link>
         </Button>
       </div>
     </form>

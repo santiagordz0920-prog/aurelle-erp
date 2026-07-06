@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 import {
   crearItem,
   type ResultadoAccion,
@@ -128,7 +129,7 @@ export function ItemForm({ esAdmin }: { esAdmin: boolean }) {
       <div className="flex items-center gap-3 pt-1">
         <Guardar />
         <Button asChild variant="ghost">
-          <a href="/taller/inventario">Cancelar</a>
+          <Link href="/taller/inventario">Cancelar</Link>
         </Button>
       </div>
     </form>

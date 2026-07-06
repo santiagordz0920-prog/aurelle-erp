@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
 import {
   crearCotizacion,
@@ -205,7 +206,7 @@ export function CotizacionBuilder({
       <div className="flex items-center gap-3">
         <Guardar />
         <Button asChild variant="ghost">
-          <a href="/ventas/cotizaciones">Cancelar</a>
+          <Link href="/ventas/cotizaciones">Cancelar</Link>
         </Button>
       </div>
     </form>

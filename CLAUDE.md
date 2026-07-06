@@ -4,8 +4,9 @@ ERP interno de Aurelle & Co. (joyería premium de compromiso, Monterrey). Reempl
 
 ## Protocolo de sesión (OBLIGATORIO)
 
-**Al iniciar toda sesión:**
-1. Lee `docs/ESTADO.md` completo (1 página). Ahí está la fase actual, la tarea siguiente exacta y qué secciones del plan leer.
+**Al iniciar toda sesión (en este orden, sin saltarse pasos):**
+0. **Anti-bifurcación (PRIMERO):** `git fetch --all --prune` y revisa las ramas `claude/*` remotas por fecha. Si otra rama tiene commits más recientes que la tuya, HAY BIFURCACIÓN: para, mira `git log HEAD..origin/<rama>` y reconcilia ANTES de escribir código. Regla de higiene: un solo frente de trabajo por módulo (ver §8 del Plan Maestro). El hook `SessionStart` imprime esto automáticamente; léelo. *(La bifurcación del 2026-07-06, dos sesiones construyendo Pedidos/Tareas en paralelo, costó una reconciliación entera — no se repite.)*
+1. Lee `docs/ESTADO.md` **completo** (1 página). Ahí está la fase actual, la tarea siguiente exacta y qué secciones del plan leer. No lo hojees: léelo entero.
 2. Lee SOLO la sección del `docs/PLAN_MAESTRO.md` que ESTADO.md indica para la tarea en turno. Nunca leas el plan completo.
 3. Si vas a tocar un módulo ya construido, lee su archivo en `docs/modulos/`.
 4. Antes de proponer una decisión técnica, busca en `docs/DECISIONES.md` si ya se tomó (grep por palabra clave, no lectura completa).
@@ -16,7 +17,7 @@ ERP interno de Aurelle & Co. (joyería premium de compromiso, Monterrey). Reempl
 3. Si construiste o modificaste un módulo, crea/actualiza `docs/modulos/<modulo>.md` (usa `docs/modulos/_PLANTILLA.md`).
 4. Si estableciste un patrón nuevo reutilizable, agrégalo a `docs/CONVENCIONES.md`.
 
-Una sesión que no actualiza ESTADO.md le cuesta a la siguiente sesión re-descubrir todo. No hay excepciones.
+Una sesión que no actualiza ESTADO.md le cuesta a la siguiente sesión re-descubrir todo. No hay excepciones. **Los documentos madre (`CLAUDE.md`, `docs/ESTADO.md`, `docs/DECISIONES.md`, `docs/CONVENCIONES.md`, `docs/modulos/*`) son la fuente de verdad del proyecto: SIEMPRE se leen al iniciar y se actualizan al cerrar, con la misma seriedad que el código. Un cambio de código sin su actualización de documentos está incompleto.**
 
 ## Reglas duras
 
@@ -28,6 +29,8 @@ Una sesión que no actualiza ESTADO.md le cuesta a la siguiente sesión re-descu
 - Nunca subas secretos al repo (.env en .gitignore; secretos en Vercel/Supabase).
 - No refactorices código fuera del alcance de la tarea en turno sin registrarlo como decisión.
 - Commits pequeños y frecuentes con mensajes en español descriptivos.
+- **Un solo frente de trabajo por módulo.** Antes de empezar, verifica que no haya otra rama/sesión avanzando lo mismo (paso 0 del protocolo). Nunca reescribas historia ya mergeada; si tu rama designada ya se mergeó, arranca de nuevo desde la default.
+- **Documentos madre = obligatorios.** Leerlos al inicio y actualizarlos al cierre no es opcional ni "si da tiempo": es parte de la definición de terminado.
 
 ## Mapa de documentos
 
