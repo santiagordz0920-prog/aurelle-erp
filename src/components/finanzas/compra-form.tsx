@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { CONDICION_COMPRA, TIPO_COMPRA, type CondicionCompra } from "@/lib/compras";
+import { TIPO_ITEM, type TipoItem } from "@/lib/inventario";
 
 const inicial: ResultadoAccion = { ok: false };
 
@@ -105,6 +106,34 @@ export function CompraForm({
         <Label htmlFor="notas">Notas (opcional)</Label>
         <Input id="notas" name="notas" placeholder="Detalle de la compra…" />
       </div>
+
+      {/* Alta opcional en inventario (solo aplica a compras de tipo Inventario). */}
+      <div className="space-y-3 rounded-lg border border-dashed border-border p-3">
+        <p className="text-xs text-muted-foreground">
+          Dar de alta la pieza en inventario (opcional; solo compras de tipo Inventario). El costo será el monto de la compra.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="item_sku">SKU</Label>
+            <Input id="item_sku" name="item_sku" placeholder="MON-015" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="item_tipo">Tipo de pieza</Label>
+            <Select id="item_tipo" name="item_tipo" defaultValue="montura">
+              {(Object.keys(TIPO_ITEM) as TipoItem[]).map((t) => (
+                <option key={t} value={t}>
+                  {TIPO_ITEM[t]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="item_nombre">Nombre</Label>
+            <Input id="item_nombre" name="item_nombre" placeholder="Montura solitario 14k" />
+          </div>
+        </div>
+      </div>
+
       {estado.error ? <p className="text-sm text-destructive">{estado.error}</p> : null}
       <div className="flex items-center gap-2">
         <Guardar />

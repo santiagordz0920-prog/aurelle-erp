@@ -7,9 +7,10 @@ Construido en Fase 2. Última modificación: 2026-07-06. Migración 0014. v1: ca
 de compra + asiento automático + CxP a crédito. La alta de items de inventario desde
 la compra queda pendiente (abajo).
 
-## Tablas (migración 0014)
+## Tablas (migración 0014, +0016)
 - `compra` — **SOLO-ADMIN**. proveedor_id, fecha, concepto, tipo (enum inventario/gasto),
   condicion_pago (enum contado/credito), monto, fecha_vencimiento, notas.
+- `item_inventario.compra_id` (0016) — liga la pieza dada de alta a su compra (trazabilidad / historial de precios).
 
 ## Rutas / pantallas
 - `/dinero/compras` — registrar compra (proveedor, tipo, condición, monto, vencimiento) + lista. Enlazada desde `/dinero/proveedores`.
@@ -28,6 +29,6 @@ la compra queda pendiente (abajo).
 - En local (`supabaseConfigurado()` false) la acción empuja a mano el movimiento y la CxP porque el trigger de BD no corre; en prod los crea la base.
 
 ## Pendientes conocidos de este módulo
-- **Alta automática de items de inventario** desde líneas de compra (§3.10): hoy la compra es cabecera; falta el detalle que dé de alta `item_inventario` + `item_costo`.
+- ~~Alta de items de inventario desde la compra~~ HECHO (0016): una compra de inventario con SKU+nombre da de alta `item_inventario` (propio/disponible, ligado a la compra) + `item_costo` = monto. Nota contable: la compra ya expensa el costo en el ledger; el item_costo es valuación de stock (no se suma al P&L). Pendiente: cantidad>1 (hoy 1 pieza por compra).
 - Historial de precios por proveedor/categoría (¿subió el casting?) — las compras ya guardan el dato; falta la vista.
 - Vínculo con sugerencias de recompra de Inventario.
