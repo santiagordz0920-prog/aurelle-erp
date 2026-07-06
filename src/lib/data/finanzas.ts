@@ -127,17 +127,18 @@ export async function listarCxP(): Promise<CuentaPorPagar[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("cuenta_por_pagar")
-    .select("*, consignante(nombre)")
+    .select("*, consignante(nombre), proveedor(nombre)")
     .order("estado")
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rel = (v: any) => (Array.isArray(v) ? v[0]?.nombre : v?.nombre) ?? null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data ?? []).map((r: any) => ({
     ...r,
-    consignante_nombre: Array.isArray(r.consignante)
-      ? (r.consignante[0]?.nombre ?? null)
-      : (r.consignante?.nombre ?? null),
+    consignante_nombre: rel(r.consignante),
+    proveedor_nombre: rel(r.proveedor),
   })) as CuentaPorPagar[];
 }
 

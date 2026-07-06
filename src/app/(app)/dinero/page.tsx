@@ -193,7 +193,7 @@ export default async function DineroPage() {
           <CardHeader>
             <CardTitle className="text-sm">
               Cuentas por pagar{" "}
-              <span className="text-muted-foreground">(consignantes)</span>
+              <span className="text-muted-foreground">(consignantes y proveedores)</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -205,7 +205,7 @@ export default async function DineroPage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">
-                      {c.consignante_nombre ?? "Consignante"}
+                      {c.proveedor_nombre ?? c.consignante_nombre ?? "Cuenta por pagar"}
                     </p>
                     <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                       <Badge className={ESTADO_CXP[c.estado].clase}>

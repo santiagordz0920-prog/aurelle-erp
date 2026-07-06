@@ -57,3 +57,4 @@
 2026-07-06 | Proyección de flujo = neto proyectado (cobros − CxP − burn·n), sin saldo de caja inicial | No trackeamos saldo bancario; honesto llamarlo flujo neto. Buckets acumulados 30/60/90; vencido y CxP sin fecha cuentan en ≤30
 2026-07-06 | Comisión = % sobre utilidad real (total − costo_real), calculado en el server; requiere costo capturado | Nunca sobre el total; utilidad depende de pedido_costo (solo-admin), por eso el módulo es admin y el monto no se confía al cliente
 2026-07-06 | Alta de item desde compra en el Server Action (no trigger); item_costo=monto; compra_id liga item↔compra | El alta involucra SKU/tipo que decide el usuario; la compra ya expensa el costo, item_costo es valuación de stock (sin doble conteo en P&L)
+2026-07-06 | Comisiones se quedan MANUALES (sin devengo automático al entregar) | Santiago: casi no se usan; el registro manual en /dinero/comisiones sobra. No vale la pena tocar el esquema del pedido para automatizar

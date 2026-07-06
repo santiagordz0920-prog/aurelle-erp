@@ -4,7 +4,7 @@
 > Última actualización: 2026-07-06 (Claude Code).
 
 ## Fase actual
-**Fase 2 — Dinero: EN CURSO.** Fase 1 completa y verificada en producción.
+**Fase 2 — Dinero: núcleo COMPLETO.** Fase 1 completa y verificada en prod. El área Dinero cubre ledger + 4 eventos automáticos, P&L, capital de trabajo, proyección de flujo, Proveedores, Compras (con alta de item), Gastos recurrentes, Comisiones (manual) y Reporte al socio.
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.
@@ -14,8 +14,8 @@
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). Compras a proveedor v1 (0014) y **proyección de flujo 30/60/90** (solo lectura, en `/dinero`) ya están. Pendientes, a elegir:
-- **Devengo automático de comisión al entregar** + **asiento del pago de comisión** (cierra el módulo Comisiones, ver su doc).
+El núcleo de Fase 2 está listo. **Decidir con Santiago el rumbo:** (a) cerrar Fase 2 y arrancar la siguiente fase — leer §6 del PLAN_MAESTRO para cuál toca (Producción/Documentos/CRM-bot, etc.); o (b) pulir Dinero: historial de precios por proveedor (las compras ya guardan el dato, falta vista + ficha de proveedor), asiento al pagar una comisión, edición de compras/gastos.
+Decisión tomada: **comisiones se quedan manuales** (Santiago: casi no se usan) — no se automatiza el devengo.
 Seguir el patrón: migración → probar en Postgres local → dominio → datos+muestra → acciones → páginas → docs. Costos/finanzas SIEMPRE en tabla solo-admin.
 
 ## Reacciones de la matriz §4 (estado)

@@ -63,6 +63,8 @@ export type CuentaPorPagar = {
   id: string;
   consignante_id: string | null;
   consignante_nombre?: string | null;
+  proveedor_id?: string | null;
+  proveedor_nombre?: string | null;
   item_id: string | null;
   pedido_id: string | null;
   concepto: string;
