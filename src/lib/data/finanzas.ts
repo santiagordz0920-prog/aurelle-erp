@@ -7,6 +7,7 @@ import { getUsuarioActual } from "@/lib/session";
 import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "./finanzas-muestra";
 import { listarPedidos } from "./pedidos";
 import { burnMensual } from "./gastos";
+import { listarCotizaciones } from "./cotizaciones";
 
 /*
   Capa de datos de Finanzas. SOLO-ADMIN: la RLS de movimiento_financiero lo
@@ -138,6 +139,60 @@ export async function listarCxP(): Promise<CuentaPorPagar[]> {
       ? (r.consignante[0]?.nombre ?? null)
       : (r.consignante?.nombre ?? null),
   })) as CuentaPorPagar[];
+}
+
+export type ReporteSocio = {
+  mes: string; // 'YYYY-MM'
+  ingresoMes: number;
+  netoMes: number;
+  ingresoBridal: number;
+  ingresoConcierge: number;
+  pctConcierge: number;
+  avanceMeta: number;
+  ticketPromedio: number;
+  pipelineValor: number;
+  pipelineCount: number;
+  serie: { mes: string; ingreso: number }[]; // últimos 6 meses, ascendente
+};
+
+/** Agregado mensual para el reporte al socio capitalista (§3.9). Solo-admin. */
+export async function reporteSocio(): Promise<ReporteSocio> {
+  const [movimientos, metricas, resumen, cotizaciones] = await Promise.all([
+    listarMovimientos(),
+    metricasMes(),
+    resumenFinanciero(),
+    listarCotizaciones(),
+  ]);
+
+  const hoy = new Date();
+  const mesKey = (d: Date) => d.toISOString().slice(0, 7);
+  const serie: { mes: string; ingreso: number }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    const k = mesKey(d);
+    const ingreso = movimientos
+      .filter((m) => m.categoria === "ingreso" && m.fecha.startsWith(k))
+      .reduce((s, m) => s + m.monto, 0);
+    serie.push({ mes: k, ingreso });
+  }
+
+  const vivas = cotizaciones.filter((c) =>
+    ["borrador", "enviada", "seguimiento"].includes(c.estado),
+  );
+
+  return {
+    mes: mesKey(hoy),
+    ingresoMes: resumen.ingresosMes,
+    netoMes: resumen.netoMes,
+    ingresoBridal: metricas.ingresoBridal,
+    ingresoConcierge: metricas.ingresoConcierge,
+    pctConcierge: metricas.pctConcierge,
+    avanceMeta: metricas.avanceMeta,
+    ticketPromedio: metricas.ticketPromedio,
+    pipelineValor: vivas.reduce((s, c) => s + c.total, 0),
+    pipelineCount: vivas.length,
+    serie,
+  };
 }
 
 export type ProyeccionFlujo = {

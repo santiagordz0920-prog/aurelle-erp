@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Wallet, Lock, Truck, Repeat, Percent } from "lucide-react";
+import { Wallet, Lock, Truck, Repeat, Percent, FileText } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
@@ -68,6 +68,12 @@ export default async function DineroPage() {
               <Link href="/dinero/proveedores">
                 <Truck className="size-4" />
                 Proveedores
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/imprimir/reporte-socio" target="_blank">
+                <FileText className="size-4" />
+                Reporte al socio
               </Link>
             </Button>
           </div>
