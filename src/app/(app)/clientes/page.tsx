@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, Plus, Cake, Heart, CalendarClock } from "lucide-react";
+import { Users, Plus, Cake, Heart, CalendarClock, MessageSquareText } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,12 @@ export default async function ClientesPage({
         descripcion="La memoria comercial de Aurelle: cada lead, cita y pedido en un solo lugar."
         accion={
           <div className="flex gap-2">
+            <Button asChild variant="outline">
+              <Link href="/clientes/inbox">
+                <MessageSquareText className="size-4" />
+                Inbox
+              </Link>
+            </Button>
             <Button asChild variant="outline">
               <Link href="/clientes/citas">
                 <CalendarClock className="size-4" />
