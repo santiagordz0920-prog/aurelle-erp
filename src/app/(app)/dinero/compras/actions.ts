@@ -7,8 +7,10 @@ import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
 import type { Compra } from "@/lib/compras";
 import type { CuentaPorPagar, MovimientoFinanciero } from "@/lib/finanzas";
+import type { ItemInventario } from "@/lib/inventario";
 import { COMPRAS_MUESTRA } from "@/lib/data/compras-muestra";
 import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "@/lib/data/finanzas-muestra";
+import { ITEMS_MUESTRA } from "@/lib/data/inventario-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -22,10 +24,21 @@ const compraSchema = z
     fecha: z.string().optional().nullable(),
     fecha_vencimiento: z.string().optional().nullable(),
     notas: z.string().trim().optional().nullable(),
+    // Alta opcional en inventario (solo si tipo='inventario' y hay SKU).
+    item_sku: z.string().trim().optional().nullable(),
+    item_tipo: z
+      .enum(["piedra_color", "diamante", "montura", "pieza_terminada", "churumbela"])
+      .optional()
+      .nullable(),
+    item_nombre: z.string().trim().optional().nullable(),
   })
   .refine((d) => d.condicion_pago !== "credito" || !!d.fecha_vencimiento, {
     message: "Una compra a crédito necesita fecha de vencimiento.",
     path: ["fecha_vencimiento"],
+  })
+  .refine((d) => !d.item_sku || (d.tipo === "inventario" && !!d.item_nombre), {
+    message: "Para dar de alta la pieza: tipo 'inventario', SKU y nombre.",
+    path: ["item_sku"],
   });
 
 export async function crearCompra(
@@ -44,6 +57,9 @@ export async function crearCompra(
     fecha: (formData.get("fecha") as string) || null,
     fecha_vencimiento: (formData.get("fecha_vencimiento") as string) || null,
     notas: (formData.get("notas") as string) || null,
+    item_sku: (formData.get("item_sku") as string) || null,
+    item_tipo: (formData.get("item_tipo") as string) || null,
+    item_nombre: (formData.get("item_nombre") as string) || null,
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos no válidos." };
@@ -105,26 +121,86 @@ export async function crearCompra(
       };
       CXP_MUESTRA.unshift(cxp);
     }
+    // Alta opcional del item de inventario (costo = monto de la compra).
+    if (d.tipo === "inventario" && d.item_sku && d.item_nombre) {
+      const item: ItemInventario = {
+        id: `e1000000-0000-0000-0000-00000000c${(ITEMS_MUESTRA.length + 10).toString().slice(-3)}`,
+        sku: d.item_sku,
+        tipo: d.item_tipo ?? "montura",
+        nombre: d.item_nombre,
+        descripcion: null,
+        quilates: null,
+        color: null,
+        claridad: null,
+        corte: null,
+        propiedad: "propio",
+        consignante_id: null,
+        consignante_nombre: null,
+        ubicacion: null,
+        estado: "disponible",
+        foto_url: null,
+        certificado_url: null,
+        pedido_id: null,
+        sucursal_id: usuario.sucursalId,
+        costo: d.monto,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      ITEMS_MUESTRA.unshift(item);
+    }
     revalidatePath("/dinero/compras");
     revalidatePath("/dinero");
+    revalidatePath("/taller/inventario");
     return { ok: true };
   }
 
   const supabase = await createClient();
   // El trigger asiento_de_compra crea el asiento y la CxP en la misma transacción.
-  const { error } = await supabase.from("compra").insert({
-    proveedor_id: d.proveedor_id ?? null,
-    fecha,
-    concepto: d.concepto,
-    tipo: d.tipo,
-    condicion_pago: d.condicion_pago,
-    monto: d.monto,
-    fecha_vencimiento: d.condicion_pago === "credito" ? (d.fecha_vencimiento ?? null) : null,
-    notas: d.notas ?? null,
-    sucursal_id: usuario.sucursalId,
-  });
-  if (error) return { ok: false, error: "No se pudo registrar la compra." };
+  const { data: compra, error } = await supabase
+    .from("compra")
+    .insert({
+      proveedor_id: d.proveedor_id ?? null,
+      fecha,
+      concepto: d.concepto,
+      tipo: d.tipo,
+      condicion_pago: d.condicion_pago,
+      monto: d.monto,
+      fecha_vencimiento: d.condicion_pago === "credito" ? (d.fecha_vencimiento ?? null) : null,
+      notas: d.notas ?? null,
+      sucursal_id: usuario.sucursalId,
+    })
+    .select("id")
+    .single();
+  if (error || !compra) return { ok: false, error: "No se pudo registrar la compra." };
+
+  // Alta opcional del item de inventario, ligado a la compra (costo = monto).
+  if (d.tipo === "inventario" && d.item_sku && d.item_nombre) {
+    const { data: item, error: eItem } = await supabase
+      .from("item_inventario")
+      .insert({
+        sku: d.item_sku,
+        tipo: d.item_tipo ?? "montura",
+        nombre: d.item_nombre,
+        propiedad: "propio",
+        compra_id: compra.id,
+        sucursal_id: usuario.sucursalId,
+      })
+      .select("id")
+      .single();
+    if (eItem) {
+      const dup = eItem.code === "23505";
+      return {
+        ok: false,
+        error: dup
+          ? "La compra se guardó, pero ese SKU ya existe: da de alta la pieza manualmente."
+          : "La compra se guardó, pero no se pudo dar de alta la pieza.",
+      };
+    }
+    await supabase.from("item_costo").insert({ item_id: item.id, costo: d.monto });
+  }
+
   revalidatePath("/dinero/compras");
   revalidatePath("/dinero");
+  revalidatePath("/taller/inventario");
   return { ok: true };
 }
