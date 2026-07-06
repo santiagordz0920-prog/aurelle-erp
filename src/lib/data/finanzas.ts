@@ -6,6 +6,7 @@ import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
 import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "./finanzas-muestra";
 import { listarPedidos } from "./pedidos";
+import { burnMensual } from "./gastos";
 
 /*
   Capa de datos de Finanzas. SOLO-ADMIN: la RLS de movimiento_financiero lo
@@ -137,4 +138,73 @@ export async function listarCxP(): Promise<CuentaPorPagar[]> {
       ? (r.consignante[0]?.nombre ?? null)
       : (r.consignante?.nombre ?? null),
   })) as CuentaPorPagar[];
+}
+
+export type ProyeccionFlujo = {
+  cobros: [number, number, number]; // acumulado a 30/60/90 días
+  pagos: [number, number, number]; // CxP acumuladas a 30/60/90
+  burnMensual: number;
+  neto: [number, number, number]; // cobros − pagos − burn·(1,2,3)
+  saldoSinFecha: number; // por cobrar de pedidos sin fecha compromiso
+};
+
+function diasDesdeHoy(fecha: string): number {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const f = new Date(fecha + "T00:00:00");
+  return Math.round((f.getTime() - hoy.getTime()) / 86400000);
+}
+
+/** Índice de bucket acumulado (0=≤30, 1=≤60, 2=≤90). Vencido cuenta en ≤30. */
+function bucket(dias: number): number | null {
+  if (dias <= 30) return 0;
+  if (dias <= 60) return 1;
+  if (dias <= 90) return 2;
+  return null; // más allá de 90: fuera del horizonte
+}
+
+/**
+ * Proyección de flujo a 30/60/90 días (§3.9): entradas por cobrar (saldos de
+ * pedidos activos por fecha compromiso) menos CxP por vencer y burn fijo. Es
+ * flujo NETO proyectado (no incluye saldo de caja actual). Solo-admin.
+ */
+export async function proyeccionFlujo(): Promise<ProyeccionFlujo> {
+  const [pedidos, cxp, burn] = await Promise.all([
+    listarPedidos(),
+    listarCxP(),
+    burnMensual(),
+  ]);
+
+  const cobros: [number, number, number] = [0, 0, 0];
+  let saldoSinFecha = 0;
+  for (const p of pedidos) {
+    if (p.estado === "entregado" || p.estado === "cancelado") continue;
+    const saldo = p.saldo ?? 0;
+    if (saldo <= 0) continue;
+    if (!p.fecha_compromiso) {
+      saldoSinFecha += saldo;
+      continue;
+    }
+    const b = bucket(diasDesdeHoy(p.fecha_compromiso));
+    if (b === null) continue;
+    for (let i = b; i < 3; i++) cobros[i] += saldo; // acumulado
+  }
+
+  const pagos: [number, number, number] = [0, 0, 0];
+  for (const c of cxp) {
+    if (c.estado !== "pendiente") continue;
+    // Sin vencimiento se asume inmediato (≤30).
+    const dias = c.fecha_vencimiento ? diasDesdeHoy(c.fecha_vencimiento) : 0;
+    const b = bucket(dias);
+    if (b === null) continue;
+    for (let i = b; i < 3; i++) pagos[i] += c.monto;
+  }
+
+  const neto: [number, number, number] = [
+    cobros[0] - pagos[0] - burn * 1,
+    cobros[1] - pagos[1] - burn * 2,
+    cobros[2] - pagos[2] - burn * 3,
+  ];
+
+  return { cobros, pagos, burnMensual: burn, neto, saldoSinFecha };
 }

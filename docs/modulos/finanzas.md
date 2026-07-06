@@ -13,7 +13,7 @@ asiento automático al pagar + P&L del mes + capital de trabajo. Falta el resto 
   pedido_id, concepto, monto, estado (enum pendiente/pagada/cancelada), fecha_vencimiento, pagada_at.
 
 ## Rutas / pantallas
-- `/dinero` — KPIs (ingresos/egresos/neto del mes, capital atrapado, CxP) + **P&L del mes por línea** (Bridal/Concierge, % Concierge, avance vs meta $100k, ticket promedio) + sección CxP (marcar pagada) + captura manual + ledger. Solo-admin.
+- `/dinero` — KPIs (ingresos/egresos/neto del mes, capital atrapado, CxP) + **P&L del mes por línea** (Bridal/Concierge, % Concierge, avance vs meta $100k, ticket promedio) + **proyección de flujo 30/60/90** (neto por cobrar − CxP − burn) + sección CxP (marcar pagada) + captura manual + ledger. Solo-admin.
 - `/dinero/proveedores` — directorio de proveedores (alta con categorías + condiciones).
 
 ## Capa de datos
@@ -33,5 +33,5 @@ asiento automático al pagar + P&L del mes + capital de trabajo. Falta el resto 
 
 ## Pendientes conocidos de este módulo
 - CxP a consignante al reservar/vender consignación; costos de producción; comisiones; gastos recurrentes; proveedores.
-- P&L mensual COMPARATIVO mes a mes, proyección de flujo 30/60/90, reporte al socio (PDF). (P&L del mes por línea + métricas base ya hechas.)
+- P&L mensual COMPARATIVO mes a mes, reporte al socio (PDF). (P&L del mes por línea, métricas base y proyección de flujo 30/60/90 ya hechas.)
 - Captura manual de movimientos (hoy solo nacen del pago). Reverso de asiento al anular un pago.

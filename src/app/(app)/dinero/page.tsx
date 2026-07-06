@@ -9,7 +9,13 @@ import { MovimientoForm } from "@/components/finanzas/movimiento-form";
 import { CxpPagarBoton } from "@/components/finanzas/cxp-pagar-boton";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
-import { listarCxP, listarMovimientos, metricasMes, resumenFinanciero } from "@/lib/data/finanzas";
+import {
+  listarCxP,
+  listarMovimientos,
+  metricasMes,
+  proyeccionFlujo,
+  resumenFinanciero,
+} from "@/lib/data/finanzas";
 import { CATEGORIA_MOVIMIENTO, ESTADO_CXP, META_MENSUAL_MXN, montoConSigno } from "@/lib/finanzas";
 import { pesos } from "@/lib/inventario";
 
@@ -29,11 +35,12 @@ export default async function DineroPage() {
     );
   }
 
-  const [movimientos, resumen, cxp, metricas] = await Promise.all([
+  const [movimientos, resumen, cxp, metricas, flujo] = await Promise.all([
     listarMovimientos(),
     resumenFinanciero(),
     listarCxP(),
     metricasMes(),
+    proyeccionFlujo(),
   ]);
   const cxpPendientes = cxp.filter((c) => c.estado === "pendiente");
   const cxpTotal = cxpPendientes.reduce((s, c) => s + c.monto, 0);
@@ -120,6 +127,51 @@ export default async function DineroPage() {
                 style={{ width: `${Math.min(metricas.avanceMeta, 100)}%` }}
               />
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">
+            Proyección de flujo{" "}
+            <span className="text-muted-foreground">(neto, sin saldo de caja)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-3 gap-3">
+            {([0, 1, 2] as const).map((i) => (
+              <div key={i} className="rounded-lg border border-border p-3 text-center">
+                <p className="text-xs text-muted-foreground">{(i + 1) * 30} días</p>
+                <p
+                  className={`mt-1 text-lg font-semibold ${
+                    flujo.neto[i] >= 0 ? "text-success" : "text-destructive"
+                  }`}
+                >
+                  {pesos(flujo.neto[i])}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <span>
+              Por cobrar a 90d:{" "}
+              <span className="font-medium text-foreground">{pesos(flujo.cobros[2])}</span>
+            </span>
+            <span>
+              Por pagar a 90d:{" "}
+              <span className="font-medium text-foreground">{pesos(flujo.pagos[2])}</span>
+            </span>
+            <span>
+              Burn fijo:{" "}
+              <span className="font-medium text-foreground">{pesos(flujo.burnMensual)}</span>/mes
+            </span>
+            {flujo.saldoSinFecha > 0 ? (
+              <span>
+                Sin fecha (no proyectado):{" "}
+                <span className="font-medium text-foreground">{pesos(flujo.saldoSinFecha)}</span>
+              </span>
+            ) : null}
           </div>
         </CardContent>
       </Card>

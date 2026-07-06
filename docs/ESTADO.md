@@ -16,7 +16,7 @@
 ## Siguiente tarea exacta
 Continuar Fase 2 (§3.9–3.11, §3.17, Fase 2 en §6). **Compras a proveedor v1 ya está** (0014): compra→asiento (costo/gasto) + CxP a crédito. Pendientes, a elegir:
 - **Alta de items desde la compra** (§3.10): que una compra de inventario dé de alta `item_inventario` + `item_costo` automáticamente (hoy la compra es solo cabecera). Cierra la otra mitad del ciclo Proveedores↔**Inventario**.
-- **Proyección de flujo 30/60/90** (§3.9): parcialidades por cobrar + pipeline ponderado − gastos conocidos (el burn fijo ya lo da Gastos recurrentes).
+- **Alta de items desde la compra** (§3.10, requiere decisión contable costo-vs-activo antes de codear).
 - **Comisiones** (§3.9/§3.17): devengadas al cierre del pedido (planner/referidor), % sobre utilidad real. Devengado depende de "pedido entregado" (ya sella margen).
 - **Reporte al socio** (PDF mensual, §3.9) — reusar el patrón de cotización imprimible.
 Seguir el patrón: migración → probar en Postgres local → dominio → datos+muestra → acciones → páginas → docs. Costos/finanzas SIEMPRE en tabla solo-admin.
