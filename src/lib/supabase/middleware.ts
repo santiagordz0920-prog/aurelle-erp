@@ -40,7 +40,11 @@ export async function actualizarSesion(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const ruta = request.nextUrl.pathname;
-  const esPublica = ruta.startsWith("/login") || ruta.startsWith("/auth");
+  // /firmar/[token] es pública: el cliente firma sin cuenta (el token es la llave).
+  const esPublica =
+    ruta.startsWith("/login") ||
+    ruta.startsWith("/auth") ||
+    ruta.startsWith("/firmar");
 
   if (!user && !esPublica) {
     const url = request.nextUrl.clone();

@@ -12,6 +12,8 @@ import { CostoForm } from "@/components/pedidos/costo-form";
 import { EntregarBoton } from "@/components/pedidos/entregar-boton";
 import { getPedido, itemsReservados } from "@/lib/data/pedidos";
 import { ordenDePedido } from "@/lib/data/produccion";
+import { listarDocumentosDePedido } from "@/lib/data/documentos";
+import { DocumentosPedido } from "@/components/documentos/documentos-pedido";
 import { CrearOrdenBtn } from "@/components/produccion/crear-orden-btn";
 import { ETAPA_PRODUCCION } from "@/lib/produccion";
 import { listarItems } from "@/lib/data/inventario";
@@ -49,11 +51,12 @@ export default async function PedidoPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [pedido, reservados, usuario, orden] = await Promise.all([
+  const [pedido, reservados, usuario, orden, documentos] = await Promise.all([
     getPedido(id),
     itemsReservados(id),
     getUsuarioActual(),
     ordenDePedido(id),
+    listarDocumentosDePedido(id),
   ]);
   if (!pedido) notFound();
   const esAdmin = usuario.rol === "admin";
@@ -307,6 +310,16 @@ export default async function PedidoPage({
           </CardContent>
         </Card>
       ) : null}
+
+      {/* Documentos (contrato + firma) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Documentos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DocumentosPedido pedidoId={pedido.id} documentos={documentos} />
+        </CardContent>
+      </Card>
 
       {/* Producción */}
       {!cerrado ? (

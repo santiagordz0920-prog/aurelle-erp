@@ -65,3 +65,4 @@
 2026-07-06 | Anti doble-reserva de citas en el Server Action (traslape por sala/día), no constraint de BD | Exclusion constraint (btree_gist) es v2; el chequeo en la acción cubre el caso de una sola sucursal/2 salas
 2026-07-06 | Producción: costo_produccion (capturable por taller) → trigger recomputa pedido_costo.costo_real=Σ (SECURITY DEFINER) | El taller conoce lo que paga; el margen sigue solo-admin. Recompute robusto reemplaza el costo_real manual una vez hay costos reales
 2026-07-06 | Fase 4 arranca por Producción (no Documentos) | Cierra el círculo costos→costo_real→margen/comisiones que ya estaba construido; alto valor operativo para Fer; sin dependencia externa
+2026-07-06 | E-firma: ruta pública /firmar/[token] con service_role (token=llave), no policies anónimas | El cliente firma sin cuenta; evita abrir RLS a anon. Firma simple (nombre+aceptación+evidencia); trazo canvas es mejora posterior
