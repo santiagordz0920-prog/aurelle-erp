@@ -4,6 +4,7 @@ import {
   FileText,
   ShoppingBag,
   CalendarClock,
+  CalendarHeart,
   ArrowRight,
   AlertTriangle,
 } from "lucide-react";
@@ -11,9 +12,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
 import { TareaItem } from "@/components/tareas/tarea-item";
 import { CitaItem } from "@/components/citas/cita-item";
+import { FechaClaveItem } from "@/components/clientes/fecha-clave-item";
 import { getUsuarioActual } from "@/lib/session";
 import { tareasDeHoy } from "@/lib/data/tareas";
 import { citasDeHoy } from "@/lib/data/citas";
+import { fechasClaveProximas } from "@/lib/data/clientes";
 import { listarCotizaciones } from "@/lib/data/cotizaciones";
 import { listarPedidos } from "@/lib/data/pedidos";
 import { pesos } from "@/lib/inventario";
@@ -31,12 +34,13 @@ const PEDIDO_ACTIVO = (e: string) => e !== "entregado" && e !== "cancelado";
   (sin costos ni márgenes, que son solo-admin en su propio módulo).
 */
 export default async function HoyPage() {
-  const [usuario, tareas, cotizaciones, pedidos, citas] = await Promise.all([
+  const [usuario, tareas, cotizaciones, pedidos, citas, fechas] = await Promise.all([
     getUsuarioActual(),
     tareasDeHoy(),
     listarCotizaciones(),
     listarPedidos(),
     citasDeHoy(),
+    fechasClaveProximas(14),
   ]);
   const saludo = obtenerSaludo();
 
@@ -124,6 +128,32 @@ export default async function HoyPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Fechas importantes (próximos 14 días) */}
+      {fechas.length > 0 ? (
+        <Card>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CalendarHeart className="size-4 text-accent" />
+              Fechas importantes
+            </CardTitle>
+            <Link
+              href="/clientes/fechas"
+              className="inline-flex items-center gap-1 text-xs text-accent hover:underline"
+            >
+              Ver todas
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ul className="divide-y divide-border">
+              {fechas.map((fc) => (
+                <FechaClaveItem key={`${fc.cliente_id}-${fc.tipo}`} fc={fc} />
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Tareas del día */}

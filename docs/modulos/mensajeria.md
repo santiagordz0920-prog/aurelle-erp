@@ -18,6 +18,7 @@ hardcodeadas en `src/lib/mensajes.ts`). El botón asistido ya está reusado en P
 - Ficha de cliente → pestaña **Conversación**: selector de plantilla + texto editable + "Abrir en WhatsApp".
 - **Pedido** (`/ventas/pedidos/[id]`) → plan de pagos: botón "Recordar pago por WhatsApp" cuando hay saldo y el cliente tiene teléfono.
 - **Cita** (item de agenda / ficha) → botón "Confirmar" cuando la cita está agendada o confirmada y el cliente tiene teléfono.
+- **Fechas importantes** (`/clientes/fechas` y tarjeta en `/hoy`) → cumpleaños y aniversarios de boda próximos con botón "Felicitar" (plantillas cumpleaños/aniversario). Ventana: 30 días en la página, 14 en el dashboard.
 
 ## Capa
 - `src/lib/mensajes.ts`: `PLANTILLAS_MENSAJE` (bienvenida, seguimiento post-visita, recordatorio de pago,
@@ -25,8 +26,11 @@ hardcodeadas en `src/lib/mensajes.ts`). El botón asistido ya está reusado en P
   `linkWhatsApp(telefono, texto)`.
 - `src/components/clientes/enviar-whatsapp.tsx` (client): compositor.
 - `src/components/mensajeria/boton-whatsapp.tsx` (client): botón reusable de envío asistido
-  (`telefono` + `texto` pre-llenado); se oculta solo si no hay teléfono. Usado en Pedido y Cita.
+  (`telefono` + `texto` pre-llenado); se oculta solo si no hay teléfono. Usado en Pedido, Cita y Fechas.
 - Cita expone `cliente_telefono` (join `cliente(nombre, telefono)` en `src/lib/data/citas.ts`).
+- `src/lib/fechas-clave.ts`: recurrencia anual (mes-día) anclada a Monterrey — `diasHastaAniversario`,
+  `aniosEnProxima`, `hoyMonterrey`, `fechaCorta`, `etiquetaDias`, tipo `FechaClave`.
+- `src/lib/data/clientes.ts` → `fechasClaveProximas(ventanaDias)`; `src/components/clientes/fecha-clave-item.tsx`.
 
 ## Lógica no obvia / trampas
 - **Sin teléfono → no se puede** (el botón se oculta con aviso).

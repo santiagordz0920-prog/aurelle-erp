@@ -8,12 +8,22 @@ import type { Cliente, NotaCliente } from "@/lib/clientes";
 */
 const S = "00000000-0000-0000-0000-000000000001";
 
+/* Fecha (YYYY-MM-DD) con el mes-día a `dias` de hoy y un año de nacimiento fijo,
+   para que las "fechas importantes" de muestra siempre caigan en la ventana. */
+function cumpleEnDias(dias: number, anioNacimiento: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + dias);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${anioNacimiento}-${mm}-${dd}`;
+}
+
 export const CLIENTES_MUESTRA: Cliente[] = [
   {
     id: "10000000-0000-0000-0000-000000000001",
     nombre: "Ana López",
     telefono: "+52 81 8111 1111",
-    fecha_nacimiento: "1995-03-14",
+    fecha_nacimiento: cumpleEnDias(3, 1995),
     fecha_boda: "2026-11-21",
     pareja_nombre: "Diego",
     fuente_canal: "ads",
@@ -49,7 +59,7 @@ export const CLIENTES_MUESTRA: Cliente[] = [
     id: "10000000-0000-0000-0000-000000000003",
     nombre: "Carla Mendoza",
     telefono: "+52 81 8333 3333",
-    fecha_nacimiento: "1992-09-02",
+    fecha_nacimiento: cumpleEnDias(11, 1992),
     fecha_boda: null,
     pareja_nombre: null,
     fuente_canal: "expo",
@@ -86,7 +96,7 @@ export const CLIENTES_MUESTRA: Cliente[] = [
     nombre: "Emilia Cavazos",
     telefono: "+52 81 8555 5555",
     fecha_nacimiento: "1990-12-20",
-    fecha_boda: "2025-12-06",
+    fecha_boda: cumpleEnDias(22, 2023),
     pareja_nombre: "Marcelo",
     fuente_canal: "ads",
     fuente_detalle: "Fase 2 · San Jerónimo",

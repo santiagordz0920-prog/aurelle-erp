@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { Users, Plus, Cake, Heart, CalendarClock, MessageSquareText } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Cake,
+  Heart,
+  CalendarClock,
+  CalendarHeart,
+  MessageSquareText,
+} from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
@@ -38,6 +46,12 @@ export default async function ClientesPage({
               <Link href="/clientes/citas">
                 <CalendarClock className="size-4" />
                 Citas
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/clientes/fechas">
+                <CalendarHeart className="size-4" />
+                Fechas
               </Link>
             </Button>
             <Button asChild>

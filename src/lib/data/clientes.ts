@@ -1,5 +1,11 @@
 import "server-only";
 import type { Cliente, NotaCliente, EstadoPipeline } from "@/lib/clientes";
+import {
+  type FechaClave,
+  aniosEnProxima,
+  diasHastaAniversario,
+  hoyMonterrey,
+} from "@/lib/fechas-clave";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { CLIENTES_MUESTRA, NOTAS_MUESTRA } from "./clientes-muestra";
@@ -85,6 +91,53 @@ export async function getNotas(clienteId: string): Promise<NotaCliente[]> {
         ? (n.autor[0]?.nombre ?? null)
         : (n.autor?.nombre ?? null),
     }),
+  );
+}
+
+/**
+ * Cumpleaños y aniversarios de boda dentro de una ventana de días.
+ * Corre sobre los clientes visibles (RLS por sucursal en prod). Ordenado por
+ * cercanía. Alimenta el saludo asistido por WhatsApp (plantillas del CRM).
+ */
+export async function fechasClaveProximas(ventanaDias = 14): Promise<FechaClave[]> {
+  const clientes = await listarClientes();
+  const hoy = hoyMonterrey();
+  const eventos = clientes.flatMap((c) => {
+    const out: FechaClave[] = [];
+    if (c.fecha_nacimiento) {
+      const dias = diasHastaAniversario(c.fecha_nacimiento, hoy);
+      if (dias !== null && dias <= ventanaDias) {
+        out.push({
+          cliente_id: c.id,
+          cliente_nombre: c.nombre,
+          telefono: c.telefono,
+          tipo: "cumpleanos",
+          pareja: c.pareja_nombre,
+          fecha: c.fecha_nacimiento,
+          dias,
+          anios: aniosEnProxima(c.fecha_nacimiento, hoy),
+        });
+      }
+    }
+    if (c.fecha_boda) {
+      const dias = diasHastaAniversario(c.fecha_boda, hoy);
+      if (dias !== null && dias <= ventanaDias) {
+        out.push({
+          cliente_id: c.id,
+          cliente_nombre: c.nombre,
+          telefono: c.telefono,
+          tipo: "aniversario",
+          pareja: c.pareja_nombre,
+          fecha: c.fecha_boda,
+          dias,
+          anios: aniosEnProxima(c.fecha_boda, hoy),
+        });
+      }
+    }
+    return out;
+  });
+  return eventos.sort(
+    (a, b) => a.dias - b.dias || a.cliente_nombre.localeCompare(b.cliente_nombre),
   );
 }
 
