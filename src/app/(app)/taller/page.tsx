@@ -15,11 +15,11 @@ const SUBMODULOS = [
     activo: true,
   },
   {
-    href: "/taller",
+    href: "/taller/produccion",
     icono: Hammer,
     titulo: "Producción",
-    descripcion: "Kanban de etapas, QC y costos del taller. Llega en Fase 4.",
-    activo: false,
+    descripcion: "Kanban de etapas, QC y costos del taller. Los costos alimentan el margen del pedido.",
+    activo: true,
   },
   {
     href: "/taller",
