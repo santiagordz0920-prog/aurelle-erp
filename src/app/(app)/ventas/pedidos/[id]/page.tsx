@@ -120,6 +120,14 @@ export default async function PedidoPage({
                 Cotización
               </Link>
             ) : null}
+            <Link
+              href={`/imprimir/contrato/${pedido.id}`}
+              target="_blank"
+              className="inline-flex items-center gap-1 text-accent hover:underline"
+            >
+              <FileText className="size-3.5" />
+              Contrato
+            </Link>
           </div>
         </div>
         {cerrado ? (
@@ -174,9 +182,18 @@ export default async function PedidoPage({
                       <p className="text-xs text-muted-foreground">{pg.notas}</p>
                     ) : null}
                   </div>
-                  <span className="font-medium text-foreground">
-                    {pesos(pg.monto)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium text-foreground">
+                      {pesos(pg.monto)}
+                    </span>
+                    <Link
+                      href={`/imprimir/recibo/${pedido.id}?p=${pg.id}`}
+                      target="_blank"
+                      className="text-xs text-accent hover:underline"
+                    >
+                      Recibo
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
