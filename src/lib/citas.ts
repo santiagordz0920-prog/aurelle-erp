@@ -15,6 +15,7 @@ export type Cita = {
   id: string;
   cliente_id: string;
   cliente_nombre?: string | null;
+  cliente_telefono?: string | null;
   tipo: TipoCita;
   sala: SalaCita;
   inicio: string; // ISO timestamptz

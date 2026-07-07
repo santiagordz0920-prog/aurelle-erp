@@ -11,6 +11,8 @@ import { LiberarItem } from "@/components/pedidos/liberar-item";
 import { CostoForm } from "@/components/pedidos/costo-form";
 import { EntregarBoton } from "@/components/pedidos/entregar-boton";
 import { getPedido, itemsReservados } from "@/lib/data/pedidos";
+import { getCliente } from "@/lib/data/clientes";
+import { BotonWhatsApp } from "@/components/mensajeria/boton-whatsapp";
 import { ordenDePedido } from "@/lib/data/produccion";
 import { listarDocumentosDePedido } from "@/lib/data/documentos";
 import { DocumentosPedido } from "@/components/documentos/documentos-pedido";
@@ -59,6 +61,7 @@ export default async function PedidoPage({
     listarDocumentosDePedido(id),
   ]);
   if (!pedido) notFound();
+  const cliente = await getCliente(pedido.cliente_id);
   const esAdmin = usuario.rol === "admin";
 
   const disponibles = await listarItems({ estado: "disponible" });
@@ -205,6 +208,14 @@ export default async function PedidoPage({
               Sin pagos registrados. Empieza por el anticipo 1.
             </p>
           )}
+
+          {!cerrado && saldo > 0 && cliente?.telefono ? (
+            <BotonWhatsApp
+              telefono={cliente.telefono}
+              texto={`Hola ${pedido.cliente_nombre ?? ""}, te recordamos con cariño el saldo pendiente de tu pieza: ${pesos(saldo)}. Cuando gustes coordinamos el pago. — Aurelle & Co.`}
+              etiqueta="Recordar pago por WhatsApp"
+            />
+          ) : null}
 
           {!cerrado ? (
             <div className="border-t border-border pt-4">

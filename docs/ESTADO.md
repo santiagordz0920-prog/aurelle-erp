@@ -1,7 +1,7 @@
 # ESTADO — ERP Aurelle
 
 > Bastón de relevo entre sesiones. Se SOBREESCRIBE (no se acumula). Máx. ~1 página.
-> Última actualización: 2026-07-06 (Claude Code).
+> Última actualización: 2026-07-07 (Claude Code).
 
 ## Fase actual
 **Fase 4 — Producción y Documentos: EN CURSO** (Fase 3 topada por el trámite de Meta). Producción (kanban+costos) y Documentos v1 (contrato+recibo imprimibles) hechos. Fase 1 y núcleo de Fase 2 completos y en prod. Se está construyendo primero lo que NO depende de Meta. **Citas (0017) ya está** (agenda + resultado=funnel, usable a mano). **Envío asistido de WhatsApp ya está** (plantillas + wa.me, humano envía; sin migración). **Inbox shell (0018) ya está** (conversaciones/mensajes + pantalla, con muestra). **Con esto, TODO lo construible sin Meta de Fase 3 está hecho.** Falta el riel vivo (webhook + envío por Cloud API + bot), que espera el trámite de Meta de Santiago.
@@ -13,6 +13,7 @@
 - **Producción verificada:** las 19 tablas y el esquema de `tarea` (`entidad_tipo`/`estado`) confirmados en el Supabase de Santiago; migraciones 0004–0015 aplicadas. La bifurcación de dos ramas paralelas (2026-07-06) quedó reconciliada; el tronco oficial es `claude/business-erp-plan-kqb9uk`.
 - **Fase 3 en curso** — **Citas (0017):** calendario del showroom (salas, tipos, candado anti doble-reserva, resultado obligatorio = funnel) en `/clientes/citas`, pestaña Citas en la ficha y "citas de hoy" en el Dashboard. Usable a mano ya; el bot reservará aquí cuando el riel esté vivo. **Envío asistido:** pestaña Conversación de la ficha → plantillas en tono Aurelle + botón que abre WhatsApp con el texto listo (humano envía, sin bridges). **Inbox shell (0018):** `/clientes/inbox` (lista + hilo con respuesta asistida), estructura conversacion/mensaje lista para el webhook. `docs/modulos/citas.md`, `docs/modulos/mensajeria.md`, `docs/modulos/inbox.md`.
 - **Fase 4 en curso** — **Producción (0019):** kanban del taller en `/taller/produccion` (etapas, avanzar en 2 toques, atasco), detalle de orden con QC y **costos que alimentan el `costo_real` del pedido** (trigger → cierra el círculo con margen/comisiones), orden creable desde el pedido. **Documentos (sin migración + 0020):** contrato/recibo imprimibles + **e-firma**: `/firmar/[token]` pública (cliente firma sin cuenta, service_role por token) + tarjeta Documentos en el pedido (generar/compartir/cancelar). `<ContratoDoc>` compartido. `docs/modulos/produccion.md`, `docs/modulos/documentos.md`.
+- **Envío asistido reusado (2026-07-07, sin migración):** botón `BotonWhatsApp` reusable en Pedido (recordatorio de saldo pendiente) y Cita (confirmación con fecha/hora en horario Monterrey). La Cita ahora expone `cliente_telefono`. Corre sobre tablas ya en prod (0004–0018). `docs/modulos/mensajeria.md`.
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
@@ -30,7 +31,7 @@ Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurren
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (confirmar que ya puede entrar).
-- **Migraciones en prod: 0004–0015 aplicadas** + `CRON_SECRET`. **Pendientes de aplicar: `0016_item_desde_compra.sql` y `0017_citas.sql`** (en ese orden). Sin 0017, el módulo Citas no tiene tabla en prod.
+- **Migraciones en prod: 0004–0018 aplicadas** + `CRON_SECRET`. **Pendientes de aplicar (Santiago dijo "no puedo subir sqls ahorita"): `0019_produccion.sql` y `0020_documentos.sql`** (en ese orden). Sin 0019 el kanban de Producción no persiste; sin 0020 la e-firma no tiene tabla `documento`. La slice de envío asistido de hoy NO necesita migración.
 
 ## Notas para la siguiente sesión
 - **El hook `SessionStart` ya te muestra el estado y las ramas al arrancar. Léelo.** Si hay una rama `claude/*` más nueva que la tuya, reconcilia antes de codear.

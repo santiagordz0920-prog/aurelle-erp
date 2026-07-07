@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CitaAcciones } from "@/components/citas/cita-acciones";
+import { BotonWhatsApp } from "@/components/mensajeria/boton-whatsapp";
 import {
   ESTADO_CITA,
   RESULTADO_CITA,
@@ -19,6 +20,23 @@ function hora(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function fechaLarga(iso: string): string {
+  return new Date(iso).toLocaleDateString("es-MX", {
+    timeZone: TZ,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
+/** Mensaje de confirmación en tono Aurelle, con fecha y hora en horario de Monterrey. */
+function textoConfirmacion(cita: Cita): string {
+  const nombre = cita.cliente_nombre ? ` ${cita.cliente_nombre}` : "";
+  return `Hola${nombre}, te confirmamos tu cita en Aurelle & Co. el ${fechaLarga(
+    cita.inicio,
+  )} a las ${hora(cita.inicio)} h. Te esperamos con mucho gusto. Si necesitas reagendar, escríbenos por aquí. ✨`;
 }
 
 export function CitaItem({
@@ -57,7 +75,17 @@ export function CitaItem({
           {cita.notas ? <span className="truncate">· {cita.notas}</span> : null}
         </div>
       </div>
-      <CitaAcciones id={cita.id} estado={cita.estado} />
+      <div className="flex shrink-0 items-center gap-2">
+        {cita.cliente_telefono &&
+        (cita.estado === "agendada" || cita.estado === "confirmada") ? (
+          <BotonWhatsApp
+            telefono={cita.cliente_telefono}
+            texto={textoConfirmacion(cita)}
+            etiqueta="Confirmar"
+          />
+        ) : null}
+        <CitaAcciones id={cita.id} estado={cita.estado} />
+      </div>
     </li>
   );
 }

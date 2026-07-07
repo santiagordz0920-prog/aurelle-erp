@@ -16,7 +16,11 @@ export type FiltroCitas = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizar(r: any): Cita {
   const cliente = Array.isArray(r.cliente) ? r.cliente[0] : r.cliente;
-  return { ...r, cliente_nombre: cliente?.nombre ?? null } as Cita;
+  return {
+    ...r,
+    cliente_nombre: cliente?.nombre ?? null,
+    cliente_telefono: cliente?.telefono ?? null,
+  } as Cita;
 }
 
 export async function listarCitas(filtro: FiltroCitas = {}): Promise<Cita[]> {
@@ -34,7 +38,7 @@ export async function listarCitas(filtro: FiltroCitas = {}): Promise<Cita[]> {
   const supabase = await createClient();
   let query = supabase
     .from("cita")
-    .select("*, cliente(nombre)")
+    .select("*, cliente(nombre, telefono)")
     .order("inicio", { ascending: true });
   if (filtro.cliente_id) query = query.eq("cliente_id", filtro.cliente_id);
   if (filtro.sala) query = query.eq("sala", filtro.sala);
