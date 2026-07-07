@@ -4,7 +4,7 @@
 > Última actualización: 2026-07-06 (Claude Code).
 
 ## Fase actual
-**Fase 3 — Riel de WhatsApp: ARRANCADA.** Fase 1 y núcleo de Fase 2 completos y en prod. Se está construyendo primero lo que NO depende de Meta. **Citas (0017) ya está** (agenda + resultado=funnel, usable a mano). **Envío asistido de WhatsApp ya está** (plantillas + wa.me, humano envía; sin migración). **Inbox shell (0018) ya está** (conversaciones/mensajes + pantalla, con muestra). **Con esto, TODO lo construible sin Meta de Fase 3 está hecho.** Falta el riel vivo (webhook + envío por Cloud API + bot), que espera el trámite de Meta de Santiago.
+**Fase 4 — Producción y Documentos: ARRANCADA** (Fase 3 topada por el trámite de Meta de Santiago). Fase 1 y núcleo de Fase 2 completos y en prod. Se está construyendo primero lo que NO depende de Meta. **Citas (0017) ya está** (agenda + resultado=funnel, usable a mano). **Envío asistido de WhatsApp ya está** (plantillas + wa.me, humano envía; sin migración). **Inbox shell (0018) ya está** (conversaciones/mensajes + pantalla, con muestra). **Con esto, TODO lo construible sin Meta de Fase 3 está hecho.** Falta el riel vivo (webhook + envío por Cloud API + bot), que espera el trámite de Meta de Santiago.
 
 ## Hecho
 - **Fase 0** completa (app, diseño, navegación, roles+RLS+auditoría). Supabase + Vercel arriba.
@@ -12,16 +12,16 @@
 - **Fase 2 en curso** — Finanzas v1 (0010/0011): ledger solo-admin, asiento automático al pagar, CxP a consignante al reservar, captura manual, P&L del mes, capital de trabajo. Proveedores v1 (0012): directorio en `/dinero/proveedores`. **Gastos recurrentes (0013):** alta + posteo mensual idempotente (función SECURITY DEFINER) + Vercel Cron protegido + botón manual; burn fijo en `/dinero/gastos`. Tercer evento §4 automático. **Compras a proveedor v1 (0014):** registrar compra en `/dinero/compras` → asiento (costo/gasto) + CxP a crédito (4º evento §4). **Proyección de flujo 30/60/90** en `/dinero`. **Comisiones v1 (0015):** `/dinero/comisiones`, % sobre utilidad real. **Reporte al socio:** `/imprimir/reporte-socio`. **Alta de items desde la compra (0016):** una compra de inventario da de alta la pieza + su costo, ligada a la compra. `docs/modulos/finanzas.md`, `docs/modulos/gastos-recurrentes.md`, `docs/modulos/compras.md`, `docs/modulos/comisiones.md`.
 - **Producción verificada:** las 19 tablas y el esquema de `tarea` (`entidad_tipo`/`estado`) confirmados en el Supabase de Santiago; migraciones 0004–0015 aplicadas. La bifurcación de dos ramas paralelas (2026-07-06) quedó reconciliada; el tronco oficial es `claude/business-erp-plan-kqb9uk`.
 - **Fase 3 en curso** — **Citas (0017):** calendario del showroom (salas, tipos, candado anti doble-reserva, resultado obligatorio = funnel) en `/clientes/citas`, pestaña Citas en la ficha y "citas de hoy" en el Dashboard. Usable a mano ya; el bot reservará aquí cuando el riel esté vivo. **Envío asistido:** pestaña Conversación de la ficha → plantillas en tono Aurelle + botón que abre WhatsApp con el texto listo (humano envía, sin bridges). **Inbox shell (0018):** `/clientes/inbox` (lista + hilo con respuesta asistida), estructura conversacion/mensaje lista para el webhook. `docs/modulos/citas.md`, `docs/modulos/mensajeria.md`, `docs/modulos/inbox.md`.
+- **Fase 4 en curso** — **Producción (0019):** kanban del taller en `/taller/produccion` (etapas, avanzar en 2 toques, atasco), detalle de orden con QC y **costos que alimentan el `costo_real` del pedido** (trigger → cierra el círculo con margen/comisiones), orden creable desde el pedido. `docs/modulos/produccion.md`.
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-**Todo lo construible sin Meta de Fase 3 está hecho** (Citas, envío asistido, inbox shell). Lo que sigue REQUIERE que Santiago avance su trámite:
-- **Tarea de Santiago (ruta crítica):** verificación de Meta Business + crear WABA + display name; preparar migración del número ACTUAL (probar en número temporal, migrar al final); pasar las 4-5 preguntas de calificación del bot; redactar/aprobar plantillas (Claude las redacta).
-- **Cuando existan las llaves (`WHATSAPP_TOKEN`, `WABA_ID`, `PHONE_NUMBER_ID`, `VERIFY_TOKEN` en Vercel), el ERP enchufa:** webhook `/api/webhook/whatsapp` (verify + recibir → find-or-create cliente/conversación por teléfono, dedup por wa_id); envío por Cloud API (Server Action) con estado de entrega; bot v2 (calificación + reserva en Citas) + cola de aprobación (es_ia); media vía Supabase Storage. Ver `docs/modulos/inbox.md` (sección "riel vivo").
-- **Alternativa mientras tanto:** avanzar Fase 4 (Producción/Documentos), que no depende de Meta.
-Luego, cuando Santiago tenga verificación de Meta + WABA: webhook (Meta→ERP), envío por Cloud API, bot v2 (calificación + reserva en Citas), plantillas aprobadas.
-**Tarea de Santiago (ruta crítica, arrancar ya):** verificación de Meta Business + crear WABA; migrar el número ACTUAL (seguro: probar en número temporal, migrar al final); pasar las 4-5 preguntas de calificación del bot; redactar/aprobar plantillas (Claude las redacta).
+Seguir Fase 4:
+1. **Documentos (§3.12):** contrato autogenerado al confirmar el pedido (reusar patrón imprimible de la cotización/reporte) + nota de remisión por pago. Reacción §4 "cotización aceptada → Documentos genera contrato".
+2. **Producción — completar:** asignar responsable desde la UI; alerta de atasco → tarea/notificación; checklist QC por tipo de pieza; fotos por etapa (necesita Biblioteca/Storage).
+Fase 3 (riel vivo de WhatsApp) sigue esperando el trámite de Meta de Santiago.
 Patrón: migración → Postgres local → dominio → datos+muestra → acciones → páginas → docs.
+
 
 ## Reacciones de la matriz §4 (estado)
 Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurrente→asiento mensual (0013). Pendientes (fases posteriores): consumo de material en producción y contrato al confirmar (Fase 4); Postventa/Comisiones/lifecycle al entregar (Fases 4/6); tareas sugeridas por IA + Dashboard por rol + push.

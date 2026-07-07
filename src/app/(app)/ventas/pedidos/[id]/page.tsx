@@ -11,6 +11,9 @@ import { LiberarItem } from "@/components/pedidos/liberar-item";
 import { CostoForm } from "@/components/pedidos/costo-form";
 import { EntregarBoton } from "@/components/pedidos/entregar-boton";
 import { getPedido, itemsReservados } from "@/lib/data/pedidos";
+import { ordenDePedido } from "@/lib/data/produccion";
+import { CrearOrdenBtn } from "@/components/produccion/crear-orden-btn";
+import { ETAPA_PRODUCCION } from "@/lib/produccion";
 import { listarItems } from "@/lib/data/inventario";
 import {
   ESTADO_PEDIDO,
@@ -46,10 +49,11 @@ export default async function PedidoPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [pedido, reservados, usuario] = await Promise.all([
+  const [pedido, reservados, usuario, orden] = await Promise.all([
     getPedido(id),
     itemsReservados(id),
     getUsuarioActual(),
+    ordenDePedido(id),
   ]);
   if (!pedido) notFound();
   const esAdmin = usuario.rol === "admin";
@@ -283,6 +287,32 @@ export default async function PedidoPage({
                 <CostoForm pedidoId={pedido.id} costoActual={costoReal} />
               </div>
             ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Producción */}
+      {!cerrado ? (
+        <Card>
+          <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-foreground">Producción</p>
+              <p className="text-xs text-muted-foreground">
+                {orden
+                  ? `En el taller · etapa ${ETAPA_PRODUCCION[orden.etapa].etiqueta}.`
+                  : "Genera la orden para que Fer arranque el taller."}
+              </p>
+            </div>
+            {orden ? (
+              <Link
+                href={`/taller/produccion/${orden.id}`}
+                className="inline-flex items-center gap-1 text-sm text-accent hover:underline"
+              >
+                Ver orden
+              </Link>
+            ) : (
+              <CrearOrdenBtn pedidoId={pedido.id} />
+            )}
           </CardContent>
         </Card>
       ) : null}
