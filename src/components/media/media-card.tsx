@@ -1,17 +1,22 @@
 import { FileText, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MediaAcciones } from "@/components/media/media-acciones";
-import { TIPO_MEDIA, esImagen, etiquetaBonita, type Media } from "@/lib/media";
+import { BotonWhatsApp } from "@/components/mensajeria/boton-whatsapp";
+import { TIPO_MEDIA, esImagen, etiquetaBonita, mensajeCompartirMedia, type Media } from "@/lib/media";
 
 /* Tarjeta de una pieza de media. Muestra la imagen (URL firmada) o un icono de
    archivo para no-imágenes (CAD/PDF), con su tipo, versión, etiquetas y acciones. */
 export function MediaCard({
   media,
   pedidoId,
+  telefono,
+  clienteNombre,
   conAcciones = true,
 }: {
   media: Media;
   pedidoId?: string | null;
+  telefono?: string | null;
+  clienteNombre?: string | null;
   conAcciones?: boolean;
 }) {
   const imagen = esImagen(media.nombre ?? media.storage_path) || media.url?.startsWith("data:image");
@@ -55,6 +60,13 @@ export function MediaCard({
               </span>
             ))}
           </div>
+        ) : null}
+        {telefono ? (
+          <BotonWhatsApp
+            telefono={telefono}
+            texto={mensajeCompartirMedia(media.tipo, clienteNombre ?? null, media.url ?? null)}
+            etiqueta="Enviar"
+          />
         ) : null}
         {conAcciones ? (
           <MediaAcciones

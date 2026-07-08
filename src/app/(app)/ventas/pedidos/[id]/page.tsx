@@ -339,7 +339,12 @@ export default async function PedidoPage({
           <CardTitle className="text-sm">Renders y fotos</CardTitle>
         </CardHeader>
         <CardContent>
-          <MediaPedido pedidoId={pedido.id} clienteId={pedido.cliente_id} />
+          <MediaPedido
+            pedidoId={pedido.id}
+            clienteId={pedido.cliente_id}
+            telefono={cliente?.telefono}
+            clienteNombre={pedido.cliente_nombre}
+          />
         </CardContent>
       </Card>
 

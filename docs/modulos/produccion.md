@@ -14,8 +14,9 @@ Construido en Fase 4 (primer módulo). Última modificación: 2026-07-06. Migrac
 
 ## Rutas / pantallas
 - `/taller/produccion` — **kanban** por etapa (columnas), tarjetas por orden, avanzar en 2 toques, alerta de atasco (≥7d). Activado en el landing `/taller`.
-- `/taller/produccion/[id]` — etapa + control de QC + costos (con total) + link al pedido.
+- `/taller/produccion/[id]` — etapa + control de QC + costos (con total) + link al pedido + **tarjeta de fotos/archivos** (Biblioteca del pedido; sube con `orden_id`+`etapa` como `foto_etapa`).
 - En el pedido `/ventas/pedidos/[id]`: tarjeta **Producción** → "Crear orden de producción" (si no existe) o "Ver orden" con su etapa.
+- Enganche con Biblioteca: aprobar un render mueve la orden a `aprobacion_cliente` (ver `docs/modulos/biblioteca-media.md`).
 
 ## Capa de datos / acciones
 - `src/lib/produccion.ts`: etapas ordenadas, `siguienteEtapa`, `puedeCerrar` (QC), `diasEnEtapa`.

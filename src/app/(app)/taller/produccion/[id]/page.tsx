@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { AvanzarBtn } from "@/components/produccion/avanzar-btn";
 import { QcToggle } from "@/components/produccion/qc-toggle";
 import { CostoProdForm } from "@/components/produccion/costo-prod-form";
+import { MediaPedido } from "@/components/media/media-pedido";
 import { getOrden } from "@/lib/data/produccion";
 import { ETAPA_PRODUCCION, TIPO_COSTO_PROD } from "@/lib/produccion";
 import { pesos } from "@/lib/inventario";
@@ -103,6 +104,20 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
           <div className="border-t border-border pt-4">
             <CostoProdForm ordenId={orden.id} />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Fotos de la pieza (van a la Biblioteca del pedido) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Fotos y archivos de la pieza</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MediaPedido
+            pedidoId={orden.pedido_id}
+            ordenId={orden.id}
+            etapa={orden.etapa}
+          />
         </CardContent>
       </Card>
 

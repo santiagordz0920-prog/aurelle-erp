@@ -9,6 +9,8 @@ import { getUsuarioActual } from "@/lib/session";
 import type { Media, TipoMedia } from "@/lib/media";
 import { TIPOS_MEDIA, TODAS_ETIQUETAS } from "@/lib/media";
 import { MEDIA_MUESTRA } from "@/lib/data/media-muestra";
+import { ETAPAS_PRODUCCION, indiceEtapa, type EtapaProduccion } from "@/lib/produccion";
+import { ORDENES_MUESTRA } from "@/lib/data/produccion-muestra";
 
 export type ResultadoMedia = { ok: boolean; error?: string };
 
@@ -19,6 +21,8 @@ const esquema = z.object({
   tipo: z.enum(TIPOS_MEDIA as [TipoMedia, ...TipoMedia[]]),
   pedido_id: z.string().uuid().nullable().optional(),
   cliente_id: z.string().uuid().nullable().optional(),
+  orden_id: z.string().uuid().nullable().optional(),
+  etapa: z.enum(ETAPAS_PRODUCCION as [EtapaProduccion, ...EtapaProduccion[]]).nullable().optional(),
   etiquetas: z.array(z.string()).default([]),
 });
 
@@ -37,17 +41,20 @@ export async function subirMedia(formData: FormData): Promise<ResultadoMedia> {
     tipo: formData.get("tipo"),
     pedido_id: (formData.get("pedido_id") as string) || null,
     cliente_id: (formData.get("cliente_id") as string) || null,
+    orden_id: (formData.get("orden_id") as string) || null,
+    etapa: (formData.get("etapa") as string) || null,
     etiquetas: formData
       .getAll("etiquetas")
       .map(String)
       .filter((t) => TODAS_ETIQUETAS.includes(t)),
   });
   if (!parsed.success) return { ok: false, error: "Datos inválidos." };
-  const { tipo, pedido_id, cliente_id, etiquetas } = parsed.data;
+  const { tipo, pedido_id, cliente_id, orden_id, etapa, etiquetas } = parsed.data;
 
   const revalidar = () => {
     revalidatePath("/taller/biblioteca");
     if (pedido_id) revalidatePath(`/ventas/pedidos/${pedido_id}`);
+    if (orden_id) revalidatePath(`/taller/produccion/${orden_id}`);
   };
 
   if (!supabaseConfigurado()) {
@@ -62,8 +69,8 @@ export async function subirMedia(formData: FormData): Promise<ResultadoMedia> {
       cliente_id: cliente_id ?? null,
       pedido_id: pedido_id ?? null,
       item_id: null,
-      orden_id: null,
-      etapa: null,
+      orden_id: orden_id ?? null,
+      etapa: etapa ?? null,
       version: 1,
       aprobado: false,
       etiquetas,
@@ -92,6 +99,8 @@ export async function subirMedia(formData: FormData): Promise<ResultadoMedia> {
     nombre: archivo.name,
     pedido_id: pedido_id ?? null,
     cliente_id: cliente_id ?? null,
+    orden_id: orden_id ?? null,
+    etapa: etapa ?? null,
     etiquetas,
     sucursal_id: usuario.sucursalId,
     subido_por: usuario.id,
@@ -105,15 +114,60 @@ export async function subirMedia(formData: FormData): Promise<ResultadoMedia> {
   return { ok: true };
 }
 
+/**
+ * Avanza la orden de un pedido a `aprobacion_cliente` (matriz §4: render aprobado
+ * → etapa aprobada). Solo hacia adelante: si ya pasó esa etapa, no retrocede.
+ */
+async function avanzarOrdenAAprobacion(usuarioId: string, pedidoId: string) {
+  const meta = indiceEtapa("aprobacion_cliente");
+
+  if (!supabaseConfigurado()) {
+    const orden = ORDENES_MUESTRA.find((o) => o.pedido_id === pedidoId);
+    if (orden && indiceEtapa(orden.etapa) < meta) {
+      orden.etapa = "aprobacion_cliente";
+      orden.updated_at = new Date().toISOString();
+      revalidatePath(`/taller/produccion/${orden.id}`);
+      revalidatePath("/taller/produccion");
+    }
+    return;
+  }
+
+  const supabase = await createClient();
+  const { data: orden } = await supabase
+    .from("orden_produccion")
+    .select("id, etapa")
+    .eq("pedido_id", pedidoId)
+    .maybeSingle();
+  if (!orden || indiceEtapa(orden.etapa as EtapaProduccion) >= meta) return;
+  await supabase
+    .from("orden_produccion")
+    .update({ etapa: "aprobacion_cliente" })
+    .eq("id", orden.id);
+  await supabase.from("orden_movimiento").insert({
+    orden_id: orden.id,
+    etapa_desde: orden.etapa,
+    etapa_hasta: "aprobacion_cliente",
+    movido_por: usuarioId,
+  });
+  revalidatePath(`/taller/produccion/${orden.id}`);
+  revalidatePath("/taller/produccion");
+}
+
 /** Marca/desmarca un render como aprobado por el cliente (v2 aprobado). */
 export async function alternarAprobado(
   id: string,
   aprobado: boolean,
   pedidoId?: string | null,
+  tipo?: TipoMedia,
 ): Promise<ResultadoMedia> {
+  const usuario = await getUsuarioActual();
+
   if (!supabaseConfigurado()) {
     const m = MEDIA_MUESTRA.find((x) => x.id === id);
     if (m) m.aprobado = aprobado;
+    if (aprobado && tipo === "render" && pedidoId) {
+      await avanzarOrdenAAprobacion(usuario.id, pedidoId);
+    }
     revalidatePath("/taller/biblioteca");
     if (pedidoId) revalidatePath(`/ventas/pedidos/${pedidoId}`);
     return { ok: true };
@@ -121,6 +175,9 @@ export async function alternarAprobado(
   const supabase = await createClient();
   const { error } = await supabase.from("media").update({ aprobado }).eq("id", id);
   if (error) return { ok: false, error: "No se pudo actualizar." };
+  if (aprobado && tipo === "render" && pedidoId) {
+    await avanzarOrdenAAprobacion(usuario.id, pedidoId);
+  }
   revalidatePath("/taller/biblioteca");
   if (pedidoId) revalidatePath(`/ventas/pedidos/${pedidoId}`);
   return { ok: true };

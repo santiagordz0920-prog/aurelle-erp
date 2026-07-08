@@ -70,3 +70,26 @@ export function esImagen(nombreOPath: string | null): boolean {
   if (!nombreOPath) return false;
   return /\.(png|jpe?g|webp|gif|avif)$/i.test(nombreOPath);
 }
+
+/*
+  Mensaje en tono Aurelle para compartir un archivo por WhatsApp (envío asistido:
+  lo manda una persona). Incluye la liga firmada solo si es http(s) — en modo
+  muestra la url es un data-URI que WhatsApp no puede abrir, así que se omite.
+*/
+export function mensajeCompartirMedia(
+  tipo: TipoMedia,
+  clienteNombre: string | null,
+  url: string | null,
+): string {
+  const hola = clienteNombre ? `Hola ${clienteNombre}, ` : "Hola, ";
+  const liga = url && /^https?:\/\//i.test(url) ? ` ${url}` : "";
+  const cuerpo =
+    tipo === "render"
+      ? "te comparto el diseño de tu pieza para tu revisión 💍. Cualquier ajuste lo afinamos antes de producción."
+      : tipo === "foto_etapa"
+        ? "te comparto un avance de tu pieza en el taller ✨."
+        : tipo === "foto_final"
+          ? "¡tu pieza está lista! Te comparto una foto ✨."
+          : "te comparto un archivo de tu pieza.";
+  return `${hola}${cuerpo}${liga} — Aurelle & Co.`;
+}

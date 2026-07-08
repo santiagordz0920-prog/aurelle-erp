@@ -8,9 +8,17 @@ import { listarMediaDePedido } from "@/lib/data/media";
 export async function MediaPedido({
   pedidoId,
   clienteId,
+  telefono,
+  clienteNombre,
+  ordenId,
+  etapa,
 }: {
   pedidoId: string;
   clienteId?: string | null;
+  telefono?: string | null;
+  clienteNombre?: string | null;
+  ordenId?: string | null;
+  etapa?: string | null;
 }) {
   const media = await listarMediaDePedido(pedidoId);
   return (
@@ -21,7 +29,13 @@ export async function MediaPedido({
             ? `${media.length} ${media.length === 1 ? "archivo" : "archivos"} · renders, CAD y fotos.`
             : "Sube renders, CAD y fotos de la pieza."}
         </p>
-        <SubirMedia pedidoId={pedidoId} clienteId={clienteId} />
+        <SubirMedia
+          pedidoId={pedidoId}
+          clienteId={clienteId}
+          ordenId={ordenId}
+          etapa={etapa}
+          tipoDefault={ordenId ? "foto_etapa" : "foto_final"}
+        />
       </div>
 
       {media.length === 0 ? (
@@ -32,7 +46,13 @@ export async function MediaPedido({
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {media.map((m) => (
-            <MediaCard key={m.id} media={m} pedidoId={pedidoId} />
+            <MediaCard
+              key={m.id}
+              media={m}
+              pedidoId={pedidoId}
+              telefono={telefono}
+              clienteNombre={clienteNombre}
+            />
           ))}
         </div>
       )}

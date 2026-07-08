@@ -11,9 +11,15 @@ import { ETIQUETAS_MEDIA, TIPOS_MEDIA, TIPO_MEDIA, etiquetaBonita } from "@/lib/
 export function SubirMedia({
   pedidoId,
   clienteId,
+  ordenId,
+  etapa,
+  tipoDefault = "foto_final",
 }: {
   pedidoId?: string | null;
   clienteId?: string | null;
+  ordenId?: string | null;
+  etapa?: string | null;
+  tipoDefault?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [abierto, setAbierto] = useState(false);
@@ -39,6 +45,8 @@ export function SubirMedia({
     <form ref={formRef} action={accion} className="space-y-3 rounded-lg border border-border p-4">
       {pedidoId ? <input type="hidden" name="pedido_id" value={pedidoId} /> : null}
       {clienteId ? <input type="hidden" name="cliente_id" value={clienteId} /> : null}
+      {ordenId ? <input type="hidden" name="orden_id" value={ordenId} /> : null}
+      {etapa ? <input type="hidden" name="etapa" value={etapa} /> : null}
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm">
@@ -55,7 +63,7 @@ export function SubirMedia({
           <span className="mb-1 block text-xs font-medium text-muted-foreground">Tipo</span>
           <select
             name="tipo"
-            defaultValue="foto_final"
+            defaultValue={tipoDefault}
             className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           >
             {TIPOS_MEDIA.map((t) => (

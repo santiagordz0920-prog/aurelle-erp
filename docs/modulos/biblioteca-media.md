@@ -4,8 +4,9 @@
 > galería general filtrable. Archivos en Supabase Storage (bucket privado).
 
 ## Estado
-Construido en Fase 4. Última modificación: 2026-07-07. Migración `0021_media.sql`
+Construido en Fase 4. Última modificación: 2026-07-08. Migración `0021_media.sql`
 + setup de Storage `supabase/storage/media_setup.sql` (bucket + policies, se corre aparte).
+Enganches con CRM/Producción ya integrados (envío por WhatsApp, foto por etapa, aprobación → etapa).
 
 ## Tablas
 - `media` (0021) — índice de archivos. Columnas clave: `tipo` (render/cad/foto_etapa/foto_final/referencia/otro),
@@ -31,9 +32,12 @@ Construido en Fase 4. Última modificación: 2026-07-07. Migración `0021_media.
 - Componentes: `media-card`, `media-acciones` (client), `subir-media` (client), `media-pedido` (server).
 
 ## Eventos que emite / consume
-- Consume: Producción (fotos por etapa), Santiago (renders Higgsfield), Documentos. *(Los enganches de
-  "foto por etapa desde Producción" y "enviar render por WhatsApp desde la conversación" quedan pendientes.)*
-- Alimenta a: CRM (envío del archivo), Producción (referencia visual), Marketing (galería etiquetada).
+- Consume: Producción (foto por etapa: la orden sube con `orden_id` + `etapa`, tipo `foto_etapa`),
+  Santiago (renders Higgsfield), Documentos.
+- Emite: **render aprobado → orden a `aprobacion_cliente`** (solo hacia adelante). Implementado en
+  `alternarAprobado` → `avanzarOrdenAAprobacion` (matriz §4). En prod registra `orden_movimiento`.
+- Alimenta a: CRM (**envío del archivo por WhatsApp asistido** desde la galería del pedido — botón "Enviar"
+  con `mensajeCompartirMedia`, incluye la liga firmada si es http), Producción (referencia visual), Marketing (galería).
 
 ## Lógica no obvia / trampas
 - **Bucket PRIVADO + URL firmada**: nunca exponer una URL pública de una foto de cliente. La `url` de cada
@@ -45,6 +49,6 @@ Construido en Fase 4. Última modificación: 2026-07-07. Migración `0021_media.
 
 ## Pendientes conocidos de este módulo
 - Correr `supabase/storage/media_setup.sql` en prod (crea el bucket + policies) además de aplicar `0021`.
-- Envío del archivo por WhatsApp desde la conversación del cliente (asistido) — pendiente.
-- Foto por etapa subida desde Producción (enganche `orden_id`/`etapa`) — pendiente.
-- Aprobación de render que marque la etapa `aprobacion_cliente` de la orden — pendiente (hoy `aprobado` es un flag del render).
+- El envío por WhatsApp incluye la liga firmada de 1 h en el texto; si la persona tarda >1 h, regenerar
+  (recargar la galería vuelve a firmar). Adjuntar el archivo binario en el mensaje llega con el riel oficial.
+- Galería general por cliente/ficha 360 (hoy la galería general es global + por pedido/orden).

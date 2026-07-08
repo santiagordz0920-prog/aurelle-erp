@@ -30,7 +30,7 @@ export function MediaAcciones({
           disabled={pendiente}
           onClick={() =>
             startTransition(async () => {
-              await alternarAprobado(id, !aprobado, pedidoId);
+              await alternarAprobado(id, !aprobado, pedidoId, tipo);
             })
           }
           title={aprobado ? "Quitar aprobación" : "Marcar como aprobado por el cliente"}
