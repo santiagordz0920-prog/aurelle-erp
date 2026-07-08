@@ -40,11 +40,16 @@ export async function actualizarSesion(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const ruta = request.nextUrl.pathname;
-  // /firmar/[token] es pública: el cliente firma sin cuenta (el token es la llave).
+  // Rutas públicas (sin sesión de usuario). Cada una hace su propia autorización:
+  // - /firmar/[token]: el cliente firma sin cuenta (el token es la llave).
+  // - /api/webhook/*: Meta llama sin sesión (verify token + firma X-Hub-Signature).
+  // - /api/cron/*: Vercel Cron llama sin sesión (Bearer CRON_SECRET).
   const esPublica =
     ruta.startsWith("/login") ||
     ruta.startsWith("/auth") ||
-    ruta.startsWith("/firmar");
+    ruta.startsWith("/firmar") ||
+    ruta.startsWith("/api/webhook") ||
+    ruta.startsWith("/api/cron");
 
   if (!user && !esPublica) {
     const url = request.nextUrl.clone();

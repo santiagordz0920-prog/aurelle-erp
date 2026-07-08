@@ -1,10 +1,15 @@
-# Módulo: Inbox de WhatsApp (Fase 3 — shell)
+# Módulo: Inbox de WhatsApp (Fase 3 — riel vivo)
 
-> Inbox unificado (§3.1). La ESTRUCTURA + pantalla están listas con datos de
-> muestra; el riel vivo (webhook de Meta) se enchufa cuando haya verificación+WABA.
+> Inbox unificado (§3.1) con el riel OFICIAL de Meta: webhook receptor, envío por
+> Cloud API, y bot con IA (redacta y responde; cola de aprobación para lo sensible).
 
 ## Estado
-Construido en Fase 3 (shell, sin Meta). Última modificación: 2026-07-06. Migración 0018.
+Construido en Fase 3. Shell (0018, 2026-07-06) + **riel vivo 2026-07-08 (webhook +
+envío por Cloud API + bot con IA + marcar leído)**. Sin migración nueva (el estado
+`borrador_ia` de la IA vive en `mensaje.estado_entrega`, columna text). Requiere
+variables de entorno de WhatsApp/Anthropic en Vercel (ver `docs/GUIA_WHATSAPP.md`).
+Build+lint verdes; webhook (verify GET / POST) probado local; el bot completo se
+verifica en prod con credenciales de Meta.
 
 ## Tablas (migración 0018)
 - `conversacion` — RLS por sucursal. cliente_id (nullable), **telefono** (identificador natural, único por sucursal),
@@ -20,13 +25,20 @@ Construido en Fase 3 (shell, sin Meta). Última modificación: 2026-07-06. Migra
 - `src/lib/inbox.ts`: tipos + `horaMensaje` (Monterrey).
 - `src/lib/data/inbox.ts`: `listarConversaciones`, `getConversacion` (con mensajes), `totalNoLeidos`.
 
-## Lo que falta para el riel VIVO (necesita Meta)
-1. **Webhook receptor** (`/api/webhook/whatsapp`, GET verify + POST): Meta manda cada mensaje entrante → find-or-create `conversacion` por teléfono, **find-or-create `cliente`** (regla §3.1: el teléfono es el identificador; el mensaje crea al cliente), insert `mensaje` entrante, incrementa no_leidos, set ultimo_at. Dedup por `wa_id`. Usa el cliente service_role (sin sesión), protegido por el verify token de Meta.
-2. **Envío por Cloud API**: Server Action que POSTea a la Graph API y guarda el `mensaje` saliente con su `wa_id`; actualizar estado_entrega con los webhooks de status.
-3. **Marcar leído** al abrir la conversación (hoy no_leidos es estático de muestra).
-4. **Bot v2** (calificación + reserva en Citas) + **cola de aprobación** para lo sensible (2ct+, quejas) → `es_ia` + estado pendiente de aprobación.
-5. Media (imágenes/certificados) vía Supabase Storage.
+## Riel vivo (2026-07-08) — piezas
+1. **Webhook receptor** `src/app/api/webhook/whatsapp/route.ts` (**público**, en el middleware): GET verify (handshake `hub.verify_token` vs `WHATSAPP_VERIFY_TOKEN`) + POST (valida firma `X-Hub-Signature-256` con `WHATSAPP_APP_SECRET`, aplana el payload, guarda entrantes, actualiza estados de salientes). Responde 200 SIEMPRE y rápido; el bot corre en `after()`.
+2. **`src/lib/whatsapp.ts`**: `enviarTextoWa`, `enviarPlantillaWa`, `marcarLeidoWa`, `firmaWebhookValida`, `parsearWebhook`, `whatsappConfigurado`.
+3. **`src/lib/data/inbox-riel.ts`** (service_role): `registrarEntrante` (dedup por `wa_id` → find-or-create `cliente` por últimos 10 dígitos → find-or-create `conversacion` → insert entrante → no_leidos++/ultimo_at) y `actualizarEstadoSaliente`.
+4. **Bot con IA** (`src/lib/ia/`): ver `docs/modulos/bot-ia.md`. Sensible → borrador (`estado_entrega='borrador_ia'`, no se envía); seguro → envía por API.
+5. **Acciones del Inbox** (`clientes/inbox/actions.ts`): `responderInbox` (envía por API), `aprobarBorrador`/`descartarBorrador` (cola de aprobación), `marcarLeido`. Componentes `inbox/responder-inbox`, `inbox/borrador-ia`, `inbox/marcar-leido`. El hilo usa el compositor por API si `whatsappConfigurado()`, si no cae al asistido (wa.me).
+
+## Pendiente
+- **Bot v2**: reservar cita real en Citas desde la conversación (hoy invita a agendar; no crea el registro).
+- Media entrante (imágenes/certificados) → Supabase Storage (hoy se guarda el mensaje sin bajar el binario).
+- Plantillas de Meta pre-aprobadas para escribir FUERA de la ventana de 24 h (`enviarPlantillaWa` ya existe; falta dar de alta las plantillas en Meta y cablearlas a los avisos).
 
 ## Trampas
 - `wa_id` único (índice parcial) = idempotencia: reintentos del webhook de Meta no duplican mensajes.
-- El teléfono se normaliza a lada 52 (ver `src/lib/mensajes.ts`) para casar conversación↔cliente.
+- El teléfono se casa por **últimos 10 dígitos** (Meta manda `5218112345678`; el cliente puede tener `8112345678`).
+- **Ventana de 24 h de Meta:** texto libre solo dentro de 24 h del último mensaje del cliente; fuera de ella se necesita plantilla aprobada. El bot responde a un entrante → siempre dentro de la ventana.
+- El webhook responde 200 y procesa el bot en `after()` (Next) para no exceder el tiempo de Meta.
