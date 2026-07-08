@@ -18,15 +18,22 @@
 - **Biblioteca — enganches (2026-07-08):** (1) **envío del archivo por WhatsApp** asistido desde la galería del pedido (botón "Enviar", liga firmada en el texto); (2) **foto por etapa desde Producción** (la orden sube con `orden_id`+`etapa`, tipo `foto_etapa`; tarjeta de media en el detalle de la orden); (3) **render aprobado → orden a `aprobacion_cliente`** (solo hacia adelante, registra `orden_movimiento`). `docs/modulos/biblioteca-media.md`.
 - **SQL combinado para prod:** `supabase/aplicar_0019_a_0021.sql` (0019+0020+0021+Storage en una transacción), validado en Postgres local sobre base a 0018. **Aplicado en prod el 2026-07-08.**
 - **Producción v2 (2026-07-08, sin migración):** (1) **asignar responsable** desde la UI (selector en el detalle de la orden); (2) **checklist de QC por tipo de pieza** (`QC_CHECKLIST` bridal/concierge; guía pre-vuelo que habilita "Marcar QC completo"); (3) **atasco → tarea**: en una orden ≥7d en su etapa aparece "Crear tarea de seguimiento" (tarea ligada al pedido, prioridad alta, origen sugerida). `docs/modulos/produccion.md`.
+- **Documentos v2 — pulido (2026-07-08, sin migración):** (1) **contrato automático al confirmar el pedido** (`crearContratoSiNoExiste`, idempotente; disparado en `cambiarEstado` cuando `estado='confirmado'`); (2) **archivo en la ficha 360**: tab **Documentos** (`listarDocumentosDeCliente`) con estado de firma, liga de firma e imprimir, y el tab **Media** ahora muestra la biblioteca real del cliente; (3) **firma en canvas**: `CanvasFirma` captura el trazo (dataURL) en `documento.evidencia.firma_trazo` y se muestra en el archivo. **Build verde + lint cero; FALTA smoke test visual** (ver Problemas conocidos). `docs/modulos/documentos.md`.
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-Seguir Fase 4:
-1. **Documentos — pulir:** disparo automático de contrato al confirmar el pedido; archivar el firmado en la ficha; trazo de firma en canvas.
-2. **Biblioteca (menor):** galería por cliente en la ficha 360; adjuntar binario en WhatsApp llega con el riel oficial.
-3. **Producción (menor):** atasco → tarea **automática** por cron (hoy es botón asistido); checklist QC editable desde la app.
-Con esto Fase 4 queda casi cerrada; lo que falta de Fase 3 (riel vivo) y la IA (Fase 5) esperan el trámite de Meta / datos fluyendo.
-Fase 3 (riel vivo de WhatsApp) sigue esperando el trámite de Meta de Santiago.
+**PRIMERO: verificar visualmente Documentos v2** (commit `aae1236`). El código compila y pasa lint, pero NO se pudo correr el smoke test en el sandbox (`npm run start` se cae — ver Problemas conocidos). Revisar en prod (o con un `npm run start` estable):
+   a. Ficha del cliente → tab **Documentos** lista los contratos (probar con un cliente que tenga pedido con contrato).
+   b. Ficha del cliente → tab **Media** muestra la galería del cliente.
+   c. Confirmar un pedido (`estado='confirmado'`) genera el contrato solo, sin duplicar si ya hay.
+   d. `/firmar/[token]` muestra el canvas y al firmar guarda el trazo en `evidencia.firma_trazo`.
+   Si algo falla, el arreglo probablemente esté en `src/app/(app)/clientes/[id]/page.tsx` (tabs) o en `listarDocumentosDeCliente` (`src/lib/data/documentos.ts`, join `pedido!inner`).
+
+Luego, seguir Fase 4 (menor):
+1. **Biblioteca:** adjuntar binario en WhatsApp llega con el riel oficial (hoy va la liga firmada).
+2. **Producción:** atasco → tarea **automática** por cron (hoy es botón asistido); checklist QC editable desde la app.
+3. **Documentos:** archivar snapshot del contrato firmado (hoy se reimprime en vivo desde el pedido).
+Con esto Fase 4 queda casi cerrada; Fase 3 (riel vivo de WhatsApp) espera el trámite de Meta; la IA (Fase 5) espera datos fluyendo.
 Patrón: migración → Postgres local → dominio → datos+muestra → acciones → páginas → docs.
 
 
@@ -34,6 +41,7 @@ Patrón: migración → Postgres local → dominio → datos+muestra → accione
 Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurrente→asiento mensual (0013), costo_produccion→costo_real (0019), **render aprobado→orden a aprobacion_cliente (0021, en `alternarAprobado`)**. Pendientes (fases posteriores): consumo de material en producción y contrato al confirmar (Fase 4); Postventa/Comisiones/lifecycle al entregar (Fases 4/6); tareas sugeridas por IA + Dashboard por rol + push.
 
 ## Problemas conocidos / bloqueos
+- **Sandbox inestable para `npm run start` (2026-07-08):** el servidor de prod local se cae/termina (SIGTERM, exit 144) al levantarlo para smoke tests; probablemente presión de recursos tras varios `build`+`start`. Por eso Documentos v2 quedó sin smoke test visual (build+lint sí pasan). Mitigación para la próxima sesión: `rm -rf .next && npm run build` una vez, luego `npm run start` UNA sola vez y no reconstruir en la misma sesión; o verificar en prod (Vercel) directamente.
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (confirmar que ya puede entrar).
 - **Migraciones en prod: 0004–0021 aplicadas** + `CRON_SECRET` + bucket privado `media` (Santiago aplicó `aplicar_0019_a_0021.sql` el 2026-07-08). Producción, Documentos/e-firma y Biblioteca ya persisten en prod.

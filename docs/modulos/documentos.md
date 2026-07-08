@@ -4,8 +4,10 @@
 > (§3.12). v1: generación imprimible/PDF. E-firma y archivado: siguiente slice.
 
 ## Estado
-Construido en Fase 4. Última modificación: 2026-07-06. Contrato/recibo imprimibles (sin
-migración) + **archivado y e-firma** (migración 0020).
+Construido en Fase 4. Última modificación: 2026-07-08. Contrato/recibo imprimibles (sin
+migración) + **archivado y e-firma** (migración 0020, aplicada en prod).
+v2 (2026-07-08): contrato automático al confirmar, archivo en la ficha 360, firma en canvas.
+**OJO: v2 con build+lint verdes pero sin smoke test visual** (sandbox inestable; ver ESTADO §Problemas).
 
 ## Rutas / pantallas (fuera del cascarón, imprimibles / PDF)
 - `/imprimir/contrato/[id]` (id = pedidoId) — contrato de compraventa: cliente, línea, precio, plan de pagos, saldo, términos (anticipos/garantía/especificaciones), y campo **Firma del cliente** en blanco.
@@ -18,13 +20,14 @@ migración) + **archivado y e-firma** (migración 0020).
 
 ## Capa de datos / acciones
 - `src/lib/documentos.ts`: tipos + etiquetas.
-- `src/lib/data/documentos.ts`: `listarDocumentosDePedido` (equipo), `getDocumentoParaFirma` (público, **admin client** por token + datos del contrato).
-- `documentos-actions.ts` (equipo): `generarContrato` (token aleatorio, estado enviado), `cancelarDocumento`.
-- `firmar/[token]/actions.ts` (público): `firmarDocumento` (valida token, registra nombre+fecha+evidencia, estado firmado; bloquea re-firma; service_role).
+- `src/lib/data/documentos.ts`: `listarDocumentosDePedido` (equipo), **`listarDocumentosDeCliente`** (ficha 360, join `pedido!inner` por `cliente_id`), `getDocumentoParaFirma` (público, **admin client** por token + datos del contrato).
+- `documentos-actions.ts` (equipo): `generarContrato` (token aleatorio, estado enviado), **`crearContratoSiNoExiste`** (idempotente, para el disparo automático), `cancelarDocumento`.
+- `firmar/[token]/actions.ts` (público): `firmarDocumento` (valida token, registra nombre+fecha+evidencia **+ `firma_trazo`**, estado firmado; bloquea re-firma; service_role).
+- Componentes v2: `documentos-cliente` (lista archivada, muestra el trazo si existe), `canvas-firma` (captura del trazo en `<FirmaForm>`).
 - `<ContratoDoc>` compartido por `/imprimir/contrato` y `/firmar/[token]`.
 
 ## Eventos / matriz §4
-- "Cotización aceptada → Documentos genera contrato": hoy es **on-demand** (botón "Generar contrato para firma"). El disparo automático al confirmar y el aviso "contrato sin firmar 48h" (cron) son mejoras siguientes; el archivado ya existe (tabla `documento`).
+- **Pedido confirmado → genera contrato:** `cambiarEstado(..., 'confirmado')` llama `crearContratoSiNoExiste` (idempotente, no pisa uno firmado). El botón manual "Generar contrato" sigue existiendo. Pendiente: aviso "contrato sin firmar 48h" (cron).
 
 ## Lógica no obvia / trampas
 - **Ruta `/firmar` es pública** (agregada a `esPublica` en el middleware). Sin sesión; el **token** (64 hex) es la capacidad. Se lee/escribe con `createAdminClient()` (service_role) → requiere `SUPABASE_SERVICE_ROLE_KEY` en Vercel (ya lo usa el cron de gastos).
@@ -32,8 +35,8 @@ migración) + **archivado y e-firma** (migración 0020).
 - No se puede re-firmar (bloqueado por estado) ni firmar un documento cancelado.
 
 ## Pendientes conocidos
-- Disparo automático del contrato al confirmar el pedido + aviso "sin firmar 48h" (cron/notificación).
-- Trazo de firma en canvas (hoy: nombre + aceptación como evidencia).
-- Archivar el documento firmado en la pestaña del cliente (hoy vive en el pedido).
+- **Smoke test visual de v2** (tab Documentos/Media en la ficha, contrato auto al confirmar, canvas en /firmar). Ver ESTADO §Siguiente tarea.
+- Aviso "contrato sin firmar 48h" (cron/notificación).
+- Snapshot del contrato firmado (hoy `/imprimir/contrato/[id]` lo reimprime en vivo desde el pedido; si el pedido cambia, cambia el impreso).
 - **Plantillas editables por Santiago** (texto legal/garantía) sin tocar código.
 - PDF binario con tipografías de marca server-side (hoy imprime la web; el navegador guarda como PDF).
