@@ -22,14 +22,9 @@
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
-**PRIMERO: verificar visualmente Documentos v2** (commit `aae1236`). El código compila y pasa lint, pero NO se pudo correr el smoke test en el sandbox (`npm run start` se cae — ver Problemas conocidos). Revisar en prod (o con un `npm run start` estable):
-   a. Ficha del cliente → tab **Documentos** lista los contratos (probar con un cliente que tenga pedido con contrato).
-   b. Ficha del cliente → tab **Media** muestra la galería del cliente.
-   c. Confirmar un pedido (`estado='confirmado'`) genera el contrato solo, sin duplicar si ya hay.
-   d. `/firmar/[token]` muestra el canvas y al firmar guarda el trazo en `evidencia.firma_trazo`.
-   Si algo falla, el arreglo probablemente esté en `src/app/(app)/clientes/[id]/page.tsx` (tabs) o en `listarDocumentosDeCliente` (`src/lib/data/documentos.ts`, join `pedido!inner`).
+**Documentos v2 ya quedó verificado visualmente (2026-07-08, smoke test con Playwright sobre datos de muestra):** (a) tab Documentos de la ficha lista contratos con estado ✓; (b) tab Media muestra la galería del cliente ✓; (c) confirmar un pedido con contrato activo NO duplica (idempotente) ✓; (d) `/firmar/[token]` muestra el canvas y el flujo de firma completo funciona (nombre+aceptación → "Firmado por…" visible en ficha y pedido) ✓. Caveat menor: el trazo dibujado en el canvas no se pudo confirmar visualmente en la captura (la firma es opcional y el flujo sin trazo funciona); vale re-probar el trazo a mano en prod.
 
-Luego, seguir Fase 4 (menor):
+Seguir Fase 4 (menor):
 1. **Biblioteca:** adjuntar binario en WhatsApp llega con el riel oficial (hoy va la liga firmada).
 2. **Producción:** atasco → tarea **automática** por cron (hoy es botón asistido); checklist QC editable desde la app.
 3. **Documentos:** archivar snapshot del contrato firmado (hoy se reimprime en vivo desde el pedido).
@@ -41,7 +36,7 @@ Patrón: migración → Postgres local → dominio → datos+muestra → accione
 Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurrente→asiento mensual (0013), compra→asiento+CxP+alta de item (0014/0016), costo_produccion→costo_real (0019), etapa de producción→estado del pedido (0019, `sincronizarPedido`), **render aprobado→orden a aprobacion_cliente (0021, en `alternarAprobado`)**, QC como candado a listo_entrega, **contrato automático al confirmar el pedido (Documentos v2, `crearContratoSiNoExiste`)**. Pendientes (fases posteriores): consumo de material en producción (Fase 4); resultado de cita→pipeline del cliente y no-show→lifecycle (comentado en `citas/actions.ts`); cotización enviada→tarea de seguimiento; QC completo→sugerir cita de entrega+notificación; stock bajo→notificación/tarea; Postventa/Comisiones/lifecycle al entregar (Fases 4/6); tareas sugeridas por IA + Dashboard por rol + push.
 
 ## Problemas conocidos / bloqueos
-- **Sandbox inestable para `npm run start` (2026-07-08):** el servidor de prod local se cae/termina (SIGTERM, exit 144) al levantarlo para smoke tests; probablemente presión de recursos tras varios `build`+`start`. Por eso Documentos v2 quedó sin smoke test visual (build+lint sí pasan). Mitigación para la próxima sesión: `rm -rf .next && npm run build` una vez, luego `npm run start` UNA sola vez y no reconstruir en la misma sesión; o verificar en prod (Vercel) directamente.
+- **Sandbox inestable para `npm run start` (2026-07-08):** el servidor de prod local se puede caer (SIGTERM, exit 144) tras varios `build`+`start`. **La mitigación FUNCIONA:** `rm -rf .next && npm run build` una vez y un solo `npm run start`; así se corrió el smoke test de Documentos v2 el mismo día. Para Playwright: instalar `playwright-core` en el scratchpad (no en el repo) y usar `executablePath` `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`.
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (confirmar que ya puede entrar).
 - **Migraciones en prod: 0004–0021 aplicadas** + `CRON_SECRET` + bucket privado `media` (Santiago aplicó `aplicar_0019_a_0021.sql` el 2026-07-08). Producción, Documentos/e-firma y Biblioteca ya persisten en prod.
