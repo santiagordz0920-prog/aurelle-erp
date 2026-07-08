@@ -10,6 +10,7 @@ import type { EstadoPedido, LineaNegocio, Pago } from "@/lib/pedidos";
 import { PEDIDOS_MUESTRA } from "@/lib/data/pedidos-muestra";
 import { COTIZACIONES_MUESTRA } from "@/lib/data/cotizaciones-muestra";
 import { ITEMS_MUESTRA } from "@/lib/data/inventario-muestra";
+import { crearContratoSiNoExiste } from "./documentos-actions";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -220,6 +221,11 @@ export async function cambiarEstado(
       .update({ estado })
       .eq("id", pedidoId);
     if (error) return { ok: false, error: "No se pudo actualizar el estado." };
+  }
+  // Reacción §4: al confirmar el pedido, se genera el contrato automáticamente
+  // (idempotente: no duplica ni pisa uno firmado).
+  if (estado === "confirmado") {
+    await crearContratoSiNoExiste(pedidoId);
   }
   revalidarPedido(pedidoId);
   return { ok: true };

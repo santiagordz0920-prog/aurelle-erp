@@ -55,6 +55,34 @@ export async function generarContrato(pedidoId: string): Promise<ResultadoDoc> {
   return { ok: true, token };
 }
 
+/**
+ * Genera el contrato automáticamente si el pedido no tiene ya uno activo
+ * (borrador/enviado/firmado). Se dispara al confirmar el pedido. Idempotente:
+ * no duplica contratos ni pisa uno firmado.
+ */
+export async function crearContratoSiNoExiste(pedidoId: string): Promise<ResultadoDoc> {
+  const activos = new Set(["borrador", "enviado", "firmado"]);
+
+  if (!supabaseConfigurado()) {
+    const yaHay = DOCUMENTOS_MUESTRA.some(
+      (d) => d.pedido_id === pedidoId && d.tipo === "contrato" && activos.has(d.estado),
+    );
+    if (yaHay) return { ok: true };
+    return generarContrato(pedidoId);
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("documento")
+    .select("id")
+    .eq("pedido_id", pedidoId)
+    .eq("tipo", "contrato")
+    .in("estado", ["borrador", "enviado", "firmado"])
+    .limit(1);
+  if (data && data.length > 0) return { ok: true };
+  return generarContrato(pedidoId);
+}
+
 /** Cancela un documento (p. ej. si hubo cambios → se emite una adenda nueva). */
 export async function cancelarDocumento(
   id: string,

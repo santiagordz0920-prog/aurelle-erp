@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { PenLine } from "lucide-react";
 import { firmarDocumento, type ResultadoFirma } from "@/app/firmar/[token]/actions";
+import { CanvasFirma } from "@/components/documentos/canvas-firma";
 
 const inicial: ResultadoFirma = { ok: false };
 
@@ -47,6 +48,7 @@ export function FirmaForm({ token }: { token: string }) {
           className="h-11 w-full rounded-md border border-[#e3ddce] bg-white px-3 text-sm text-[#08221b] outline-none focus:border-[#b77321]"
         />
       </div>
+      <CanvasFirma name="firma_trazo" />
       <label className="flex items-start gap-2 text-sm text-[#3d4a44]">
         <input type="checkbox" name="acepto" className="mt-1" />
         <span>

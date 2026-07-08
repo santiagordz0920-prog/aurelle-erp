@@ -23,10 +23,14 @@ import { TareaItem } from "@/components/tareas/tarea-item";
 import { CitaForm } from "@/components/citas/cita-form";
 import { CitaItem } from "@/components/citas/cita-item";
 import { EnviarWhatsApp } from "@/components/clientes/enviar-whatsapp";
+import { DocumentosCliente } from "@/components/documentos/documentos-cliente";
+import { MediaCard } from "@/components/media/media-card";
 import { getCliente, getNotas } from "@/lib/data/clientes";
 import { listarTareas } from "@/lib/data/tareas";
 import { listarCitas } from "@/lib/data/citas";
 import { listarUsuarios } from "@/lib/data/usuarios";
+import { listarDocumentosDeCliente } from "@/lib/data/documentos";
+import { listarMedia } from "@/lib/data/media";
 import { CANAL_FUENTE } from "@/lib/clientes";
 
 export async function generateMetadata({
@@ -48,11 +52,13 @@ export default async function FichaClientePage({
   const cliente = await getCliente(id);
   if (!cliente) notFound();
 
-  const [notas, tareas, usuarios, citas] = await Promise.all([
+  const [notas, tareas, usuarios, citas, documentos, media] = await Promise.all([
     getNotas(id),
     listarTareas({ entidad_tipo: "cliente", entidad_id: id }),
     listarUsuarios(),
     listarCitas({ cliente_id: id }),
+    listarDocumentosDeCliente(id),
+    listarMedia({ cliente_id: id }),
   ]);
   const citasProximas = citas.filter(
     (c) => c.estado !== "completada" && c.estado !== "cancelada",
@@ -175,15 +181,47 @@ export default async function FichaClientePage({
       ),
     },
     {
+      id: "documentos",
+      label: "Documentos",
+      badge: documentos.length,
+      content:
+        documentos.length === 0 ? (
+          <EmptyState
+            icono={FileText}
+            titulo="Sin documentos"
+            descripcion="El contrato se genera solo al confirmar el pedido y se archiva aquí; los firmados quedan con su evidencia."
+            className="border-0 bg-transparent py-8"
+          />
+        ) : (
+          <DocumentosCliente documentos={documentos} />
+        ),
+    },
+    {
       id: "media",
       label: "Media",
-      content: (
-        <EmptyState
-          icono={ImageIcon}
-          titulo="Biblioteca en Fase 4"
-          descripcion="Renders, CADs y fotos de las piezas del cliente, listos para enviar por WhatsApp."
-        />
-      ),
+      badge: media.length,
+      content:
+        media.length === 0 ? (
+          <EmptyState
+            icono={ImageIcon}
+            titulo="Sin media todavía"
+            descripcion="Renders, CADs y fotos de las piezas del cliente aparecerán aquí, listos para enviar por WhatsApp."
+            className="border-0 bg-transparent py-8"
+          />
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {media.map((m) => (
+              <MediaCard
+                key={m.id}
+                media={m}
+                pedidoId={m.pedido_id}
+                telefono={cliente.telefono}
+                clienteNombre={cliente.nombre}
+                conAcciones={false}
+              />
+            ))}
+          </div>
+        ),
     },
   ];
 

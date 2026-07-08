@@ -35,10 +35,18 @@ export async function firmarDocumento(
   }
   const { token, nombre } = parsed.data;
   const h = await headers();
+  // Trazo de firma (dataURL PNG), evidencia adicional. Se acota para no meter
+  // basura enorme en jsonb; si viene raro, se ignora.
+  const trazoRaw = (formData.get("firma_trazo") as string) || "";
+  const firma_trazo =
+    trazoRaw.startsWith("data:image/png;base64,") && trazoRaw.length < 200_000
+      ? trazoRaw
+      : null;
   const evidencia = {
     user_agent: h.get("user-agent") ?? null,
     firmado_desde: h.get("x-forwarded-for") ?? null,
     at: new Date().toISOString(),
+    firma_trazo,
   };
 
   if (!supabaseConfigurado()) {

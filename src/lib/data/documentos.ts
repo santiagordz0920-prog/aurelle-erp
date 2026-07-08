@@ -35,6 +35,27 @@ export async function listarDocumentosDePedido(pedidoId: string): Promise<Docume
   return (data ?? []) as Documento[];
 }
 
+/** Documentos de todos los pedidos de un cliente (para archivarlos en la ficha 360). */
+export async function listarDocumentosDeCliente(clienteId: string): Promise<Documento[]> {
+  if (!supabaseConfigurado()) {
+    const pedidosDelCliente = new Set(
+      PEDIDOS_MUESTRA.filter((p) => p.cliente_id === clienteId).map((p) => p.id),
+    );
+    return DOCUMENTOS_MUESTRA.filter((d) => pedidosDelCliente.has(d.pedido_id)).sort((a, b) =>
+      b.created_at.localeCompare(a.created_at),
+    );
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("documento")
+    .select("*, pedido!inner(cliente_id)")
+    .eq("pedido.cliente_id", clienteId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  // El join `pedido` sólo sirve para filtrar; la columna extra se ignora.
+  return (data ?? []) as unknown as Documento[];
+}
+
 /**
  * Documento + datos del contrato para la firma PÚBLICA (por token). Usa el
  * cliente service_role: no hay sesión de usuario (el cliente firma sin cuenta).
