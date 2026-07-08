@@ -38,6 +38,6 @@ hardcodeadas en `src/lib/mensajes.ts`). El botón asistido ya está reusado en P
 - El texto va URL-encoded en `?text=`. WhatsApp lo abre listo pero **quien envía es la persona**.
 
 ## Pendientes / lo que reemplaza el riel oficial
-- Inbox de 2 vías (recibir + historial) — llega con el webhook de Meta (Fase 3 con riel vivo).
+- ~~Inbox de 2 vías (recibir + historial) — webhook de Meta.~~ **Hecho 2026-07-08** (ver `docs/modulos/inbox.md`): el Inbox ahora recibe y envía por la Cloud API cuando el riel está configurado; el envío asistido (wa.me) sigue como fallback y en Pedido/Cita/Fechas.
 - Plantillas **editables por Santiago** desde la app (hoy hardcodeadas) — tabla `plantilla_mensaje` a futuro.
 - ~~Reusar el compositor en Pedidos (recordatorio de pago) y Citas (confirmación).~~ Hecho 2026-07-07.

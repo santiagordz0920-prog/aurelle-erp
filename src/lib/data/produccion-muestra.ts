@@ -1,4 +1,6 @@
-import type { CostoProduccion, OrdenProduccion } from "@/lib/produccion";
+import type { CostoProduccion, OrdenProduccion, QcChecklistItem } from "@/lib/produccion";
+import { QC_CHECKLIST } from "@/lib/produccion";
+import type { LineaNegocio } from "@/lib/pedidos";
 
 /* Datos de muestra — solo modo local. NUNCA en producción. */
 const S = "00000000-0000-0000-0000-000000000001";
@@ -28,6 +30,23 @@ export const COSTOS_PROD_MUESTRA: CostoProduccion[] = [
     created_at: haceDias(1),
   },
 ];
+
+/* Checklist de QC de muestra (mutable): sembrado del default en código, para que
+   el CRUD editable funcione en modo local. */
+export const CHECKLIST_QC_MUESTRA: QcChecklistItem[] = (
+  Object.keys(QC_CHECKLIST) as LineaNegocio[]
+).flatMap((linea) =>
+  QC_CHECKLIST[linea].map((texto, i) => ({
+    id: `qc-${linea}-${i}`,
+    linea_negocio: linea,
+    posicion: i,
+    texto,
+    activo: true,
+    sucursal_id: S,
+    created_at: haceDias(30),
+    updated_at: haceDias(30),
+  })),
+);
 
 export const ORDENES_MUESTRA: OrdenProduccion[] = [
   {

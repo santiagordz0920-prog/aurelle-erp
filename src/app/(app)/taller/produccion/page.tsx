@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ArrowLeft, Hammer, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Hammer, Clock, AlertTriangle, SlidersHorizontal } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { AvanzarBtn } from "@/components/produccion/avanzar-btn";
 import { listarOrdenes } from "@/lib/data/produccion";
+import { getUsuarioActual } from "@/lib/session";
 import { ETAPAS_PRODUCCION, ETAPA_PRODUCCION, type OrdenProduccion } from "@/lib/produccion";
 import { LINEA_NEGOCIO } from "@/lib/pedidos";
 
@@ -13,7 +14,8 @@ export const metadata = { title: "Producción" };
 const ATASCO_DIAS = 7;
 
 export default async function ProduccionPage() {
-  const ordenes = await listarOrdenes();
+  const [ordenes, usuario] = await Promise.all([listarOrdenes(), getUsuarioActual()]);
+  const esAdmin = usuario.rol === "admin";
 
   const porEtapa = new Map<string, OrdenProduccion[]>();
   for (const e of ETAPAS_PRODUCCION) porEtapa.set(e, []);
@@ -32,6 +34,17 @@ export default async function ProduccionPage() {
       <PageHeader
         titulo="Producción"
         descripcion="El taller de un vistazo. Mueve de etapa en dos toques; los costos alimentan el margen del pedido."
+        accion={
+          esAdmin ? (
+            <Link
+              href="/taller/produccion/qc"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <SlidersHorizontal className="size-4" />
+              Checklist de QC
+            </Link>
+          ) : null
+        }
       />
 
       {ordenes.length === 0 ? (

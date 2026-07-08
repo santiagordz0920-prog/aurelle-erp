@@ -1,7 +1,23 @@
-import type { Documento } from "@/lib/documentos";
+import type { ClausulaContrato, Documento } from "@/lib/documentos";
+import { CLAUSULAS_CONTRATO_DEFAULT } from "@/lib/documentos";
 
 /* Datos de muestra — solo modo local. NUNCA en producción. */
 const S = "00000000-0000-0000-0000-000000000001";
+
+/* Cláusulas del contrato de muestra (mutable): sembradas del default en código,
+   para que el CRUD editable funcione en modo local. */
+export const CLAUSULAS_CONTRATO_MUESTRA: ClausulaContrato[] = CLAUSULAS_CONTRATO_DEFAULT.map(
+  (c, i) => ({
+    id: `cl-${i}`,
+    titulo: c.titulo,
+    cuerpo: c.cuerpo,
+    posicion: i,
+    activo: true,
+    sucursal_id: S,
+    created_at: "2026-07-01T00:00:00Z",
+    updated_at: "2026-07-01T00:00:00Z",
+  }),
+);
 
 export const DOCUMENTOS_MUESTRA: Documento[] = [
   {
@@ -34,6 +50,17 @@ export const DOCUMENTOS_MUESTRA: Documento[] = [
       firmado_desde: null,
       at: "2026-07-06T21:30:00Z",
       firma_trazo: null,
+    },
+    // Snapshot congelado al firmar (0022): los términos que Carla aceptó, aunque
+    // el pedido cambie después.
+    contenido: {
+      cliente_nombre: "Carla Mendoza",
+      linea_negocio: "concierge",
+      total: 92000,
+      pagos: [{ id: "pg-3", tipo: "anticipo_1", fecha: "2026-07-03", monto: 1000 }],
+      saldo: 91000,
+      created_at: "2026-07-03T18:00:00Z",
+      fecha_compromiso: "2026-07-30",
     },
     sucursal_id: S,
     created_at: "2026-07-06T20:00:00Z",

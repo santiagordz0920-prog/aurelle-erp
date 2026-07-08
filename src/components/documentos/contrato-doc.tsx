@@ -1,4 +1,5 @@
 import type { ContratoDatos } from "@/lib/data/documentos";
+import { CLAUSULAS_CONTRATO_DEFAULT } from "@/lib/documentos";
 import { LINEA_NEGOCIO, TIPO_PAGO } from "@/lib/pedidos";
 import { pesos } from "@/lib/inventario";
 
@@ -92,21 +93,14 @@ export function ContratoDoc({
       </div>
 
       <div className="mt-6 space-y-2 text-xs leading-relaxed text-[#5b6660]">
-        <p>
-          <span className="font-medium text-[#08221b]">Anticipos.</span> La fabricación inicia una
-          vez cubierto el anticipo convenido; la compra de materiales requiere el anticipo del 30%.
-          El saldo se liquida antes de la entrega.
-        </p>
-        <p>
-          <span className="font-medium text-[#08221b]">Garantía.</span> La pieza cuenta con garantía
-          de por vida contra defectos de fabricación y servicio de limpieza y pulido sin costo. No
-          cubre daño por mal uso.
-        </p>
-        <p>
-          <span className="font-medium text-[#08221b]">Especificaciones.</span> Las piedras y
-          características corresponden a la cotización aceptada; cualquier cambio se documenta como
-          adenda.
-        </p>
+        {(datos.clausulas && datos.clausulas.length > 0
+          ? datos.clausulas
+          : CLAUSULAS_CONTRATO_DEFAULT
+        ).map((c) => (
+          <p key={c.titulo}>
+            <span className="font-medium text-[#08221b]">{c.titulo}.</span> {c.cuerpo}
+          </p>
+        ))}
       </div>
 
       <div className="mt-12 grid grid-cols-2 gap-8 text-center text-xs text-[#5b6660]">

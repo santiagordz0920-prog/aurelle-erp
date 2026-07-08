@@ -15,10 +15,52 @@ export type Documento = {
   firmado_at: string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   evidencia: Record<string, any> | null;
+  // Snapshot inmutable del contrato al firmar (ContratoDatos). NULL hasta firmar;
+  // un documento firmado se renderiza desde aquí, no del pedido en vivo (0022).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  contenido?: Record<string, any> | null;
   sucursal_id: string;
   created_at: string;
   updated_at: string;
 };
+
+/** Cláusula legal del contrato (editable, 0024). */
+export type ClausulaContrato = {
+  id: string;
+  titulo: string;
+  cuerpo: string;
+  posicion: number;
+  activo: boolean;
+  sucursal_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Solo el texto que se imprime/congela (título + cuerpo). */
+export type ClausulaTexto = { titulo: string; cuerpo: string };
+
+/*
+  Cláusulas por defecto = semilla de la tabla `clausula_contrato` y fallback:
+  las usa `<ContratoDoc>` si un contrato (o su snapshot) no trae cláusulas, para
+  no dejar el contrato sin términos legales.
+*/
+export const CLAUSULAS_CONTRATO_DEFAULT: ClausulaTexto[] = [
+  {
+    titulo: "Anticipos",
+    cuerpo:
+      "La fabricación inicia una vez cubierto el anticipo convenido; la compra de materiales requiere el anticipo del 30%. El saldo se liquida antes de la entrega.",
+  },
+  {
+    titulo: "Garantía",
+    cuerpo:
+      "La pieza cuenta con garantía de por vida contra defectos de fabricación y servicio de limpieza y pulido sin costo. No cubre daño por mal uso.",
+  },
+  {
+    titulo: "Especificaciones",
+    cuerpo:
+      "Las piedras y características corresponden a la cotización aceptada; cualquier cambio se documenta como adenda.",
+  },
+];
 
 export const TIPO_DOCUMENTO: Record<TipoDocumento, string> = {
   contrato: "Contrato",

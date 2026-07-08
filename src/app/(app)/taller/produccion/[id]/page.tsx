@@ -9,12 +9,13 @@ import { AsignarResponsable } from "@/components/produccion/asignar-responsable"
 import { CrearTareaAtasco } from "@/components/produccion/crear-tarea-atasco";
 import { CostoProdForm } from "@/components/produccion/costo-prod-form";
 import { MediaPedido } from "@/components/media/media-pedido";
-import { getOrden } from "@/lib/data/produccion";
+import { SlidersHorizontal } from "lucide-react";
+import { getOrden, checklistDeLinea } from "@/lib/data/produccion";
 import { listarUsuarios } from "@/lib/data/usuarios";
+import { getUsuarioActual } from "@/lib/session";
 import {
   ATASCO_DIAS,
   ETAPA_PRODUCCION,
-  QC_CHECKLIST,
   TIPO_COSTO_PROD,
   diasEnEtapa,
 } from "@/lib/produccion";
@@ -28,12 +29,17 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function OrdenPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [orden, usuarios] = await Promise.all([getOrden(id), listarUsuarios()]);
+  const [orden, usuarios, usuario] = await Promise.all([
+    getOrden(id),
+    listarUsuarios(),
+    getUsuarioActual(),
+  ]);
   if (!orden) notFound();
   const costos = orden.costos ?? [];
   const dias = orden.dias_en_etapa ?? diasEnEtapa(orden.updated_at);
   const atascada = dias >= ATASCO_DIAS && orden.etapa !== "listo_entrega";
-  const checklistQc = QC_CHECKLIST[orden.linea_negocio === "concierge" ? "concierge" : "bridal"];
+  const checklistQc = await checklistDeLinea(orden.linea_negocio);
+  const esAdmin = usuario.rol === "admin";
 
   return (
     <div className="space-y-5">
@@ -104,8 +110,17 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
 
       {/* Control de calidad (checklist por tipo de pieza) */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-sm">Control de calidad</CardTitle>
+          {esAdmin ? (
+            <Link
+              href="/taller/produccion/qc"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <SlidersHorizontal className="size-3.5" />
+              Editar checklist
+            </Link>
+          ) : null}
         </CardHeader>
         <CardContent>
           <QcChecklist ordenId={orden.id} qcOk={orden.qc_ok} items={checklistQc} />

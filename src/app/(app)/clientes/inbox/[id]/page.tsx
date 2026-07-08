@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Sparkles, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnviarWhatsApp } from "@/components/clientes/enviar-whatsapp";
+import { ResponderInbox } from "@/components/inbox/responder-inbox";
+import { BorradorIA } from "@/components/inbox/borrador-ia";
+import { MarcarLeidoAlAbrir } from "@/components/inbox/marcar-leido";
 import { getConversacion } from "@/lib/data/inbox";
 import { horaMensaje } from "@/lib/inbox";
+import { whatsappConfigurado } from "@/lib/whatsapp";
 
 export async function generateMetadata({
   params,
@@ -24,10 +28,15 @@ export default async function ConversacionPage({
   const { id } = await params;
   const conv = await getConversacion(id);
   if (!conv) notFound();
-  const mensajes = conv.mensajes ?? [];
+  const todos = conv.mensajes ?? [];
+  // Los borradores de la IA (sensibles) se muestran aparte, para aprobar/editar.
+  const borradores = todos.filter((m) => m.estado_entrega === "borrador_ia");
+  const mensajes = todos.filter((m) => m.estado_entrega !== "borrador_ia");
+  const railActivo = whatsappConfigurado();
 
   return (
     <div className="space-y-5">
+      <MarcarLeidoAlAbrir conversacionId={id} />
       <Link
         href="/clientes/inbox"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
@@ -95,16 +104,43 @@ export default async function ConversacionPage({
         </CardContent>
       </Card>
 
-      {/* Responder (asistido, hasta que el riel envíe por la API) */}
+      {/* Borradores de la IA pendientes de aprobación (mensajes sensibles) */}
+      {borradores.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Sparkles className="size-4 text-warning" />
+              Respuestas sugeridas por la IA
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {borradores.map((b) => (
+              <BorradorIA
+                key={b.id}
+                mensajeId={b.id}
+                conversacionId={id}
+                telefono={conv.telefono}
+                cuerpo={b.cuerpo ?? ""}
+              />
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Responder: por la API oficial si el riel está activo; si no, asistido. */}
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Responder</CardTitle>
         </CardHeader>
         <CardContent>
-          <EnviarWhatsApp
-            nombre={conv.cliente_nombre ?? "cliente"}
-            telefono={conv.telefono}
-          />
+          {railActivo ? (
+            <ResponderInbox conversacionId={id} telefono={conv.telefono} />
+          ) : (
+            <EnviarWhatsApp
+              nombre={conv.cliente_nombre ?? "cliente"}
+              telefono={conv.telefono}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,9 +1,9 @@
 import "server-only";
-import type { OrdenProduccion } from "@/lib/produccion";
-import { diasEnEtapa } from "@/lib/produccion";
+import type { OrdenProduccion, QcChecklistItem } from "@/lib/produccion";
+import { diasEnEtapa, QC_CHECKLIST, lineaODefault } from "@/lib/produccion";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
-import { ORDENES_MUESTRA, COSTOS_PROD_MUESTRA } from "./produccion-muestra";
+import { ORDENES_MUESTRA, COSTOS_PROD_MUESTRA, CHECKLIST_QC_MUESTRA } from "./produccion-muestra";
 
 /* Capa de datos de Producción. RLS por sucursal. */
 
@@ -68,6 +68,51 @@ export async function getOrden(id: string): Promise<OrdenProduccion | null> {
     .eq("id", id)
     .maybeSingle();
   return data ? normalizar(data) : null;
+}
+
+/* ── Checklist de QC (editable, 0023). En modo muestra usa el array mutable
+   `CHECKLIST_QC_MUESTRA` (sembrado del default `QC_CHECKLIST`). ────────────── */
+
+/** Todos los ítems del checklist (para administrarlos), ordenados por línea/posición. */
+export async function listarChecklistQC(): Promise<QcChecklistItem[]> {
+  if (!supabaseConfigurado()) {
+    return [...CHECKLIST_QC_MUESTRA].sort(
+      (a, b) =>
+        a.linea_negocio.localeCompare(b.linea_negocio) || a.posicion - b.posicion,
+    );
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("qc_checklist_item")
+    .select("*")
+    .order("linea_negocio", { ascending: true })
+    .order("posicion", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as QcChecklistItem[];
+}
+
+/**
+ * Puntos ACTIVOS del checklist de una línea, como textos (para el QC de la
+ * orden). Si la tabla no tiene puntos capturados para esa línea, cae al default
+ * en código (`QC_CHECKLIST`) para no dejar el QC sin guía.
+ */
+export async function checklistDeLinea(linea?: string | null): Promise<string[]> {
+  const l = lineaODefault(linea);
+  if (!supabaseConfigurado()) {
+    const items = CHECKLIST_QC_MUESTRA.filter((i) => i.linea_negocio === l && i.activo)
+      .sort((a, b) => a.posicion - b.posicion)
+      .map((i) => i.texto);
+    return items.length > 0 ? items : QC_CHECKLIST[l];
+  }
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("qc_checklist_item")
+    .select("texto")
+    .eq("linea_negocio", l)
+    .eq("activo", true)
+    .order("posicion", { ascending: true });
+  const items = (data ?? []).map((r) => r.texto as string);
+  return items.length > 0 ? items : QC_CHECKLIST[l];
 }
 
 /** ¿El pedido ya tiene orden? (para el botón "crear orden" en el pedido). */

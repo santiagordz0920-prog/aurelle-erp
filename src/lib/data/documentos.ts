@@ -1,10 +1,12 @@
 import "server-only";
-import type { Documento } from "@/lib/documentos";
+import type { ClausulaContrato, ClausulaTexto, Documento } from "@/lib/documentos";
+import { CLAUSULAS_CONTRATO_DEFAULT } from "@/lib/documentos";
 import type { Pago, LineaNegocio } from "@/lib/pedidos";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { DOCUMENTOS_MUESTRA } from "./documentos-muestra";
+import { CLAUSULAS_CONTRATO_MUESTRA } from "./documentos-muestra";
 import { PEDIDOS_MUESTRA, pagadoDe } from "./pedidos-muestra";
 
 /* Capa de datos de Documentos. RLS por sucursal para el equipo; la firma pública
@@ -19,7 +21,50 @@ export type ContratoDatos = {
   saldo: number;
   created_at: string;
   fecha_compromiso: string | null;
+  // Cláusulas legales vigentes (0024). Se congelan en el snapshot al firmar; si
+  // falta (snapshots viejos), `<ContratoDoc>` cae a las cláusulas por defecto.
+  clausulas?: ClausulaTexto[];
 };
+
+/* ── Cláusulas del contrato (editable, 0024) ──────────────────────────────── */
+
+/** Todas las cláusulas (para administrarlas), ordenadas por posición. */
+export async function listarClausulasContrato(): Promise<ClausulaContrato[]> {
+  if (!supabaseConfigurado()) {
+    return [...CLAUSULAS_CONTRATO_MUESTRA].sort((a, b) => a.posicion - b.posicion);
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("clausula_contrato")
+    .select("*")
+    .order("posicion", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as ClausulaContrato[];
+}
+
+/**
+ * Cláusulas ACTIVAS (título + cuerpo) para renderizar/congelar el contrato.
+ * Acepta un cliente (admin service_role en la ruta pública de firma; server
+ * client en el imprimible del equipo). Si no hay ninguna, cae al default.
+ */
+export async function clausulasContratoActivas(
+  supabase?: ReturnType<typeof createAdminClient>,
+): Promise<ClausulaTexto[]> {
+  if (!supabaseConfigurado()) {
+    const items = CLAUSULAS_CONTRATO_MUESTRA.filter((c) => c.activo)
+      .sort((a, b) => a.posicion - b.posicion)
+      .map((c) => ({ titulo: c.titulo, cuerpo: c.cuerpo }));
+    return items.length > 0 ? items : CLAUSULAS_CONTRATO_DEFAULT;
+  }
+  const client = supabase ?? (await createClient());
+  const { data } = await client
+    .from("clausula_contrato")
+    .select("titulo, cuerpo")
+    .eq("activo", true)
+    .order("posicion", { ascending: true });
+  const items = (data ?? []) as ClausulaTexto[];
+  return items.length > 0 ? items : CLAUSULAS_CONTRATO_DEFAULT;
+}
 
 export async function listarDocumentosDePedido(pedidoId: string): Promise<Documento[]> {
   if (!supabaseConfigurado()) {
@@ -57,8 +102,44 @@ export async function listarDocumentosDeCliente(clienteId: string): Promise<Docu
 }
 
 /**
+ * Construye el snapshot ContratoDatos leyendo el pedido con el cliente dado
+ * (admin service_role). Es la fuente del contrato "en vivo" antes de firmar y la
+ * que se congela en `documento.contenido` al firmar (0022).
+ */
+export async function construirContratoDesdePedido(
+  supabase: ReturnType<typeof createAdminClient>,
+  pedidoId: string,
+): Promise<ContratoDatos | null> {
+  const { data: p } = await supabase
+    .from("pedido")
+    .select("total, linea_negocio, fecha_compromiso, created_at, cliente(nombre), pago(id, tipo, fecha, monto)")
+    .eq("id", pedidoId)
+    .maybeSingle();
+  if (!p) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pp = p as any;
+  const cliente = Array.isArray(pp.cliente) ? pp.cliente[0] : pp.cliente;
+  const pagos = ((pp.pago ?? []) as ContratoDatos["pagos"])
+    .slice()
+    .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const pagado = pagos.reduce((s, x) => s + Number(x.monto), 0);
+  return {
+    cliente_nombre: cliente?.nombre ?? null,
+    linea_negocio: pp.linea_negocio,
+    total: Number(pp.total),
+    pagos,
+    saldo: Number(pp.total) - pagado,
+    created_at: pp.created_at,
+    fecha_compromiso: pp.fecha_compromiso,
+    clausulas: await clausulasContratoActivas(supabase),
+  };
+}
+
+/**
  * Documento + datos del contrato para la firma PÚBLICA (por token). Usa el
  * cliente service_role: no hay sesión de usuario (el cliente firma sin cuenta).
+ * Si el documento ya está firmado, devuelve el SNAPSHOT congelado (0022), no el
+ * pedido en vivo — el cliente ve exactamente lo que firmó.
  */
 export async function getDocumentoParaFirma(
   token: string,
@@ -66,6 +147,7 @@ export async function getDocumentoParaFirma(
   if (!supabaseConfigurado()) {
     const doc = DOCUMENTOS_MUESTRA.find((d) => d.token === token);
     if (!doc) return null;
+    if (doc.contenido) return { doc, contrato: doc.contenido as ContratoDatos };
     const p = PEDIDOS_MUESTRA.find((x) => x.id === doc.pedido_id);
     if (!p) return null;
     const pagado = pagadoDe(p);
@@ -84,6 +166,7 @@ export async function getDocumentoParaFirma(
         saldo: p.total - pagado,
         created_at: p.created_at,
         fecha_compromiso: p.fecha_compromiso,
+        clausulas: await clausulasContratoActivas(),
       },
     };
   }
@@ -95,29 +178,11 @@ export async function getDocumentoParaFirma(
     .eq("token", token)
     .maybeSingle();
   if (!doc) return null;
-  const { data: p } = await supabase
-    .from("pedido")
-    .select("total, linea_negocio, fecha_compromiso, created_at, cliente(nombre), pago(id, tipo, fecha, monto)")
-    .eq("id", doc.pedido_id)
-    .maybeSingle();
-  if (!p) return null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pp = p as any;
-  const cliente = Array.isArray(pp.cliente) ? pp.cliente[0] : pp.cliente;
-  const pagos = (pp.pago ?? []) as ContratoDatos["pagos"];
-  const pagado = pagos.reduce((s, x) => s + Number(x.monto), 0);
-  return {
-    doc: doc as Documento,
-    contrato: {
-      cliente_nombre: cliente?.nombre ?? null,
-      linea_negocio: pp.linea_negocio,
-      total: Number(pp.total),
-      pagos: pagos
-        .slice()
-        .sort((a, b) => a.fecha.localeCompare(b.fecha)),
-      saldo: Number(pp.total) - pagado,
-      created_at: pp.created_at,
-      fecha_compromiso: pp.fecha_compromiso,
-    },
-  };
+  // Documento firmado con snapshot: mostrar lo congelado, no el pedido en vivo.
+  if (doc.contenido) {
+    return { doc: doc as Documento, contrato: doc.contenido as ContratoDatos };
+  }
+  const contrato = await construirContratoDesdePedido(supabase, doc.pedido_id);
+  if (!contrato) return null;
+  return { doc: doc as Documento, contrato };
 }
