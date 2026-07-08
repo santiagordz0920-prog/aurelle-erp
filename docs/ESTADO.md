@@ -23,9 +23,7 @@
 - **Documentos v3 — snapshot del contrato firmado (2026-07-08, migración 0022):** al firmar se congela el contenido del contrato (`ContratoDatos`) en `documento.contenido` (jsonb). Un documento firmado se renderiza SIEMPRE desde ese snapshot, no del pedido en vivo → si el pedido cambia después de firmado, el contrato firmado NO cambia (integridad legal). `/imprimir/contrato/[id]` (equipo) y `/firmar/[token]` (cliente) prefieren el snapshot; los no firmados siguen en vivo. Helper `construirContratoDesdePedido`. **Cadena 0001–0022 validada en Postgres local + smoke test** (firmar/imprimir del doc firmado muestran el snapshot; los sin firmar en vivo). `docs/modulos/documentos.md`.
 
 ## Siguiente tarea exacta
-**PRIMERO: aplicar la migración `0022_documento_snapshot.sql` en prod** (Santiago corre el SQL en Supabase; es un `alter table documento add column contenido jsonb`, sin backfill — los contratos ya firmados antes siguen reimprimiéndose en vivo, los nuevos se congelan al firmar). Sin esto, la firma en prod fallará al escribir `contenido`.
-
-Luego, seguir Fase 4 (menor), en este orden:
+En curso, Fase 4 (menor):
 1. **Producción:** checklist QC editable desde la app (hoy `QC_CHECKLIST` vive en código); atasco → tarea **automática** por cron (hoy es botón asistido).
 2. **Documentos:** plantillas legales/garantía editables por Santiago sin tocar código; aviso "contrato sin firmar 48h" (cron).
 3. **Biblioteca:** adjuntar binario en WhatsApp llega con el riel oficial de Meta (hoy va la liga firmada) — bloqueado por Meta.
@@ -40,7 +38,7 @@ Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurren
 - **Sandbox inestable para `npm run start` (2026-07-08):** el servidor de prod local se puede caer (SIGTERM, exit 144) tras varios `build`+`start`. **La mitigación FUNCIONA:** `rm -rf .next && npm run build` una vez y un solo `npm run start`; así se corrió el smoke test de Documentos v2 el mismo día. Para Playwright: instalar `playwright-core` en el scratchpad (no en el repo) y usar `executablePath` `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`.
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (confirmar que ya puede entrar).
-- **Migraciones en prod: 0004–0021 aplicadas** + `CRON_SECRET` + bucket privado `media` (Santiago aplicó `aplicar_0019_a_0021.sql` el 2026-07-08). Producción, Documentos/e-firma y Biblioteca ya persisten en prod. **PENDIENTE: `0022_documento_snapshot.sql` (validada local, NO aplicada en prod aún).**
+- **Migraciones en prod: 0004–0022 aplicadas** + `CRON_SECRET` + bucket privado `media` (Santiago aplicó `aplicar_0019_a_0021.sql` el 2026-07-08; `0022` la columna `documento.contenido` ya está en prod). Producción, Documentos/e-firma/snapshot y Biblioteca ya persisten en prod. La 0022 se dejó idempotente (`add column if not exists`).
 - **Auditoría de calidad (2026-07-08, rama `code-review-progress`): sin hallazgos graves.** Lint 0, build verde, RLS en las 21 migraciones, service_role confinado a firma/cron. Menores por limpiar en la próxima sesión: (1) comentarios obsoletos "§4 pendientes (Fase 2)" en `ventas/pedidos/actions.ts` (~145/175) — esos eventos ya corren por triggers 0010/0011; (2) `alternarAprobado` confía en `pedidoId`/`tipo` que manda el cliente — leerlos de la fila `media`; (3) en `produccion.md` la línea "Pendiente: fotos por etapa" quedó obsoleta (ya está hecho); (4) no hay pruebas automatizadas (verificación = build + validación visual) — considerar smoke tests antes del riel de WhatsApp.
 
 ## Notas para la siguiente sesión

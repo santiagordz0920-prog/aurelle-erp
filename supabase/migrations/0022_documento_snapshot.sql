@@ -16,7 +16,7 @@
 -- comportamiento previo, aceptable para el histórico. Los nuevos se congelan.
 -- ═══════════════════════════════════════════════════════════════════════════
 
-alter table public.documento add column contenido jsonb;
+alter table public.documento add column if not exists contenido jsonb;
 
 comment on column public.documento.contenido is
   'Snapshot inmutable del contrato al momento de firmar (ContratoDatos: cliente, línea, total, pagos, saldo, fechas). NULL mientras no se firma; una vez firmado, se lee de aquí y no del pedido en vivo.';
