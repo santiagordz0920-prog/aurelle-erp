@@ -112,7 +112,27 @@ export function diasEnEtapa(updatedAt: string): number {
   Checklist de QC por línea de negocio (§3.5). Es una guía pre-vuelo: Fer marca
   cada punto antes de poder cerrar el QC (candado a "listo para entrega"). El
   estado de los checks es efímero (no se persiste); lo que persiste es `qc_ok`.
+
+  Los puntos AHORA se editan desde la app (tabla `qc_checklist_item`, migración
+  0023). `QC_CHECKLIST` queda como el DEFAULT: es la semilla de esa tabla y el
+  fallback en modo muestra o si un cliente aún no tiene puntos capturados.
 */
+export type QcChecklistItem = {
+  id: string;
+  linea_negocio: LineaNegocio;
+  posicion: number;
+  texto: string;
+  activo: boolean;
+  sucursal_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Normaliza una línea (default bridal si viene null/desconocida). */
+export function lineaODefault(linea?: string | null): LineaNegocio {
+  return linea === "concierge" ? "concierge" : "bridal";
+}
+
 export const QC_CHECKLIST: Record<LineaNegocio, string[]> = {
   bridal: [
     "Medida de talla correcta vs. pedido",
