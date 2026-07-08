@@ -48,6 +48,9 @@ vigentes se congelan en el snapshot al firmar. Build+lint verdes + smoke test.
 - Firma simple con evidencia (nombre + aceptación + timestamp + user-agent/ip). El **trazo en canvas** es una mejora posterior.
 - No se puede re-firmar (bloqueado por estado) ni firmar un documento cancelado.
 
+## Aviso "contrato sin firmar 48h" (cron, 0025)
+- El cron nocturno `/api/cron/seguimiento` crea una tarea de seguimiento por cada contrato en estado `enviado` con >48 h sin firma. Idempotente (no duplica si ya hay tarea pendiente "Contrato sin firmar: …" para ese pedido). Ver `docs/modulos/seguimiento-cron.md`.
+
 ## Pendientes conocidos
-- Aviso "contrato sin firmar 48h" (cron/notificación).
+- PDF binario server-side con tipografías de marca (hoy imprime la web → guardar como PDF desde el navegador).
 - PDF binario con tipografías de marca server-side (hoy imprime la web; el navegador guarda como PDF).

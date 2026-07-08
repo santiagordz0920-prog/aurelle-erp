@@ -47,6 +47,8 @@ v3 (2026-07-08): **checklist de QC editable desde la app** (migración 0023): lo
 - El checklist de la orden lee **puntos ACTIVOS** de la línea (`checklistDeLinea`); si la tabla no tiene puntos de esa línea, cae al default en código (`QC_CHECKLIST`) para no dejar el QC sin guía. Reordenar/editar/desactivar impacta el QC de las **próximas** cargas de orden (los checks son efímeros; no rompe órdenes en curso).
 - En modo muestra el checklist vive en el array mutable `CHECKLIST_QC_MUESTRA` (sembrado de `QC_CHECKLIST`) para que el CRUD funcione local.
 
+## Atasco → tarea automática (cron, 0025)
+- El cron nocturno `/api/cron/seguimiento` (función `generar_tareas_seguimiento`, migración 0025) crea una tarea de seguimiento por cada orden ≥7d en su etapa (no entregada). Es **idempotente**: no duplica si ya hay una tarea pendiente "Atasco en producción: …" para ese pedido. El botón manual en la orden atascada (`crearTareaAtasco`) sigue existiendo y comparte el mismo prefijo de título, así que manual + cron no se pisan. Ver `docs/modulos/seguimiento-cron.md`.
+
 ## Pendientes conocidos
 - Aviso al cliente en etapa clave (p. ej. "entró a engaste") — depende del riel WhatsApp (Fase 3 vivo).
-- Atasco → tarea **automática** por cron (hoy es un botón asistido en la orden atascada; la detección visual ya está en kanban y detalle).
