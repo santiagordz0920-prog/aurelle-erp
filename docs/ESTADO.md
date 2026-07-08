@@ -16,14 +16,16 @@
 - **Envío asistido reusado (2026-07-07, sin migración):** botón `BotonWhatsApp` reusable en Pedido (recordatorio de saldo pendiente) y Cita (confirmación con fecha/hora en horario Monterrey). La Cita ahora expone `cliente_telefono`. **Fechas importantes:** `/clientes/fechas` + tarjeta en `/hoy` con cumpleaños y aniversarios de boda próximos y botón "Felicitar" (recurrencia anual anclada a Monterrey en `src/lib/fechas-clave.ts`). Todo corre sobre tablas ya en prod (0004–0018). `docs/modulos/mensajeria.md`.
 - **Biblioteca de media (0021, 2026-07-07):** galería en `/taller/biblioteca` (filtro por tipo y etiqueta estilo/metal/piedra) + tarjeta "Renders y fotos" en la ficha del pedido (subir, aprobar render, eliminar). Archivos en bucket privado `media` con URLs firmadas de 1 h; versionado + "aprobado" en renders. Migración `0021_media.sql` (validada en Postgres local, cadena 0001–0021 completa) + `supabase/storage/media_setup.sql` (bucket + policies, se corre aparte). `docs/modulos/biblioteca-media.md`.
 - **Biblioteca — enganches (2026-07-08):** (1) **envío del archivo por WhatsApp** asistido desde la galería del pedido (botón "Enviar", liga firmada en el texto); (2) **foto por etapa desde Producción** (la orden sube con `orden_id`+`etapa`, tipo `foto_etapa`; tarjeta de media en el detalle de la orden); (3) **render aprobado → orden a `aprobacion_cliente`** (solo hacia adelante, registra `orden_movimiento`). `docs/modulos/biblioteca-media.md`.
-- **SQL combinado para prod:** `supabase/aplicar_0019_a_0021.sql` (0019+0020+0021+Storage en una transacción), validado en Postgres local sobre base a 0018.
+- **SQL combinado para prod:** `supabase/aplicar_0019_a_0021.sql` (0019+0020+0021+Storage en una transacción), validado en Postgres local sobre base a 0018. **Aplicado en prod el 2026-07-08.**
+- **Producción v2 (2026-07-08, sin migración):** (1) **asignar responsable** desde la UI (selector en el detalle de la orden); (2) **checklist de QC por tipo de pieza** (`QC_CHECKLIST` bridal/concierge; guía pre-vuelo que habilita "Marcar QC completo"); (3) **atasco → tarea**: en una orden ≥7d en su etapa aparece "Crear tarea de seguimiento" (tarea ligada al pedido, prioridad alta, origen sugerida). `docs/modulos/produccion.md`.
 - **Guardarraíl anti-bifurcación:** hook `SessionStart` (`.claude/`) que al iniciar cada sesión instala deps, imprime ESTADO y lista ramas paralelas. Protocolo de `CLAUDE.md` reforzado (paso 0 = detectar bifurcación). Lint en cero, build verde.
 
 ## Siguiente tarea exacta
 Seguir Fase 4:
-1. **Producción — completar:** asignar responsable desde la UI; atasco → tarea/notificación; checklist QC por tipo de pieza.
-2. **Documentos — pulir:** disparo automático de contrato al confirmar; archivar firmado en la ficha; trazo de firma en canvas.
-3. **Biblioteca (menor):** galería por cliente en la ficha 360; adjuntar binario en WhatsApp llega con el riel oficial.
+1. **Documentos — pulir:** disparo automático de contrato al confirmar el pedido; archivar el firmado en la ficha; trazo de firma en canvas.
+2. **Biblioteca (menor):** galería por cliente en la ficha 360; adjuntar binario en WhatsApp llega con el riel oficial.
+3. **Producción (menor):** atasco → tarea **automática** por cron (hoy es botón asistido); checklist QC editable desde la app.
+Con esto Fase 4 queda casi cerrada; lo que falta de Fase 3 (riel vivo) y la IA (Fase 5) esperan el trámite de Meta / datos fluyendo.
 Fase 3 (riel vivo de WhatsApp) sigue esperando el trámite de Meta de Santiago.
 Patrón: migración → Postgres local → dominio → datos+muestra → acciones → páginas → docs.
 
@@ -34,7 +36,7 @@ Implementadas: pago→ingreso (0010), consignación→CxP (0011), gasto recurren
 ## Problemas conocidos / bloqueos
 - El sandbox de Claude no alcanza el Supabase/Vercel de Santiago (política de red). Verificación: build + Postgres local + `npm run start` con datos de muestra; producción se confirma con Santiago vía queries.
 - Santiago debe estar dado de alta como admin en Supabase Auth para entrar a la app (confirmar que ya puede entrar).
-- **Migraciones en prod: 0004–0018 aplicadas** + `CRON_SECRET`. **Pendientes: 0019, 0020, 0021 + Storage.** Se le mandó a Santiago `supabase/aplicar_0019_a_0021.sql` (las 3 + bucket privado `media` + policies, en UNA transacción) para pegar de una sola vez en el SQL Editor. Confirmar con él cuando lo aplique. Sin ellas: Producción no persiste, e-firma sin tabla `documento`, Biblioteca sin dónde guardar.
+- **Migraciones en prod: 0004–0021 aplicadas** + `CRON_SECRET` + bucket privado `media` (Santiago aplicó `aplicar_0019_a_0021.sql` el 2026-07-08). Producción, Documentos/e-firma y Biblioteca ya persisten en prod.
 
 ## Notas para la siguiente sesión
 - **El hook `SessionStart` ya te muestra el estado y las ramas al arrancar. Léelo.** Si hay una rama `claude/*` más nueva que la tuya, reconcilia antes de codear.

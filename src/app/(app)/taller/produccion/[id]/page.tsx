@@ -1,14 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ShoppingBag, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AvanzarBtn } from "@/components/produccion/avanzar-btn";
-import { QcToggle } from "@/components/produccion/qc-toggle";
+import { QcChecklist } from "@/components/produccion/qc-checklist";
+import { AsignarResponsable } from "@/components/produccion/asignar-responsable";
+import { CrearTareaAtasco } from "@/components/produccion/crear-tarea-atasco";
 import { CostoProdForm } from "@/components/produccion/costo-prod-form";
 import { MediaPedido } from "@/components/media/media-pedido";
 import { getOrden } from "@/lib/data/produccion";
-import { ETAPA_PRODUCCION, TIPO_COSTO_PROD } from "@/lib/produccion";
+import { listarUsuarios } from "@/lib/data/usuarios";
+import {
+  ATASCO_DIAS,
+  ETAPA_PRODUCCION,
+  QC_CHECKLIST,
+  TIPO_COSTO_PROD,
+  diasEnEtapa,
+} from "@/lib/produccion";
 import { pesos } from "@/lib/inventario";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -19,9 +28,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function OrdenPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const orden = await getOrden(id);
+  const [orden, usuarios] = await Promise.all([getOrden(id), listarUsuarios()]);
   if (!orden) notFound();
   const costos = orden.costos ?? [];
+  const dias = orden.dias_en_etapa ?? diasEnEtapa(orden.updated_at);
+  const atascada = dias >= ATASCO_DIAS && orden.etapa !== "listo_entrega";
+  const checklistQc = QC_CHECKLIST[orden.linea_negocio === "concierge" ? "concierge" : "bridal"];
 
   return (
     <div className="space-y-5">
@@ -42,7 +54,6 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
             <Badge className={ETAPA_PRODUCCION[orden.etapa].clase}>
               {ETAPA_PRODUCCION[orden.etapa].etiqueta}
             </Badge>
-            {orden.responsable_nombre ? <span>· {orden.responsable_nombre}</span> : null}
             {orden.fecha_compromiso ? (
               <span>· compromiso {formatearFecha(orden.fecha_compromiso)}</span>
             ) : null}
@@ -55,21 +66,49 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
             </Link>
           </div>
         </div>
+        <AsignarResponsable
+          ordenId={orden.id}
+          responsableId={orden.responsable_id}
+          usuarios={usuarios}
+        />
       </div>
 
-      {/* Etapa + QC */}
+      {/* Alerta de atasco → levantar tarea de seguimiento */}
+      {atascada ? (
+        <Card className="border-warning/40 bg-warning/5">
+          <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="inline-flex items-center gap-2 text-sm text-foreground">
+              <AlertTriangle className="size-4 text-warning" />
+              Lleva <span className="font-semibold">{dias} días</span> en “
+              {ETAPA_PRODUCCION[orden.etapa].etiqueta}”. ¿Está atorada?
+            </p>
+            <CrearTareaAtasco ordenId={orden.id} />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {/* Etapa */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">Etapa y control de calidad</CardTitle>
+          <CardTitle className="text-sm">Etapa</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-3">
           <AvanzarBtn ordenId={orden.id} etapa={orden.etapa} qcOk={orden.qc_ok} size="md" />
-          <QcToggle ordenId={orden.id} qcOk={orden.qc_ok} />
           {orden.etapa === "qc" && !orden.qc_ok ? (
             <span className="text-xs text-warning">
-              Completa el QC para poder marcar “listo para entrega”.
+              Completa el QC (abajo) para poder marcar “listo para entrega”.
             </span>
           ) : null}
+        </CardContent>
+      </Card>
+
+      {/* Control de calidad (checklist por tipo de pieza) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Control de calidad</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <QcChecklist ordenId={orden.id} qcOk={orden.qc_ok} items={checklistQc} />
         </CardContent>
       </Card>
 

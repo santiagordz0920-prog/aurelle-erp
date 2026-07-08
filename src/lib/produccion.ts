@@ -1,5 +1,10 @@
 /* Constantes y lógica de dominio de Producción (§3.5). */
 
+import type { LineaNegocio } from "@/lib/pedidos";
+
+/** Días en una etapa a partir de los cuales se considera atasco (§3.5). */
+export const ATASCO_DIAS = 7;
+
 export type EtapaProduccion =
   | "diseno"
   | "cad"
@@ -102,3 +107,28 @@ export function puedeCerrar(orden: OrdenProduccion): boolean {
 export function diasEnEtapa(updatedAt: string): number {
   return Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86400000);
 }
+
+/*
+  Checklist de QC por línea de negocio (§3.5). Es una guía pre-vuelo: Fer marca
+  cada punto antes de poder cerrar el QC (candado a "listo para entrega"). El
+  estado de los checks es efímero (no se persiste); lo que persiste es `qc_ok`.
+*/
+export const QC_CHECKLIST: Record<LineaNegocio, string[]> = {
+  bridal: [
+    "Medida de talla correcta vs. pedido",
+    "Piedra central centrada y firme (sin juego)",
+    "Piedras laterales/pavé completas y parejas",
+    "Quilataje y color coinciden con el certificado",
+    "Acabado/pulido sin porosidades ni rayones",
+    "Grabado interior (si aplica) correcto",
+    "Peso final registrado",
+    "Limpieza final y estuche listo",
+  ],
+  concierge: [
+    "Especificación del cliente cumplida",
+    "Piedras firmes y parejas",
+    "Acabado/pulido sin defectos",
+    "Medidas correctas vs. pedido",
+    "Limpieza final y empaque listo",
+  ],
+};

@@ -6,8 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
 import type { EtapaProduccion, CostoProduccion, OrdenProduccion } from "@/lib/produccion";
+import { ETAPA_PRODUCCION, diasEnEtapa } from "@/lib/produccion";
+import type { Tarea } from "@/lib/tareas";
+import { listarUsuarios } from "@/lib/data/usuarios";
 import { ORDENES_MUESTRA, COSTOS_PROD_MUESTRA } from "@/lib/data/produccion-muestra";
 import { PEDIDOS_MUESTRA } from "@/lib/data/pedidos-muestra";
+import { TAREAS_MUESTRA } from "@/lib/data/tareas-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -140,6 +144,107 @@ export async function moverEtapa(
   // Reacción §4: si etapa clave → lifecycle avisa (pendiente, requiere riel WhatsApp).
   await sincronizarPedido(orden.pedido_id, etapa);
   revalidar(ordenId);
+  return { ok: true };
+}
+
+/** Asigna (o quita) el responsable del taller de una orden. */
+export async function asignarResponsable(
+  ordenId: string,
+  responsableId: string | null,
+): Promise<ResultadoAccion> {
+  const usuarios = await listarUsuarios();
+  const nombre = responsableId
+    ? (usuarios.find((u) => u.id === responsableId)?.nombre ?? null)
+    : null;
+
+  if (!supabaseConfigurado()) {
+    const o = ORDENES_MUESTRA.find((x) => x.id === ordenId);
+    if (o) {
+      o.responsable_id = responsableId;
+      o.responsable_nombre = nombre;
+    }
+    revalidar(ordenId);
+    return { ok: true };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("orden_produccion")
+    .update({ responsable_id: responsableId })
+    .eq("id", ordenId);
+  if (error) return { ok: false, error: "No se pudo asignar el responsable." };
+  revalidar(ordenId);
+  return { ok: true };
+}
+
+/** Crea una tarea de seguimiento por atasco (≥7d en una etapa). Ligada al pedido. */
+export async function crearTareaAtasco(ordenId: string): Promise<ResultadoAccion> {
+  const usuario = await getUsuarioActual();
+
+  // Leer datos de la orden para armar la tarea.
+  const orden = supabaseConfigurado()
+    ? await (await createClient())
+        .from("orden_produccion")
+        .select("etapa, updated_at, responsable_id, pedido_id, pedido:pedido_id(cliente(nombre))")
+        .eq("id", ordenId)
+        .maybeSingle()
+        .then((r) => r.data)
+    : ORDENES_MUESTRA.find((o) => o.id === ordenId);
+  if (!orden) return { ok: false, error: "Orden no encontrada." };
+
+  const dias = diasEnEtapa(orden.updated_at);
+  const etapaLbl = ETAPA_PRODUCCION[orden.etapa as EtapaProduccion].etiqueta;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rel = orden as any;
+  const cliente =
+    rel.pedido_cliente ??
+    (Array.isArray(rel.pedido)
+      ? rel.pedido[0]?.cliente?.nombre
+      : rel.pedido?.cliente?.nombre) ??
+    "cliente";
+  const titulo = `Atasco en producción: ${cliente}`;
+  const detalle = `La orden lleva ${dias} días en la etapa "${etapaLbl}". Da seguimiento con el taller.`;
+  const responsable = orden.responsable_id ?? usuario.id;
+
+  if (!supabaseConfigurado()) {
+    const nueva: Tarea = {
+      id: `d1000000-0000-0000-0000-0000000009${(TAREAS_MUESTRA.length + 20).toString().slice(-2)}`,
+      titulo,
+      detalle,
+      responsable_id: responsable,
+      responsable_nombre: null,
+      prioridad: "alta",
+      estado: "pendiente",
+      fecha_vencimiento: null,
+      entidad_tipo: "pedido",
+      entidad_id: orden.pedido_id,
+      origen: "sugerida",
+      completada_at: null,
+      creada_por: usuario.id,
+      sucursal_id: usuario.sucursalId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    TAREAS_MUESTRA.unshift(nueva);
+    revalidar(ordenId);
+    revalidatePath("/hoy/tareas");
+    return { ok: true };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("tarea").insert({
+    titulo,
+    detalle,
+    responsable_id: responsable,
+    prioridad: "alta",
+    entidad_tipo: "pedido",
+    entidad_id: orden.pedido_id,
+    origen: "sugerida",
+    creada_por: usuario.id,
+    sucursal_id: usuario.sucursalId,
+  });
+  if (error) return { ok: false, error: "No se pudo crear la tarea." };
+  revalidar(ordenId);
+  revalidatePath("/hoy/tareas");
   return { ok: true };
 }
 
