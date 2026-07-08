@@ -1,10 +1,12 @@
 import "server-only";
-import type { Documento } from "@/lib/documentos";
+import type { ClausulaContrato, ClausulaTexto, Documento } from "@/lib/documentos";
+import { CLAUSULAS_CONTRATO_DEFAULT } from "@/lib/documentos";
 import type { Pago, LineaNegocio } from "@/lib/pedidos";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { DOCUMENTOS_MUESTRA } from "./documentos-muestra";
+import { CLAUSULAS_CONTRATO_MUESTRA } from "./documentos-muestra";
 import { PEDIDOS_MUESTRA, pagadoDe } from "./pedidos-muestra";
 
 /* Capa de datos de Documentos. RLS por sucursal para el equipo; la firma pública
@@ -19,7 +21,50 @@ export type ContratoDatos = {
   saldo: number;
   created_at: string;
   fecha_compromiso: string | null;
+  // Cláusulas legales vigentes (0024). Se congelan en el snapshot al firmar; si
+  // falta (snapshots viejos), `<ContratoDoc>` cae a las cláusulas por defecto.
+  clausulas?: ClausulaTexto[];
 };
+
+/* ── Cláusulas del contrato (editable, 0024) ──────────────────────────────── */
+
+/** Todas las cláusulas (para administrarlas), ordenadas por posición. */
+export async function listarClausulasContrato(): Promise<ClausulaContrato[]> {
+  if (!supabaseConfigurado()) {
+    return [...CLAUSULAS_CONTRATO_MUESTRA].sort((a, b) => a.posicion - b.posicion);
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("clausula_contrato")
+    .select("*")
+    .order("posicion", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as ClausulaContrato[];
+}
+
+/**
+ * Cláusulas ACTIVAS (título + cuerpo) para renderizar/congelar el contrato.
+ * Acepta un cliente (admin service_role en la ruta pública de firma; server
+ * client en el imprimible del equipo). Si no hay ninguna, cae al default.
+ */
+export async function clausulasContratoActivas(
+  supabase?: ReturnType<typeof createAdminClient>,
+): Promise<ClausulaTexto[]> {
+  if (!supabaseConfigurado()) {
+    const items = CLAUSULAS_CONTRATO_MUESTRA.filter((c) => c.activo)
+      .sort((a, b) => a.posicion - b.posicion)
+      .map((c) => ({ titulo: c.titulo, cuerpo: c.cuerpo }));
+    return items.length > 0 ? items : CLAUSULAS_CONTRATO_DEFAULT;
+  }
+  const client = supabase ?? (await createClient());
+  const { data } = await client
+    .from("clausula_contrato")
+    .select("titulo, cuerpo")
+    .eq("activo", true)
+    .order("posicion", { ascending: true });
+  const items = (data ?? []) as ClausulaTexto[];
+  return items.length > 0 ? items : CLAUSULAS_CONTRATO_DEFAULT;
+}
 
 export async function listarDocumentosDePedido(pedidoId: string): Promise<Documento[]> {
   if (!supabaseConfigurado()) {
@@ -86,6 +131,7 @@ export async function construirContratoDesdePedido(
     saldo: Number(pp.total) - pagado,
     created_at: pp.created_at,
     fecha_compromiso: pp.fecha_compromiso,
+    clausulas: await clausulasContratoActivas(supabase),
   };
 }
 
@@ -120,6 +166,7 @@ export async function getDocumentoParaFirma(
         saldo: p.total - pagado,
         created_at: p.created_at,
         fecha_compromiso: p.fecha_compromiso,
+        clausulas: await clausulasContratoActivas(),
       },
     };
   }

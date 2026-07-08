@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/cotizaciones/print-button";
 import { ContratoDoc } from "@/components/documentos/contrato-doc";
 import type { ContratoDatos } from "@/lib/data/documentos";
-import { listarDocumentosDePedido } from "@/lib/data/documentos";
+import { listarDocumentosDePedido, clausulasContratoActivas } from "@/lib/data/documentos";
 import { getPedido } from "@/lib/data/pedidos";
 
 /*
@@ -42,6 +42,7 @@ export default async function ContratoPage({
         saldo: p.saldo ?? p.total,
         created_at: p.created_at,
         fecha_compromiso: p.fecha_compromiso,
+        clausulas: await clausulasContratoActivas(),
       };
 
   return (

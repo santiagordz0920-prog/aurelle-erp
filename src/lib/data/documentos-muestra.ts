@@ -1,7 +1,23 @@
-import type { Documento } from "@/lib/documentos";
+import type { ClausulaContrato, Documento } from "@/lib/documentos";
+import { CLAUSULAS_CONTRATO_DEFAULT } from "@/lib/documentos";
 
 /* Datos de muestra — solo modo local. NUNCA en producción. */
 const S = "00000000-0000-0000-0000-000000000001";
+
+/* Cláusulas del contrato de muestra (mutable): sembradas del default en código,
+   para que el CRUD editable funcione en modo local. */
+export const CLAUSULAS_CONTRATO_MUESTRA: ClausulaContrato[] = CLAUSULAS_CONTRATO_DEFAULT.map(
+  (c, i) => ({
+    id: `cl-${i}`,
+    titulo: c.titulo,
+    cuerpo: c.cuerpo,
+    posicion: i,
+    activo: true,
+    sucursal_id: S,
+    created_at: "2026-07-01T00:00:00Z",
+    updated_at: "2026-07-01T00:00:00Z",
+  }),
+);
 
 export const DOCUMENTOS_MUESTRA: Documento[] = [
   {
