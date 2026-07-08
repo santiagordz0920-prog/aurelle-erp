@@ -16,6 +16,7 @@ import { BotonWhatsApp } from "@/components/mensajeria/boton-whatsapp";
 import { ordenDePedido } from "@/lib/data/produccion";
 import { listarDocumentosDePedido } from "@/lib/data/documentos";
 import { DocumentosPedido } from "@/components/documentos/documentos-pedido";
+import { MediaPedido } from "@/components/media/media-pedido";
 import { CrearOrdenBtn } from "@/components/produccion/crear-orden-btn";
 import { ETAPA_PRODUCCION } from "@/lib/produccion";
 import { listarItems } from "@/lib/data/inventario";
@@ -329,6 +330,16 @@ export default async function PedidoPage({
         </CardHeader>
         <CardContent>
           <DocumentosPedido pedidoId={pedido.id} documentos={documentos} />
+        </CardContent>
+      </Card>
+
+      {/* Biblioteca de media (renders, CAD, fotos) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Renders y fotos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MediaPedido pedidoId={pedido.id} clienteId={pedido.cliente_id} />
         </CardContent>
       </Card>
 

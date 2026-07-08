@@ -22,11 +22,11 @@ const SUBMODULOS = [
     activo: true,
   },
   {
-    href: "/taller",
+    href: "/taller/biblioteca",
     icono: ImageIcon,
     titulo: "Biblioteca",
-    descripcion: "Renders, CADs y fotos por pedido, listos para WhatsApp. Fase 4.",
-    activo: false,
+    descripcion: "Renders, CADs y fotos por pedido y galería general, filtrable por estilo, metal y piedra.",
+    activo: true,
   },
 ];
 
