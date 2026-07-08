@@ -44,10 +44,12 @@ export async function actualizarSesion(request: NextRequest) {
   // - /firmar/[token]: el cliente firma sin cuenta (el token es la llave).
   // - /api/webhook/*: Meta llama sin sesión (verify token + firma X-Hub-Signature).
   // - /api/cron/*: Vercel Cron llama sin sesión (Bearer CRON_SECRET).
+  // - /privacidad: aviso de privacidad (Meta lo exige público para publicar la app).
   const esPublica =
     ruta.startsWith("/login") ||
     ruta.startsWith("/auth") ||
     ruta.startsWith("/firmar") ||
+    ruta.startsWith("/privacidad") ||
     ruta.startsWith("/api/webhook") ||
     ruta.startsWith("/api/cron");
 

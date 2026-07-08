@@ -27,6 +27,7 @@ Luego (código, ya con el riel vivo y datos fluyendo):
 2. **Media entrante:** bajar imágenes/certificados del cliente a Storage (hoy se guarda el mensaje sin el binario).
 3. **Plantillas de Meta** pre-aprobadas para escribir fuera de la ventana de 24h (recordatorio de cita, felicitación) → cablear a Citas/Fechas/Pagos con `enviarPlantillaWa` (ya existe).
 4. **Persona/tono del bot editable** por Santiago sin tocar código (hoy el prompt vive en `bot-whatsapp.ts`).
+5. **Inbox omnicanal: Instagram DM + Messenger (pedido por Santiago 2026-07-08).** Sumar los DMs de IG y Messenger al mismo Inbox/CRM. La app de Meta "Aurelle ERP" ya existe y admite agregar esos casos de uso después sin rehacer WhatsApp. Requiere: webhook propio por canal (payload distinto al de WhatsApp), campo `canal` en `conversacion` (hoy implícito WhatsApp), casar identidad IG/FB↔cliente (no hay teléfono: nuevo identificador), y app review de Meta para permisos de mensajería de IG/Messenger. Después de que el riel de WhatsApp esté estable en prod.
 Patrón: migración → Postgres local → dominio → datos+muestra → acciones → páginas → docs.
 
 
