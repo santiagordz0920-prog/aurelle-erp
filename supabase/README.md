@@ -42,10 +42,23 @@ cambio de esquema es una migración nueva con número consecutivo.
    ```
 5. Copiar las llaves del proyecto (Project Settings → API) a `.env.local` del
    repo y a las variables de entorno de Vercel (ver `.env.example`).
-6. Registrar a Santiago y Fer (Authentication → Add user), y promoverlos a admin:
+6. Registrar a los admins (Authentication → Add user, con Auto Confirm) y
+   promoverlos corriendo `supabase/scripts/promover_admins.sql` en el SQL
+   Editor (promueve por correo; es idempotente). Para promover otro correo a
+   futuro, el equivalente manual es:
    ```sql
-   update public.usuario set rol = 'admin' where id = '<uuid-del-usuario>';
+   update public.usuario u set rol = 'admin'
+   from auth.users au
+   where au.id = u.id and lower(au.email) = '<correo>';
    ```
+
+## Scripts operativos (`supabase/scripts/`)
+
+No son migraciones: son utilidades que Santiago corre a mano en el SQL Editor.
+
+| Archivo | Qué hace |
+|---|---|
+| `scripts/promover_admins.sql` | Da rol `admin` a fgzz01@outlook.com y santiagordz0920@gmail.com (deben existir primero en Authentication → Users) |
 
 ## Verificación local (opcional, para desarrollo)
 
