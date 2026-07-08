@@ -15,6 +15,10 @@ export type Documento = {
   firmado_at: string | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   evidencia: Record<string, any> | null;
+  // Snapshot inmutable del contrato al firmar (ContratoDatos). NULL hasta firmar;
+  // un documento firmado se renderiza desde aquí, no del pedido en vivo (0022).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  contenido?: Record<string, any> | null;
   sucursal_id: string;
   created_at: string;
   updated_at: string;

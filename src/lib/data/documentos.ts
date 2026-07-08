@@ -57,8 +57,43 @@ export async function listarDocumentosDeCliente(clienteId: string): Promise<Docu
 }
 
 /**
+ * Construye el snapshot ContratoDatos leyendo el pedido con el cliente dado
+ * (admin service_role). Es la fuente del contrato "en vivo" antes de firmar y la
+ * que se congela en `documento.contenido` al firmar (0022).
+ */
+export async function construirContratoDesdePedido(
+  supabase: ReturnType<typeof createAdminClient>,
+  pedidoId: string,
+): Promise<ContratoDatos | null> {
+  const { data: p } = await supabase
+    .from("pedido")
+    .select("total, linea_negocio, fecha_compromiso, created_at, cliente(nombre), pago(id, tipo, fecha, monto)")
+    .eq("id", pedidoId)
+    .maybeSingle();
+  if (!p) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pp = p as any;
+  const cliente = Array.isArray(pp.cliente) ? pp.cliente[0] : pp.cliente;
+  const pagos = ((pp.pago ?? []) as ContratoDatos["pagos"])
+    .slice()
+    .sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const pagado = pagos.reduce((s, x) => s + Number(x.monto), 0);
+  return {
+    cliente_nombre: cliente?.nombre ?? null,
+    linea_negocio: pp.linea_negocio,
+    total: Number(pp.total),
+    pagos,
+    saldo: Number(pp.total) - pagado,
+    created_at: pp.created_at,
+    fecha_compromiso: pp.fecha_compromiso,
+  };
+}
+
+/**
  * Documento + datos del contrato para la firma PÚBLICA (por token). Usa el
  * cliente service_role: no hay sesión de usuario (el cliente firma sin cuenta).
+ * Si el documento ya está firmado, devuelve el SNAPSHOT congelado (0022), no el
+ * pedido en vivo — el cliente ve exactamente lo que firmó.
  */
 export async function getDocumentoParaFirma(
   token: string,
@@ -66,6 +101,7 @@ export async function getDocumentoParaFirma(
   if (!supabaseConfigurado()) {
     const doc = DOCUMENTOS_MUESTRA.find((d) => d.token === token);
     if (!doc) return null;
+    if (doc.contenido) return { doc, contrato: doc.contenido as ContratoDatos };
     const p = PEDIDOS_MUESTRA.find((x) => x.id === doc.pedido_id);
     if (!p) return null;
     const pagado = pagadoDe(p);
@@ -95,29 +131,11 @@ export async function getDocumentoParaFirma(
     .eq("token", token)
     .maybeSingle();
   if (!doc) return null;
-  const { data: p } = await supabase
-    .from("pedido")
-    .select("total, linea_negocio, fecha_compromiso, created_at, cliente(nombre), pago(id, tipo, fecha, monto)")
-    .eq("id", doc.pedido_id)
-    .maybeSingle();
-  if (!p) return null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pp = p as any;
-  const cliente = Array.isArray(pp.cliente) ? pp.cliente[0] : pp.cliente;
-  const pagos = (pp.pago ?? []) as ContratoDatos["pagos"];
-  const pagado = pagos.reduce((s, x) => s + Number(x.monto), 0);
-  return {
-    doc: doc as Documento,
-    contrato: {
-      cliente_nombre: cliente?.nombre ?? null,
-      linea_negocio: pp.linea_negocio,
-      total: Number(pp.total),
-      pagos: pagos
-        .slice()
-        .sort((a, b) => a.fecha.localeCompare(b.fecha)),
-      saldo: Number(pp.total) - pagado,
-      created_at: pp.created_at,
-      fecha_compromiso: pp.fecha_compromiso,
-    },
-  };
+  // Documento firmado con snapshot: mostrar lo congelado, no el pedido en vivo.
+  if (doc.contenido) {
+    return { doc: doc as Documento, contrato: doc.contenido as ContratoDatos };
+  }
+  const contrato = await construirContratoDesdePedido(supabase, doc.pedido_id);
+  if (!contrato) return null;
+  return { doc: doc as Documento, contrato };
 }

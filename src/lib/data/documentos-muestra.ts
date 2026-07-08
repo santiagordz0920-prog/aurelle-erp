@@ -35,6 +35,17 @@ export const DOCUMENTOS_MUESTRA: Documento[] = [
       at: "2026-07-06T21:30:00Z",
       firma_trazo: null,
     },
+    // Snapshot congelado al firmar (0022): los términos que Carla aceptó, aunque
+    // el pedido cambie después.
+    contenido: {
+      cliente_nombre: "Carla Mendoza",
+      linea_negocio: "concierge",
+      total: 92000,
+      pagos: [{ id: "pg-3", tipo: "anticipo_1", fecha: "2026-07-03", monto: 1000 }],
+      saldo: 91000,
+      created_at: "2026-07-03T18:00:00Z",
+      fecha_compromiso: "2026-07-30",
+    },
     sucursal_id: S,
     created_at: "2026-07-06T20:00:00Z",
     updated_at: "2026-07-06T21:30:00Z",
