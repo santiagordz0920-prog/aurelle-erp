@@ -29,6 +29,8 @@ import { getCliente, getNotas } from "@/lib/data/clientes";
 import { listarTareas } from "@/lib/data/tareas";
 import { listarCitas } from "@/lib/data/citas";
 import { listarUsuarios } from "@/lib/data/usuarios";
+import { getUsuarioActual } from "@/lib/session";
+import { EliminarCliente } from "@/components/clientes/eliminar-cliente";
 import { listarDocumentosDeCliente } from "@/lib/data/documentos";
 import { listarMedia } from "@/lib/data/media";
 import { CANAL_FUENTE } from "@/lib/clientes";
@@ -52,14 +54,16 @@ export default async function FichaClientePage({
   const cliente = await getCliente(id);
   if (!cliente) notFound();
 
-  const [notas, tareas, usuarios, citas, documentos, media] = await Promise.all([
+  const [notas, tareas, usuarios, citas, documentos, media, usuario] = await Promise.all([
     getNotas(id),
     listarTareas({ entidad_tipo: "cliente", entidad_id: id }),
     listarUsuarios(),
     listarCitas({ cliente_id: id }),
     listarDocumentosDeCliente(id),
     listarMedia({ cliente_id: id }),
+    getUsuarioActual(),
   ]);
+  const esAdmin = usuario.rol === "admin";
   const citasProximas = citas.filter(
     (c) => c.estado !== "completada" && c.estado !== "cancelada",
   ).length;
@@ -258,11 +262,14 @@ export default async function FichaClientePage({
           </div>
         </div>
 
-        <EstadoSelector
-          clienteId={cliente.id}
-          estado={cliente.estado_pipeline}
-          motivo={cliente.motivo_perdida}
-        />
+        <div className="flex flex-col items-end gap-2">
+          <EstadoSelector
+            clienteId={cliente.id}
+            estado={cliente.estado_pipeline}
+            motivo={cliente.motivo_perdida}
+          />
+          {esAdmin ? <EliminarCliente clienteId={cliente.id} nombre={cliente.nombre} /> : null}
+        </div>
       </div>
 
       <Tabs tabs={tabs} />
