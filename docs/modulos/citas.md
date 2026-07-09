@@ -37,6 +37,12 @@ Construido en Fase 3 (primer módulo, sin dependencia de Meta). Última modifica
 - **Anti doble-reserva:** se valida en el Server Action (traslape por sala el mismo día), NO con
   constraint de BD. v2 podría usar exclusion constraint (btree_gist).
 - El **resultado** es el dato de oro (funnel inquiry→visita→cotización→cierre). Captura en un toque.
+- **Resultado → pipeline del cliente (matriz §4, fix 2026-07-09):** al `registrarResultado`, el cliente
+  avanza en su `estado_pipeline` **solo hacia adelante** (`asistio→visito`, `cotizo→cotizado`, `cerro→cerrado`;
+  mapeo `RESULTADO_A_PIPELINE` + rango por `PIPELINE_ORDEN`). Nunca retrocede ni resucita un `perdido`
+  (fuera de `PIPELINE_ORDEN` → índice -1 → se ignora). **no-show** NO cambia el pipeline: deja una **tarea
+  sugerida "Reagendar (no-show): <cliente>"** ligada al cliente (idempotente por cliente pendiente) —
+  versión sin-WhatsApp del lifecycle de re-engagement. El envío por WhatsApp llega con el riel.
 
 ## Pendientes conocidos / lo que se enchufa con el riel de WhatsApp
 - **Reserva por el bot** (Fase 3, cuando Meta esté listo): el bot ofrece horarios reales y agenda.
