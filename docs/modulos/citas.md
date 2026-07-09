@@ -28,6 +28,12 @@ Construido en Fase 3 (primer módulo, sin dependencia de Meta). Última modifica
 - **Zona horaria:** el input es datetime-local (sin TZ); se ancla a Monterrey (**UTC-6 fijo**, MX sin
   horario de verano desde 2022) al guardar (`...-06:00`) y se muestra con `timeZone: America/Monterrey`.
   Sin esto, en Vercel (UTC) las horas se correrían 6h.
+- **"Hoy" también se ancla a Monterrey (fix 2026-07-09):** el rango del día para `citasDeHoy()` (Dashboard)
+  y para el límite inferior de la agenda `/clientes/citas` se calcula con `rangoDiaMonterrey()` (en `src/lib/citas.ts`),
+  NO con `new Date().setHours(0,0,0,0)`. Ese cálculo usaba el **día UTC** del server: una cita de la tarde/noche
+  (p.ej. 6pm Mty = 00:00 UTC del día siguiente) caía en "mañana" y NO aparecía en el Dashboard "Hoy". `rangoDiaMonterrey`
+  devuelve `[desde, hasta)` como instantes ISO en UTC (Z) del día de Monterrey → correcto contra timestamptz (prod)
+  y contra strings Z (muestra). Validado con `hoyA`/casos 9am–11pm.
 - **Anti doble-reserva:** se valida en el Server Action (traslape por sala el mismo día), NO con
   constraint de BD. v2 podría usar exclusion constraint (btree_gist).
 - El **resultado** es el dato de oro (funnel inquiry→visita→cotización→cierre). Captura en un toque.

@@ -8,6 +8,7 @@ import { CitaItem } from "@/components/citas/cita-item";
 import { listarCitas } from "@/lib/data/citas";
 import { listarClientes } from "@/lib/data/clientes";
 import type { Cita } from "@/lib/citas";
+import { rangoDiaMonterrey } from "@/lib/citas";
 
 export const metadata = { title: "Citas" };
 
@@ -27,10 +28,10 @@ function diaEtiqueta(iso: string): string {
 }
 
 export default async function CitasPage() {
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
+  // Desde el inicio del día de Monterrey (no del día UTC, que en Vercel se corre 6h).
+  const { desde } = rangoDiaMonterrey();
   const [citas, clientes] = await Promise.all([
-    listarCitas({ desde: hoy.toISOString() }),
+    listarCitas({ desde }),
     listarClientes(),
   ]);
 
