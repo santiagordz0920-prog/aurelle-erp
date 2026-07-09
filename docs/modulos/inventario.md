@@ -25,6 +25,10 @@ Construido en Fase 1. Última modificación: 2026-07-05.
 - Consignante se busca-o-crea por nombre al dar de alta un item en consignación.
 - Constantes de estado (`ESTADOS_ITEM`, `ESTADO_ITEM`) viven en `src/lib/inventario.ts` (cliente-safe), NO en la capa de datos server-only.
 
+## Consumo desde Producción (0026)
+- El ciclo del item es `disponible → reservado → consumido` (o `vendido`). La **reserva** ocurre desde el Pedido (`reservarItem`); el **consumo** ocurre desde la orden de Producción (tarjeta "Materiales del pedido", `consumirMaterial`). Al consumir, el item pasa a `consumido` y su `item_costo` **suma al `costo_real` del pedido** vía el trigger de 0026 (`recomputar_por_item_inventario` → `recomputar_costo_real`). Ver `docs/modulos/produccion.md`.
+- Nota: **cualquier** cambio de fila en `item_inventario` dispara el recompute del `costo_real` de su `pedido_id` (idempotente y barato; si `pedido_id` es null, no hace nada).
+
 ## Pendientes conocidos de este módulo
 - Subida real de fotos/certificados a Supabase Storage (hoy es URL) — llega con Biblioteca (Fase 4).
 - Vista "qué hay en cada vitrina" agrupada por ubicación (hoy lista + filtros).

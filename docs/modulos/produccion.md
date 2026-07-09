@@ -4,9 +4,10 @@
 > margen del pedido. RLS por sucursal (taller/ventas/admin).
 
 ## Estado
-Construido en Fase 4 (primer módulo). Última modificación: 2026-07-08. Migración 0019 (aplicada en prod).
+Construido en Fase 4 (primer módulo). Última modificación: 2026-07-09. Migración 0019 (aplicada en prod).
 v2: asignar responsable desde la UI, checklist de QC por tipo de pieza, atasco → tarea. Sin migración nueva.
 v3 (2026-07-08): **checklist de QC editable desde la app** (migración 0023): los puntos ya no viven en código, se administran en `/taller/produccion/qc` (solo admin).
+v4 (2026-07-09, migración **0026**): **consumo de material** (inventario reservado → consumido, su costo suma al `costo_real`) + **QC completo → sugiere cita de entrega**. Cierran las dos filas de la matriz §4 que faltaban sin Meta.
 
 ## Tablas (migración 0019 + 0023)
 - `qc_checklist_item` (0023) — puntos del checklist de QC por `linea_negocio`, con `posicion`, `texto`, `activo`. RLS: lectura del equipo por sucursal; **escritura SOLO admin**. Semilla = el checklist que vivía en código.
@@ -50,5 +51,11 @@ v3 (2026-07-08): **checklist de QC editable desde la app** (migración 0023): lo
 ## Atasco → tarea automática (cron, 0025)
 - El cron nocturno `/api/cron/seguimiento` (función `generar_tareas_seguimiento`, migración 0025) crea una tarea de seguimiento por cada orden ≥7d en su etapa (no entregada). Es **idempotente**: no duplica si ya hay una tarea pendiente "Atasco en producción: …" para ese pedido. El botón manual en la orden atascada (`crearTareaAtasco`) sigue existiendo y comparte el mismo prefijo de título, así que manual + cron no se pisan. Ver `docs/modulos/seguimiento-cron.md`.
 
+## Consumo de material (0026) + QC → cita de entrega (cierre de Fase 4)
+- **Consumo de material (matriz §4 "Pieza consumida"):** en el detalle de la orden, tarjeta **"Materiales del pedido"** lista los items de inventario ligados al pedido (`itemsReservados(pedido_id)`, reusada de Pedidos). Un item `reservado` tiene botón **"Marcar consumido"** (`consumirMaterial`, `ConsumirMaterial`): pasa el item a `consumido` y **su costo suma al `costo_real` del pedido**. Migración `0026`: función única `recomputar_costo_real(pedido)` = Σ `costo_produccion` + Σ `item_costo` de items `consumido` del pedido; la llaman el trigger de `costo_produccion` (redefinido) y un trigger nuevo sobre `item_inventario`. Todo SECURITY DEFINER → lee `item_costo` (solo-admin) sin exponer el costo al taller. Idempotente (Σ, no incremento); liberar el item (→disponible) lo resta de vuelta. La **CxP a consignante NO se duplica** aquí: se crea al reservar (0011). Validado en Postgres local (reservado 3000 → consumido 11000 → liberado 3000).
+- **QC completo → sugerir cita de entrega (matriz §4 "QC completo"):** al marcar `qc_ok=true` (`marcarQC`), `sugerirCitaEntrega` crea una tarea sugerida "Agendar cita de entrega: <cliente>" ligada al pedido, prioridad alta, **idempotente** (no duplica si ya hay una pendiente para ese pedido). Aparece en `/hoy` (surface de notificación hasta que exista push). El agendado real se hace en `/clientes/citas` (ya existe).
+
 ## Pendientes conocidos
 - Aviso al cliente en etapa clave (p. ej. "entró a engaste") — depende del riel WhatsApp (Fase 3 vivo).
+- Notificación push de "QC completo" a Santiago — hoy la tarea sugerida es el surface; push llega con la infraestructura de notificaciones (Fase 5/6).
+- Adjuntar el archivo/foto como binario real en WhatsApp — depende del riel (hoy va liga firmada).
