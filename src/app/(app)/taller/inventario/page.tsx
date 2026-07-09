@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Boxes, Plus, ArrowLeft, Gem } from "lucide-react";
+import { Boxes, Plus, ArrowLeft, Gem, Bell } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { InventarioFiltros } from "@/components/inventario/inventario-filtros";
 import { listarItems, valorInventario } from "@/lib/data/inventario";
+import { getUsuarioActual } from "@/lib/session";
 import {
   TIPO_ITEM,
   ESTADO_ITEM,
@@ -22,11 +23,13 @@ export default async function InventarioPage({
   searchParams: Promise<{ q?: string; tipo?: string; estado?: string }>;
 }) {
   const filtro = await searchParams;
-  const [items, valor] = await Promise.all([
+  const [items, valor, usuario] = await Promise.all([
     listarItems(filtro),
     valorInventario(),
+    getUsuarioActual(),
   ]);
   const hayFiltro = Boolean(filtro.q || filtro.tipo || filtro.estado);
+  const esAdmin = usuario.rol === "admin";
 
   return (
     <div className="space-y-5">
@@ -42,12 +45,22 @@ export default async function InventarioPage({
         titulo="Inventario"
         descripcion="Cada piedra, montura y pieza con su historia completa."
         accion={
-          <Button asChild>
-            <Link href="/taller/inventario/nuevo">
-              <Plus className="size-4" />
-              Nuevo item
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {esAdmin ? (
+              <Button asChild variant="outline">
+                <Link href="/taller/inventario/umbrales">
+                  <Bell className="size-4" />
+                  Umbrales de stock
+                </Link>
+              </Button>
+            ) : null}
+            <Button asChild>
+              <Link href="/taller/inventario/nuevo">
+                <Plus className="size-4" />
+                Nuevo item
+              </Link>
+            </Button>
+          </div>
         }
       />
 
