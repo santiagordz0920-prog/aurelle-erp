@@ -4,6 +4,38 @@
 > CRM), las respuestas salgan por el número oficial y el bot de IA ayude desde el
 > día 1. Es un trámite en el panel de Meta + pegar 5 datos en Vercel. Una sola vez.
 
+## Dónde nos quedamos (2026-07-08) — LEE ESTO PRIMERO al retomar
+
+Ya se hizo casi todo el trámite. **Estamos esperando la verificación del negocio de
+Meta (~2 días hábiles).** Hasta que Meta apruebe, no llegan mensajes reales al ERP
+aunque WhatsApp marque ✓✓ (Meta no entrega webhooks de producción antes de eso).
+
+**Ya hecho:**
+- App de Meta "Aurelle ERP" creada (solo WhatsApp), en el Business Manager de los ads.
+- Webhook **verificado ✓**: URL `https://aurelle-erp-yeft.vercel.app/api/webhook/whatsapp`,
+  campo `messages` suscrito. `WHATSAPP_VERIFY_TOKEN` ya en Vercel + redeploy hecho.
+- eSIM registrada en la Cloud API: **+52 2206289675**.
+- Token permanente (System User) generado.
+- `/privacidad` en prod (para publicar la app).
+
+**Pendiente (cuando Meta apruebe la verificación — retomar así):**
+1. Pegar en Vercel (Settings → Environment Variables, Production) las 4 que faltan:
+   - `WHATSAPP_ACCESS_TOKEN` (el token permanente; márcalo *sensitive*).
+   - `WHATSAPP_PHONE_NUMBER_ID` (WhatsApp → Config. de la API → selector con el **+52
+     nuevo** → "Identificador del número de teléfono"; NO el número de prueba).
+   - `WHATSAPP_APP_SECRET` (Config. → Básica → Clave secreta de la app; *sensitive*).
+   - `ANTHROPIC_API_KEY` (console.anthropic.com → API Keys; *sensitive*).
+2. **Redeploy** en Vercel y esperar Ready.
+3. **Publicar la app**: Config. → Básica → pegar `https://aurelle-erp-yeft.vercel.app/privacidad`
+   en "URL de la política de privacidad" → guardar → switch de "En desarrollo" a **Activo**.
+4. **Prueba de fuego:** escribir "Hola, busco un anillo" al +52 2206289675 desde el cel →
+   abrir `https://aurelle-erp-yeft.vercel.app/clientes/inbox` → debe aparecer el mensaje,
+   la ficha del cliente creada sola, y la respuesta del bot (o un borrador para aprobar).
+5. **Re-apuntar los ads** click-to-WhatsApp al número nuevo (sección "El corte de los ads").
+
+> NUNCA compartas el ACCESS_TOKEN ni el APP_SECRET en chats/notas: van directo de Meta
+> a Vercel. El VERIFY_TOKEN lo eliges tú (misma frase en Meta y en Vercel).
+
 ## El plan (decidido el 2026-07-08 con Santiago)
 
 - **Número NUEVO (la eSIM comprada hoy) → a la Cloud API.** Está activa y nunca se
