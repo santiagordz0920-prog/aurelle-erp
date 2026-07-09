@@ -146,3 +146,36 @@ export async function cambiarEstado(
   revalidatePath(`/clientes/${clienteId}`);
   return { ok: true };
 }
+
+/**
+ * Borra un cliente (solo-admin; la RLS `cliente_delete` = `es_admin()` lo impone).
+ * Guardas: `pedido.cliente_id` es RESTRICT en la BD, así que un cliente CON
+ * pedidos no se puede borrar (protege ventas) → aquí se avisa claro. Citas y
+ * notas se borran en cascada; cotizaciones/conversaciones/media quedan sin liga.
+ * Pensado para limpiar clientes de prueba o duplicados. Redirige a /clientes.
+ */
+export async function eliminarCliente(clienteId: string): Promise<ResultadoAccion> {
+  const usuario = await getUsuarioActual();
+  if (usuario.rol !== "admin") return { ok: false, error: "Solo un admin puede borrar clientes." };
+
+  if (!supabaseConfigurado()) {
+    const i = CLIENTES_MUESTRA.findIndex((c) => c.id === clienteId);
+    if (i >= 0) CLIENTES_MUESTRA.splice(i, 1);
+    revalidatePath("/clientes");
+    redirect("/clientes");
+  }
+
+  const supabase = await createClient();
+  // Guarda explícita: no borrar si tiene pedidos (además del RESTRICT de la BD).
+  const { count } = await supabase
+    .from("pedido")
+    .select("id", { count: "exact", head: true })
+    .eq("cliente_id", clienteId);
+  if ((count ?? 0) > 0) {
+    return { ok: false, error: "No se puede borrar: el cliente tiene pedidos. Márcalo como perdido si ya no aplica." };
+  }
+  const { error } = await supabase.from("cliente").delete().eq("id", clienteId);
+  if (error) return { ok: false, error: "No se pudo borrar el cliente." };
+  revalidatePath("/clientes");
+  redirect("/clientes");
+}

@@ -35,3 +35,6 @@ Construido en Fase 1. Última modificación: 2026-07-05.
 - Edición de cliente (hoy solo alta + cambio de etapa + notas).
 - Referidos: se guarda `referido_por_*` pero aún no hay UI para capturarlo ni el disparo de agradecimiento/comisión (eso es al cerrar pedido, Fase 1 Pedidos / §3.1).
 - Búsqueda por etiqueta/fuente/estado como filtros dedicados (hoy la búsqueda es texto libre sobre nombre/teléfono/fuente/etiquetas).
+
+## Borrado manual (2026-07-09)
+- Botón **Borrar** en la ficha (solo-admin, `EliminarCliente` → `eliminarCliente`) con confirmación. La política RLS `cliente_delete = es_admin()` ya existía (0004): **sin migración**. Guarda: un cliente **con pedidos NO se borra** (RESTRICT en BD + aviso en la acción); marca 'perdido' en ese caso. Citas/notas cascadean; cotización/conversación/media quedan sin liga. Para limpiar clientes de prueba/duplicados.
