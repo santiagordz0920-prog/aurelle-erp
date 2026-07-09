@@ -7,7 +7,11 @@ import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
 import type { Cita, EstadoCita, ResultadoCita } from "@/lib/citas";
 import { seTraslapan } from "@/lib/citas";
+import type { EstadoPipeline } from "@/lib/clientes";
+import { PIPELINE_ORDEN } from "@/lib/clientes";
 import { CITAS_MUESTRA } from "@/lib/data/citas-muestra";
+import { CLIENTES_MUESTRA } from "@/lib/data/clientes-muestra";
+import { TAREAS_MUESTRA } from "@/lib/data/tareas-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -140,6 +144,69 @@ export async function cambiarEstadoCita(
   return { ok: true };
 }
 
+/*
+  Reacción §4 "Resultado de cita registrado → CRM actualiza pipeline":
+  el resultado de la visita mueve al cliente en el funnel (SOLO hacia adelante).
+  no-show no cambia el pipeline; en su lugar deja una tarea de reagendar
+  (lifecycle de re-engagement, versión sin WhatsApp).
+*/
+const RESULTADO_A_PIPELINE: Partial<Record<ResultadoCita, EstadoPipeline>> = {
+  asistio: "visito",
+  cotizo: "cotizado",
+  cerro: "cerrado",
+};
+const PREFIJO_REAGENDAR = "Reagendar (no-show)";
+
+/** Avanza el pipeline del cliente por el resultado, solo si es hacia adelante. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function avanzarPipeline(supabase: any, clienteId: string, resultado: ResultadoCita) {
+  const destino = RESULTADO_A_PIPELINE[resultado];
+  if (!destino) return;
+  const { data: cli } = await supabase
+    .from("cliente")
+    .select("estado_pipeline")
+    .eq("id", clienteId)
+    .maybeSingle();
+  if (!cli) return;
+  const actualIdx = PIPELINE_ORDEN.indexOf(cli.estado_pipeline as EstadoPipeline);
+  const destinoIdx = PIPELINE_ORDEN.indexOf(destino);
+  // Solo avanza; no retrocede ni resucita un 'perdido' (fuera de PIPELINE_ORDEN → -1).
+  if (actualIdx >= 0 && destinoIdx > actualIdx) {
+    await supabase.from("cliente").update({ estado_pipeline: destino }).eq("id", clienteId);
+  }
+}
+
+/** No-show → tarea sugerida de reagendar (idempotente por cliente pendiente). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function tareaReagendar(supabase: any, clienteId: string) {
+  const usuario = await getUsuarioActual();
+  const { data: existentes } = await supabase
+    .from("tarea")
+    .select("id")
+    .eq("entidad_tipo", "cliente")
+    .eq("entidad_id", clienteId)
+    .eq("estado", "pendiente")
+    .ilike("titulo", `${PREFIJO_REAGENDAR}%`)
+    .limit(1);
+  if (existentes && existentes.length > 0) return;
+  const { data: cli } = await supabase
+    .from("cliente")
+    .select("nombre")
+    .eq("id", clienteId)
+    .maybeSingle();
+  await supabase.from("tarea").insert({
+    titulo: `${PREFIJO_REAGENDAR}: ${cli?.nombre ?? "cliente"}`,
+    detalle: "El cliente no asistió a su cita. Contáctalo para reagendar y no perder el lead.",
+    responsable_id: usuario.id,
+    prioridad: "media",
+    entidad_tipo: "cliente",
+    entidad_id: clienteId,
+    origen: "sugerida",
+    creada_por: usuario.id,
+    sucursal_id: usuario.sucursalId,
+  });
+}
+
 /** Captura del resultado (el funnel). Marca la cita como completada. */
 export async function registrarResultado(
   id: string,
@@ -150,17 +217,66 @@ export async function registrarResultado(
     if (c) {
       c.resultado = resultado;
       c.estado = "completada";
+      // Reacción §4 en muestra: mover pipeline (solo adelante) o dejar tarea de reagendar.
+      const cli = CLIENTES_MUESTRA.find((x) => x.id === c.cliente_id);
+      const destino = RESULTADO_A_PIPELINE[resultado];
+      if (cli && destino) {
+        const ai = PIPELINE_ORDEN.indexOf(cli.estado_pipeline);
+        const di = PIPELINE_ORDEN.indexOf(destino);
+        if (ai >= 0 && di > ai) cli.estado_pipeline = destino;
+      } else if (cli && resultado === "no_asistio") {
+        const dup = TAREAS_MUESTRA.some(
+          (t) =>
+            t.entidad_tipo === "cliente" &&
+            t.entidad_id === cli.id &&
+            t.estado === "pendiente" &&
+            t.titulo.startsWith(PREFIJO_REAGENDAR),
+        );
+        if (!dup) {
+          const usuario = await getUsuarioActual();
+          TAREAS_MUESTRA.unshift({
+            id: `d1000000-0000-0000-0000-0000000009${(TAREAS_MUESTRA.length + 60).toString().slice(-2)}`,
+            titulo: `${PREFIJO_REAGENDAR}: ${cli.nombre}`,
+            detalle: "El cliente no asistió a su cita. Contáctalo para reagendar y no perder el lead.",
+            responsable_id: usuario.id,
+            responsable_nombre: null,
+            prioridad: "media",
+            estado: "pendiente",
+            fecha_vencimiento: null,
+            entidad_tipo: "cliente",
+            entidad_id: cli.id,
+            origen: "sugerida",
+            completada_at: null,
+            creada_por: usuario.id,
+            sucursal_id: usuario.sucursalId,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+        }
+      }
     }
     revalidar(c?.cliente_id);
     return { ok: true };
   }
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data: cita, error } = await supabase
     .from("cita")
     .update({ resultado, estado: "completada" })
-    .eq("id", id);
+    .eq("id", id)
+    .select("cliente_id")
+    .maybeSingle();
   if (error) return { ok: false, error: "No se pudo registrar el resultado." };
-  // Reacción §4 pendiente: resultado → pipeline del cliente; no-show → lifecycle.
-  revalidar();
+  // Reacción §4: resultado → pipeline del cliente; no-show → tarea de reagendar.
+  if (cita?.cliente_id) {
+    if (resultado === "no_asistio") {
+      await tareaReagendar(supabase, cita.cliente_id);
+    } else {
+      await avanzarPipeline(supabase, cita.cliente_id, resultado);
+    }
+    revalidar(cita.cliente_id);
+    revalidatePath("/hoy/tareas");
+  } else {
+    revalidar();
+  }
   return { ok: true };
 }
