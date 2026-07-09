@@ -7,6 +7,7 @@ import {
   CalendarClock,
   CalendarHeart,
   MessageSquareText,
+  Repeat,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
@@ -52,6 +53,12 @@ export default async function ClientesPage({
               <Link href="/clientes/fechas">
                 <CalendarHeart className="size-4" />
                 Fechas
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/clientes/postventa">
+                <Repeat className="size-4" />
+                Postventa
               </Link>
             </Button>
             <Button asChild>

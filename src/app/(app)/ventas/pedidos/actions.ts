@@ -11,6 +11,7 @@ import { PEDIDOS_MUESTRA } from "@/lib/data/pedidos-muestra";
 import { COTIZACIONES_MUESTRA } from "@/lib/data/cotizaciones-muestra";
 import { ITEMS_MUESTRA } from "@/lib/data/inventario-muestra";
 import { crearContratoSiNoExiste } from "./documentos-actions";
+import { crearPiezaEntregadaSiNoExiste } from "./postventa-actions";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
 
@@ -328,6 +329,7 @@ export async function entregarPedido(
     if (p.costo_real != null && p.total > 0) {
       p.margen_sellado = Math.round(((p.total - p.costo_real) / p.total) * 100);
     }
+    await crearPiezaEntregadaSiNoExiste(pedidoId); // §4: Postventa
     revalidarPedido(pedidoId);
     return { ok: true };
   }
@@ -359,8 +361,9 @@ export async function entregarPedido(
       .update({ margen_sellado: margen })
       .eq("pedido_id", pedidoId);
   }
-  // Reacciones matriz §4 pendientes (Fases 4/6): Postventa (garantía+aniversarios),
-  // Finanzas (sella ciclo), Comisiones (si hay referidor), lifecycle (agradece).
+  // Reacción §4 "Pedido entregado → Postventa": registro de pieza (garantía+aniversarios).
+  await crearPiezaEntregadaSiNoExiste(pedidoId);
+  // Pendientes §4 (Fases posteriores): Comisiones (si hay referidor), lifecycle (agradece por WhatsApp).
   revalidarPedido(pedidoId);
   return { ok: true };
 }
