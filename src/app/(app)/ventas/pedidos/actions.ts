@@ -144,7 +144,7 @@ export async function registrarPago(
     registrado_por: usuario.id,
   });
   if (error) return { ok: false, error: "No se pudo registrar el pago." };
-  // Reacciones matriz §4 pendientes (Fase 2): asiento en Finanzas al pagar.
+  // Reacción §4 "pago→ingreso": el asiento en Finanzas lo hace el trigger de 0010.
   revalidarPedido(d.pedido_id);
   return { ok: true };
 }
@@ -174,7 +174,7 @@ export async function reservarItem(
     .eq("id", itemId)
     .eq("estado", "disponible");
   if (error) return { ok: false, error: "No se pudo reservar el item." };
-  // Reacciones matriz §4 pendientes (Fase 2): CxP a consignante si es consignación.
+  // Reacción §4 "consignación→CxP": la CxP al consignante la crea el trigger de 0011.
   revalidarPedido(pedidoId);
   return { ok: true };
 }

@@ -367,6 +367,8 @@ export async function consumirMaterial(
     if (item.estado !== "reservado") return { ok: false, error: "Solo se consume un item reservado." };
     item.estado = "consumido";
     revalidar(ordenId);
+    revalidatePath(`/ventas/pedidos/${pedidoId}`);
+    revalidatePath("/taller/inventario");
     return { ok: true };
   }
   const supabase = await createClient();
@@ -381,7 +383,10 @@ export async function consumirMaterial(
   if (!data || data.length === 0) {
     return { ok: false, error: "El item ya no está reservado para este pedido." };
   }
+  // El estado del item también se ve en la tarjeta del pedido y en Inventario.
   revalidar(ordenId);
+  revalidatePath(`/ventas/pedidos/${pedidoId}`);
+  revalidatePath("/taller/inventario");
   return { ok: true };
 }
 
