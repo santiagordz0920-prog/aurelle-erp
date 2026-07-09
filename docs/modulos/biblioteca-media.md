@@ -35,7 +35,7 @@ Enganches con CRM/Producción ya integrados (envío por WhatsApp, foto por etapa
 - Consume: Producción (foto por etapa: la orden sube con `orden_id` + `etapa`, tipo `foto_etapa`),
   Santiago (renders Higgsfield), Documentos.
 - Emite: **render aprobado → orden a `aprobacion_cliente`** (solo hacia adelante). Implementado en
-  `alternarAprobado` → `avanzarOrdenAAprobacion` (matriz §4). En prod registra `orden_movimiento`.
+  `alternarAprobado` → `avanzarOrdenAAprobacion` (matriz §4). En prod registra `orden_movimiento`. **Hardening 2026-07-09:** la firma es `(id, aprobado)`; `pedido_id`/`tipo` se leen de la FILA de media server-side (antes venían del navegador → se podía disparar el avance de orden con ids arbitrarios).
 - Alimenta a: CRM (**envío del archivo por WhatsApp asistido** desde la galería del pedido — botón "Enviar"
   con `mensajeCompartirMedia`, incluye la liga firmada si es http), Producción (referencia visual), Marketing (galería).
 

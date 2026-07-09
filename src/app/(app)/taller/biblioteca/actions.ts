@@ -153,33 +153,40 @@ async function avanzarOrdenAAprobacion(usuarioId: string, pedidoId: string) {
   revalidatePath("/taller/produccion");
 }
 
-/** Marca/desmarca un render como aprobado por el cliente (v2 aprobado). */
-export async function alternarAprobado(
-  id: string,
-  aprobado: boolean,
-  pedidoId?: string | null,
-  tipo?: TipoMedia,
-): Promise<ResultadoMedia> {
+/**
+ * Marca/desmarca un render como aprobado por el cliente (v2 aprobado).
+ * `pedido_id` y `tipo` se leen de la FILA de media (no del cliente): el efecto
+ * "render aprobado → orden a aprobacion_cliente" no debe poder dispararse con
+ * ids/tipos arbitrarios mandados desde el navegador.
+ */
+export async function alternarAprobado(id: string, aprobado: boolean): Promise<ResultadoMedia> {
   const usuario = await getUsuarioActual();
 
   if (!supabaseConfigurado()) {
     const m = MEDIA_MUESTRA.find((x) => x.id === id);
-    if (m) m.aprobado = aprobado;
-    if (aprobado && tipo === "render" && pedidoId) {
-      await avanzarOrdenAAprobacion(usuario.id, pedidoId);
+    if (!m) return { ok: false, error: "Archivo no encontrado." };
+    m.aprobado = aprobado;
+    if (aprobado && m.tipo === "render" && m.pedido_id) {
+      await avanzarOrdenAAprobacion(usuario.id, m.pedido_id);
     }
     revalidatePath("/taller/biblioteca");
-    if (pedidoId) revalidatePath(`/ventas/pedidos/${pedidoId}`);
+    if (m.pedido_id) revalidatePath(`/ventas/pedidos/${m.pedido_id}`);
     return { ok: true };
   }
   const supabase = await createClient();
-  const { error } = await supabase.from("media").update({ aprobado }).eq("id", id);
+  const { data: fila, error } = await supabase
+    .from("media")
+    .update({ aprobado })
+    .eq("id", id)
+    .select("pedido_id, tipo")
+    .maybeSingle();
   if (error) return { ok: false, error: "No se pudo actualizar." };
-  if (aprobado && tipo === "render" && pedidoId) {
-    await avanzarOrdenAAprobacion(usuario.id, pedidoId);
+  if (!fila) return { ok: false, error: "Archivo no encontrado." };
+  if (aprobado && fila.tipo === "render" && fila.pedido_id) {
+    await avanzarOrdenAAprobacion(usuario.id, fila.pedido_id);
   }
   revalidatePath("/taller/biblioteca");
-  if (pedidoId) revalidatePath(`/ventas/pedidos/${pedidoId}`);
+  if (fila.pedido_id) revalidatePath(`/ventas/pedidos/${fila.pedido_id}`);
   return { ok: true };
 }
 
