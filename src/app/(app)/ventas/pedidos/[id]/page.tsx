@@ -18,6 +18,10 @@ import { listarDocumentosDePedido } from "@/lib/data/documentos";
 import { DocumentosPedido } from "@/components/documentos/documentos-pedido";
 import { MediaPedido } from "@/components/media/media-pedido";
 import { CrearOrdenBtn } from "@/components/produccion/crear-orden-btn";
+import { getPiezaDePedido } from "@/lib/data/postventa";
+import { ServicioForm } from "@/components/postventa/servicio-form";
+import { TIPO_SERVICIO, estadoGarantia } from "@/lib/postventa";
+import { CalendarHeart } from "lucide-react";
 import { ETAPA_PRODUCCION } from "@/lib/produccion";
 import { listarItems } from "@/lib/data/inventario";
 import {
@@ -54,12 +58,13 @@ export default async function PedidoPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [pedido, reservados, usuario, orden, documentos] = await Promise.all([
+  const [pedido, reservados, usuario, orden, documentos, pieza] = await Promise.all([
     getPedido(id),
     itemsReservados(id),
     getUsuarioActual(),
     ordenDePedido(id),
     listarDocumentosDePedido(id),
+    getPiezaDePedido(id),
   ]);
   if (!pedido) notFound();
   const cliente = await getCliente(pedido.cliente_id);
@@ -333,6 +338,55 @@ export default async function PedidoPage({
         </CardContent>
       </Card>
 
+      {/* Postventa: pieza entregada (garantía, aniversarios, servicios) */}
+      {pieza ? (
+        <Card>
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <CalendarHeart className="size-4 text-accent" />
+              Postventa
+            </CardTitle>
+            <span className={`text-xs font-medium ${estadoGarantia(pieza.garantia_hasta).clase}`}>
+              Garantía: {estadoGarantia(pieza.garantia_hasta).etiqueta}
+            </span>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+              <Dato etiqueta="Entregada" valor={pieza.entregada_at.slice(0, 10)} />
+              <Dato etiqueta="Garantía hasta" valor={pieza.garantia_hasta ?? "—"} />
+              <Dato etiqueta="Aniv. entrega" valor={pieza.aniversario_entrega ?? "—"} />
+              <Dato etiqueta="Aniv. boda" valor={pieza.aniversario_boda ?? "—"} />
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-medium text-muted-foreground">Historial de servicios</p>
+              {pieza.servicios && pieza.servicios.length > 0 ? (
+                <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {pieza.servicios.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
+                      <span>
+                        <span className="font-medium text-foreground">{TIPO_SERVICIO[s.tipo]}</span>
+                        {s.descripcion ? <span className="ml-2 text-xs text-muted-foreground">{s.descripcion}</span> : null}
+                        <span className="ml-2 text-xs text-muted-foreground">{s.fecha}</span>
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {s.costo > 0 ? pesos(s.costo) : "Cortesía"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">Sin servicios registrados.</p>
+              )}
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <ServicioForm piezaId={pieza.id} pedidoId={pedido.id} />
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {/* Biblioteca de media (renders, CAD, fotos) */}
       <Card>
         <CardHeader>
@@ -404,4 +458,13 @@ function formatearFecha(iso: string): string {
     month: "short",
     year: "numeric",
   });
+}
+
+function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">{etiqueta}</p>
+      <p className="font-medium text-foreground">{valor}</p>
+    </div>
+  );
 }
