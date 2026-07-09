@@ -16,6 +16,7 @@ Corre cada noche (Vercel Cron, `0 8 * * *` UTC ≈ 2 am Monterrey) y crea tareas
 1. **Atasco de producción:** orden ≥7 días en la misma etapa (no `listo_entrega`). Prioridad alta, liga al **pedido**.
 2. **Contrato sin firmar:** documento `contrato` en estado `enviado` con >48 h. Prioridad alta, liga al **pedido**.
 3. **Cotización sin respuesta (0027, Fase 5):** cotización en estado `enviada` con `updated_at` ≥5 días (no pasó a `seguimiento`/`aceptada`/`vencida`). Prioridad media, liga a la **cotización** (`entidad_tipo='cotizacion'` → ruta `/ventas/cotizaciones/[id]`). Cierra la fila §4 "Cotización enviada → Tareas programa seguimiento".
+4. **Stock bajo (0028, Fase 5):** por cada categoría con umbral configurado (`umbral_stock`, admin), si los items `disponible` de ese `tipo` en la sucursal caen por debajo del mínimo → tarea "Stock bajo: <categoría>". Prioridad alta, **sin entidad** (es sobre una categoría, no un item); idempotente por título exacto. Cierra la fila §4 "Stock bajo → Tarea". Config en `/taller/inventario/umbrales`. Ver `docs/modulos/inventario.md`.
 
 ## Piezas
 - `supabase/migrations/0025_tareas_seguimiento.sql`: función
