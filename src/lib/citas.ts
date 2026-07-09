@@ -74,6 +74,31 @@ export function finCita(inicio: string, duracionMin: number): Date {
   return new Date(new Date(inicio).getTime() + duracionMin * 60000);
 }
 
+/*
+  Rango [desde, hasta) del día de Monterrey que contiene `ref`, como instantes ISO
+  en UTC (Z). Vercel corre en UTC: calcular "hoy" con setHours() usa el día UTC y
+  deja fuera las citas de la tarde/noche (p. ej. 6pm Monterrey = 00:00 UTC del día
+  siguiente, cae en "mañana"). Anclamos a Monterrey (UTC-6 fijo; MX sin horario de
+  verano desde 2022). Devolver Z hace que la comparación funcione igual contra
+  timestamptz (Supabase, por instante) y contra strings ISO Z (modo muestra).
+*/
+const TZ_MTY = "America/Monterrey";
+
+/** Fecha calendario (YYYY-MM-DD) en horario de Monterrey para un instante dado. */
+export function fechaMonterrey(ref: Date = new Date()): string {
+  return ref.toLocaleDateString("en-CA", { timeZone: TZ_MTY });
+}
+
+/** Rango del día de Monterrey [desde, hasta) como instantes ISO en UTC. */
+export function rangoDiaMonterrey(ref: Date = new Date()): { desde: string; hasta: string } {
+  const hoy = fechaMonterrey(ref);
+  const manana = fechaMonterrey(new Date(ref.getTime() + 86400000));
+  return {
+    desde: new Date(`${hoy}T00:00:00-06:00`).toISOString(),
+    hasta: new Date(`${manana}T00:00:00-06:00`).toISOString(),
+  };
+}
+
 /** ¿Se traslapan dos citas de la MISMA sala? (para el candado anti doble-reserva). */
 export function seTraslapan(
   aInicio: string,

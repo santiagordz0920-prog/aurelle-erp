@@ -1,5 +1,6 @@
 import "server-only";
 import type { Cita } from "@/lib/citas";
+import { rangoDiaMonterrey } from "@/lib/citas";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { CITAS_MUESTRA } from "./citas-muestra";
@@ -49,10 +50,8 @@ export async function listarCitas(filtro: FiltroCitas = {}): Promise<Cita[]> {
   return (data ?? []).map(normalizar);
 }
 
-/** Citas de hoy (para el Dashboard). Ordenadas por hora. */
+/** Citas de hoy (para el Dashboard). Ordenadas por hora. Día anclado a Monterrey. */
 export async function citasDeHoy(): Promise<Cita[]> {
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const manana = new Date(hoy.getTime() + 86400000);
-  return listarCitas({ desde: hoy.toISOString(), hasta: manana.toISOString() });
+  const { desde, hasta } = rangoDiaMonterrey();
+  return listarCitas({ desde, hasta });
 }
