@@ -28,8 +28,10 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 ## Eventos que emite / consume
 - Consume (lectura) Clientes, Cotizador y Pedidos para el Dashboard — agregación en `/hoy`, sin escribir.
 - El Dashboard NO muestra costo/margen (esos siguen solo-admin en su módulo); muestra total, saldo y valor de pipeline.
-- Pendiente (fases futuras): tareas **sugeridas por IA** desde eventos (cotización sin respuesta, pedido atascado,
-  stock bajo…) — el enum `origen='sugerida'` deja el gancho. Recurrentes también pendientes.
+- Tareas **sugeridas por IA** (`origen='sugerida'`) — generadas por el cron nocturno `generar_tareas_seguimiento`
+  (ver `docs/modulos/seguimiento-cron.md`). Ya cubre: pedido atascado (0025), contrato sin firmar (0025) y
+  **cotización sin respuesta ≥5d (0027, Fase 5)**. Pendientes: stock bajo, conversación caliente abandonada
+  (esta última requiere el riel de WhatsApp). Recurrentes también pendientes.
 
 ## Lógica no obvia / trampas
 - "Tareas del día" = pendientes con fecha vencida, para hoy, o **sin fecha** (para que nada se pierda).
