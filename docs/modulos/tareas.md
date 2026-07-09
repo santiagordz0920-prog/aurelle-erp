@@ -14,8 +14,13 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
   RLS por sucursal (NO solo-admin: el equipo comparte pendientes).
 
 ## Rutas / pantallas
-- `/hoy` — **Dashboard v1**: KPIs reales (pipeline de cotizaciones vivas + valor, por cobrar de
-  pedidos activos, entregas por vencer), tareas del día, y alertas derivadas (pedidos vencidos + saldo por cobrar).
+- `/hoy` — **Dashboard por rol (v2, 2026-07-09)** con toggle **Ventas / Taller** (`?vista=taller`):
+  - **Ventas (Santiago):** KPIs (pipeline de cotizaciones vivas + valor, por cobrar de pedidos activos,
+    entregas por vencer), citas de hoy, fechas importantes, alertas (pedidos vencidos + saldo).
+  - **Taller (Fer):** KPIs (órdenes en taller, atascadas ≥7d, QC pendientes, categorías con stock bajo),
+    **carga del taller por etapa**, entregas comprometidas (7 días), alertas del taller (atascos + stock bajo).
+  - Ambas comparten **Tareas del día**. Santiago y Fer son ambos `admin` → la vista se elige por toggle
+    (no por rol); `VistaVentas`/`VistaTaller` cargan solo sus datos. Sin costos/márgenes (solo-admin).
 - `/hoy/tareas` — lista completa (pendientes + hechas) con alta, prioridad, responsable, fecha y toggle.
 - Ficha de cliente `/clientes/[id]` → pestaña **Tareas**: alta rápida "en dos toques" vinculada al cliente + lista.
 
@@ -40,6 +45,7 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 - `crearTarea` sin responsable asigna al usuario actual (`responsable_id ?? usuario.id`).
 
 ## Pendientes conocidos de este módulo
-- Vista del Dashboard **por rol** (Santiago vs Fer del §3.16) y notificaciones push/in-app configurables (fase posterior).
+- **Recordar la vista preferida por usuario** (hoy el toggle no persiste entre visitas; default = Ventas). Falta la columna/preferencia; v2. La distinción real Santiago/Fer necesitará distinguir usuarios (hoy ambos admin).
+- Notificaciones push/in-app configurables (§3.16, fase posterior).
 - Tareas sugeridas por IA + recurrentes (§3.15).
 - Filtro "mías vs del equipo" en `/hoy/tareas` (hoy muestra todas las de la sucursal).
