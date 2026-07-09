@@ -8,9 +8,11 @@ import { QcChecklist } from "@/components/produccion/qc-checklist";
 import { AsignarResponsable } from "@/components/produccion/asignar-responsable";
 import { CrearTareaAtasco } from "@/components/produccion/crear-tarea-atasco";
 import { CostoProdForm } from "@/components/produccion/costo-prod-form";
+import { ConsumirMaterial } from "@/components/produccion/consumir-material";
 import { MediaPedido } from "@/components/media/media-pedido";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Gem } from "lucide-react";
 import { getOrden, checklistDeLinea } from "@/lib/data/produccion";
+import { itemsReservados } from "@/lib/data/pedidos";
 import { listarUsuarios } from "@/lib/data/usuarios";
 import { getUsuarioActual } from "@/lib/session";
 import {
@@ -19,7 +21,7 @@ import {
   TIPO_COSTO_PROD,
   diasEnEtapa,
 } from "@/lib/produccion";
-import { pesos } from "@/lib/inventario";
+import { pesos, ESTADO_ITEM } from "@/lib/inventario";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -35,6 +37,7 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
     getUsuarioActual(),
   ]);
   if (!orden) notFound();
+  const materiales = await itemsReservados(orden.pedido_id);
   const costos = orden.costos ?? [];
   const dias = orden.dias_en_etapa ?? diasEnEtapa(orden.updated_at);
   const atascada = dias >= ATASCO_DIAS && orden.etapa !== "listo_entrega";
@@ -158,6 +161,39 @@ export default async function OrdenPage({ params }: { params: Promise<{ id: stri
           <div className="border-t border-border pt-4">
             <CostoProdForm ordenId={orden.id} />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Materiales del pedido (inventario reservado → consumo en producción) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Materiales del pedido</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {materiales.length > 0 ? (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+              {materiales.map((m) => (
+                <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
+                  <span className="flex items-center gap-2">
+                    <Gem className="size-4 text-muted-foreground" />
+                    <span>
+                      <span className="font-medium text-foreground">{m.nombre}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{m.sku}</span>
+                    </span>
+                    <Badge className={ESTADO_ITEM[m.estado].clase}>{ESTADO_ITEM[m.estado].etiqueta}</Badge>
+                  </span>
+                  {m.estado === "reservado" ? (
+                    <ConsumirMaterial itemId={m.id} pedidoId={orden.pedido_id} ordenId={orden.id} />
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Sin materiales reservados. Resérvalos desde el pedido; al usarlos en la pieza, márcalos
+              consumidos aquí y su costo entra al costo real del pedido.
+            </p>
+          )}
         </CardContent>
       </Card>
 

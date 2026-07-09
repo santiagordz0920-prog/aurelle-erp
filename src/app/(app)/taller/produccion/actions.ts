@@ -11,6 +11,7 @@ import type { Tarea } from "@/lib/tareas";
 import { listarUsuarios } from "@/lib/data/usuarios";
 import { ORDENES_MUESTRA, COSTOS_PROD_MUESTRA } from "@/lib/data/produccion-muestra";
 import { PEDIDOS_MUESTRA } from "@/lib/data/pedidos-muestra";
+import { ITEMS_MUESTRA } from "@/lib/data/inventario-muestra";
 import { TAREAS_MUESTRA } from "@/lib/data/tareas-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
@@ -252,12 +253,134 @@ export async function marcarQC(ordenId: string, ok: boolean): Promise<ResultadoA
   if (!supabaseConfigurado()) {
     const o = ORDENES_MUESTRA.find((x) => x.id === ordenId);
     if (o) o.qc_ok = ok;
+    if (ok && o) await sugerirCitaEntrega(o.pedido_id, o.pedido_cliente ?? "cliente");
     revalidar(ordenId);
     return { ok: true };
   }
   const supabase = await createClient();
   const { error } = await supabase.from("orden_produccion").update({ qc_ok: ok }).eq("id", ordenId);
   if (error) return { ok: false, error: "No se pudo actualizar el QC." };
+  // Reacción §4 ("QC completo"): sugerir agendar la cita de entrega + avisar.
+  if (ok) {
+    const { data: orden } = await supabase
+      .from("orden_produccion")
+      .select("pedido_id, pedido:pedido_id(cliente(nombre))")
+      .eq("id", ordenId)
+      .maybeSingle();
+    if (orden) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rel = orden as any;
+      const cliente = Array.isArray(rel.pedido)
+        ? (rel.pedido[0]?.cliente?.nombre ?? "cliente")
+        : (rel.pedido?.cliente?.nombre ?? "cliente");
+      await sugerirCitaEntrega(orden.pedido_id, cliente);
+    }
+  }
+  revalidar(ordenId);
+  revalidatePath("/hoy/tareas");
+  return { ok: true };
+}
+
+/**
+ * Reacción §4 "QC completo → Citas sugiere agendar entrega; Notificación".
+ * Crea una tarea sugerida (ligada al pedido) para agendar la cita de entrega.
+ * Idempotente: no duplica si ya hay una pendiente para ese pedido. La tarea
+ * aparece en "Hoy" (surface de notificación hasta que exista push).
+ */
+const PREFIJO_CITA_ENTREGA = "Agendar cita de entrega";
+
+async function sugerirCitaEntrega(pedidoId: string, cliente: string): Promise<void> {
+  const usuario = await getUsuarioActual();
+  const titulo = `${PREFIJO_CITA_ENTREGA}: ${cliente}`;
+  const detalle = "La pieza pasó QC y está lista. Agenda la cita de entrega con el cliente en /clientes/citas.";
+
+  if (!supabaseConfigurado()) {
+    const yaExiste = TAREAS_MUESTRA.some(
+      (t) =>
+        t.entidad_tipo === "pedido" &&
+        t.entidad_id === pedidoId &&
+        t.estado === "pendiente" &&
+        t.titulo.startsWith(PREFIJO_CITA_ENTREGA),
+    );
+    if (yaExiste) return;
+    TAREAS_MUESTRA.unshift({
+      id: `d1000000-0000-0000-0000-0000000009${(TAREAS_MUESTRA.length + 40).toString().slice(-2)}`,
+      titulo,
+      detalle,
+      responsable_id: usuario.id,
+      responsable_nombre: null,
+      prioridad: "alta",
+      estado: "pendiente",
+      fecha_vencimiento: null,
+      entidad_tipo: "pedido",
+      entidad_id: pedidoId,
+      origen: "sugerida",
+      completada_at: null,
+      creada_por: usuario.id,
+      sucursal_id: usuario.sucursalId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    revalidatePath("/hoy/tareas");
+    return;
+  }
+
+  const supabase = await createClient();
+  // Idempotencia: ¿ya hay una tarea pendiente de cita de entrega para este pedido?
+  const { data: existentes } = await supabase
+    .from("tarea")
+    .select("id")
+    .eq("entidad_tipo", "pedido")
+    .eq("entidad_id", pedidoId)
+    .eq("estado", "pendiente")
+    .ilike("titulo", `${PREFIJO_CITA_ENTREGA}%`)
+    .limit(1);
+  if (existentes && existentes.length > 0) return;
+
+  await supabase.from("tarea").insert({
+    titulo,
+    detalle,
+    responsable_id: usuario.id,
+    prioridad: "alta",
+    entidad_tipo: "pedido",
+    entidad_id: pedidoId,
+    origen: "sugerida",
+    creada_por: usuario.id,
+    sucursal_id: usuario.sucursalId,
+  });
+  revalidatePath("/hoy/tareas");
+}
+
+/**
+ * Reacción §4 "Pieza consumida": el taller marca que un item reservado se usó
+ * en la pieza. El item pasa a 'consumido'; el trigger de 0026 suma su costo al
+ * costo_real del pedido (SECURITY DEFINER, sin exponer el costo al taller).
+ */
+export async function consumirMaterial(
+  itemId: string,
+  pedidoId: string,
+  ordenId: string,
+): Promise<ResultadoAccion> {
+  if (!supabaseConfigurado()) {
+    const item = ITEMS_MUESTRA.find((i) => i.id === itemId && i.pedido_id === pedidoId);
+    if (!item) return { ok: false, error: "Item no encontrado." };
+    if (item.estado !== "reservado") return { ok: false, error: "Solo se consume un item reservado." };
+    item.estado = "consumido";
+    revalidar(ordenId);
+    return { ok: true };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("item_inventario")
+    .update({ estado: "consumido" })
+    .eq("id", itemId)
+    .eq("pedido_id", pedidoId)
+    .eq("estado", "reservado")
+    .select("id");
+  if (error) return { ok: false, error: "No se pudo marcar como consumido." };
+  if (!data || data.length === 0) {
+    return { ok: false, error: "El item ya no está reservado para este pedido." };
+  }
   revalidar(ordenId);
   return { ok: true };
 }
