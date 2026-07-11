@@ -6,6 +6,7 @@ import { EnviarWhatsApp } from "@/components/clientes/enviar-whatsapp";
 import { ResponderInbox } from "@/components/inbox/responder-inbox";
 import { BorradorIA } from "@/components/inbox/borrador-ia";
 import { MarcarLeidoAlAbrir } from "@/components/inbox/marcar-leido";
+import { AutoRefresh } from "@/components/inbox/auto-refresh";
 import { getConversacion } from "@/lib/data/inbox";
 import { horaMensaje } from "@/lib/inbox";
 import { whatsappConfigurado } from "@/lib/whatsapp";
@@ -37,6 +38,7 @@ export default async function ConversacionPage({
   return (
     <div className="space-y-5">
       <MarcarLeidoAlAbrir conversacionId={id} />
+      <AutoRefresh cadaMs={5000} />
       <Link
         href="/clientes/inbox"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"

@@ -22,6 +22,12 @@ Sin migración nueva (el estado `borrador_ia` vive en `mensaje.estado_entrega`).
 - **Widget flotante global** (`components/inbox/inbox-flotante.tsx`, montado en `AppShell`): burbuja fija abajo-derecha en TODA la app con badge de pendientes (no leídos + borradores por aprobar), panel con las conversaciones que necesitan atención y liga al hilo. Sondea `/api/inbox/resumen` cada 25 s + al volver a la pestaña; Notification API del navegador si hay permiso (pide permiso al primer clic). Oculto dentro del hilo. Mobile: `bottom-20` para librar los tabs.
 - **`/api/inbox/resumen`** (route handler autenticado, RLS): conversaciones con `no_leidos>0` o con `borrador_ia` pendiente + total de pendientes.
 
+## Refresco automático
+`AutoRefresh` (`components/inbox/auto-refresh.tsx`): `router.refresh()` periódico
+con la pestaña visible + al volver a ella — hilo cada 5 s, lista cada 10 s. No es
+reload: conserva scroll y texto a medio escribir. Si algún día 5 s sabe a poco,
+el siguiente paso es Supabase Realtime (decisión ya anotada: polling primero).
+
 ## Capa de datos
 - `src/lib/inbox.ts`: tipos + `horaMensaje` (Monterrey).
 - `src/lib/data/inbox.ts`: `listarConversaciones`, `getConversacion` (con mensajes), `totalNoLeidos`.
