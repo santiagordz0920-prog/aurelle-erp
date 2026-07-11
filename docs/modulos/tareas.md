@@ -58,5 +58,4 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 - No hay "ver descartadas" / des-descartar (una sugerencia descartada queda oculta permanentemente).
 - **Recordar la vista preferida por usuario** (hoy el toggle no persiste entre visitas; default = Ventas). Falta la columna/preferencia; v2. La distinción real Santiago/Fer necesitará distinguir usuarios (hoy ambos admin).
 - Notificaciones push/in-app configurables (§3.16, fase posterior).
-- Tareas sugeridas por IA + recurrentes (§3.15).
 - Filtro "mías vs del equipo" en `/hoy/tareas` (hoy muestra todas las de la sucursal).
