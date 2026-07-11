@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { listarConversaciones } from "@/lib/data/inbox";
 import { horaMensaje } from "@/lib/inbox";
+import { AutoRefresh } from "@/components/inbox/auto-refresh";
 
 export const metadata = { title: "Inbox" };
 
@@ -12,6 +13,7 @@ export default async function InboxPage() {
 
   return (
     <div className="space-y-5">
+      <AutoRefresh cadaMs={10000} />
       <Link
         href="/clientes"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"

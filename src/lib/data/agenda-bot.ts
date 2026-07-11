@@ -87,18 +87,68 @@ export async function proximosHorarios(
     return false;
   };
 
-  const candidatos: HorarioCandidato[] = [];
-  for (let dia = 0; dia <= 7 && candidatos.length < n; dia++) {
+  // Todos los slots libres de la ventana, calificados por qué tan buenos son
+  // para CERRAR cita (no el primero cronológico: eso proponía sábado 7 pm).
+  const libres: { ms: number; iso: string; puntaje: number; fecha: string }[] = [];
+  for (let dia = 0; dia <= 7; dia++) {
     const fecha = fechaMty(dia);
-    for (let h = ABRE_H; h <= ULTIMA_CITA_H && candidatos.length < n; h++) {
+    for (let h = ABRE_H; h <= ULTIMA_CITA_H; h++) {
       const iso = `${fecha}T${String(h).padStart(2, "0")}:00:00${OFFSET_MTY}`;
       const ms = new Date(iso).getTime();
       if (ms < ahora + ANTICIPACION_MS) continue;
       if (ocupado(ms)) continue;
-      candidatos.push({ iso: new Date(ms).toISOString(), etiqueta: etiquetaHorario(iso) });
+      libres.push({ ms, iso, fecha, puntaje: puntajeSlot(ms, dia) });
     }
   }
+  libres.sort((a, b) => b.puntaje - a.puntaje);
+
+  // Principal = el mejor calificado; los siguientes, el mejor de OTRO día cada
+  // uno (dos opciones del mismo día no le sirven a quien no puede ese día).
+  const candidatos: HorarioCandidato[] = [];
+  const fechasUsadas = new Set<string>();
+  for (const s of libres) {
+    if (candidatos.length >= n) break;
+    if (fechasUsadas.has(s.fecha)) continue;
+    fechasUsadas.add(s.fecha);
+    candidatos.push({ iso: new Date(s.ms).toISOString(), etiqueta: etiquetaHorario(s.iso) });
+  }
   return candidatos;
+}
+
+/*
+  Calificación de un slot (mayor = mejor). Pesos iniciales acordados con Fer
+  (2026-07-11) — SE ITERAN con datos reales (qué horarios convierten y a cuáles
+  sí llegan; cuando haya volumen, esto se vuelve data-driven):
+  - Franjas doradas: media mañana-mediodía (11-13) y tarde (16-18) — cómodas
+    para el equipo y las más probables para el cliente.
+  - Franja de comida (14-15) floja; 10 am regular; 7 pm mala (nadie quiere ir
+    a esa hora y al equipo le cierra el día).
+  - Sábado brilla al mediodía y se castiga en la noche; domingo un escalón
+    abajo y también castigado en la noche. Entre semana, 5-6 pm suma (después
+    de la oficina).
+  - Lo pronto convierte más: bonus que decae por día de distancia.
+*/
+const PUNTAJE_HORA: Record<number, number> = {
+  10: 6, 11: 9, 12: 9, 13: 8, 14: 4, 15: 4, 16: 8, 17: 9, 18: 7, 19: 2,
+};
+
+function puntajeSlot(ms: number, diasDesdeHoy: number): number {
+  const mty = new Date(ms - 6 * 60 * 60 * 1000); // reloj Monterrey (UTC-6 fijo)
+  const hora = mty.getUTCHours();
+  const dow = mty.getUTCDay(); // 0=dom, 6=sáb
+
+  let p = PUNTAJE_HORA[hora] ?? 3;
+  if (dow === 6) {
+    if (hora >= 17) p -= 4; // sábado en la noche: espantoso (palabras de Fer)
+    if (hora >= 11 && hora <= 13) p += 1; // sábado al mediodía: el clásico
+  } else if (dow === 0) {
+    p -= 1; // domingo, un escalón abajo
+    if (hora >= 17) p -= 4;
+  } else if (hora === 17 || hora === 18) {
+    p += 1; // entre semana saliendo de la oficina
+  }
+  p += Math.max(0, 3 - diasDesdeHoy * 0.5); // lo pronto convierte más
+  return p;
 }
 
 /**

@@ -49,6 +49,14 @@ bot (el humano responde desde el Inbox).
   y el slot; validado en Postgres local). El bot solo PROPONE — no confirma citas
   ni las crea (eso sigue siendo bot v2). Si 0035 no está aplicada en prod, el
   candado entre chats se omite con gracia y lo demás funciona.
+- **Ranking de horarios (4º caso de Fer: propuso sábado 7 pm):** los slots libres
+  ya no se ofrecen en orden cronológico sino por `puntajeSlot` en `agenda-bot.ts`
+  — franjas doradas 11-13 y 16-18, comida (14-15) floja, 7 pm castigada, sábado
+  brilla al mediodía y se castiga de noche, domingo un escalón abajo, bonus por
+  cercanía en días. La alternativa siempre es de OTRO día. Pesos = constantes
+  comentadas, para iterar; cuando haya volumen, calibrar con datos reales
+  (resultado de cita por franja). Vetado "aquí la ubicación" (usar "es esta la
+  ubicación:" y variantes); horas SIEMPRE am/pm, nunca 24 h ("10 a 20").
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
