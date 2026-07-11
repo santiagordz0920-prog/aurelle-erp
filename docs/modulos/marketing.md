@@ -6,7 +6,26 @@
 
 ## Estado
 Construido 2026-07-09. Migración **0029** (`gasto_publicitario`). v1: funnel por
-`fuente_canal` + captura manual de gasto + CAC. Build/lint verdes + smoke.
+`fuente_canal` + captura manual de gasto + CAC. **v3 (2026-07-11): sync automático
+del gasto con la Meta Marketing API** — sin migración; activa al poner
+`META_ADS_ACCESS_TOKEN` (System User con `ads_read`) y `META_AD_ACCOUNT_ID` en
+Vercel. Build/lint verdes + smoke.
+
+## Sync de gasto con Meta (v3)
+- `src/lib/meta-ads.ts`: `metaAdsConfigurado()`, `obtenerGastoMeta()` — insights
+  `level=campaign` de `this_month` + `last_month` (cierra el mes anterior aunque
+  el cron corra ya entrado el nuevo).
+- `src/lib/data/ads-sync.ts` (service_role): `sincronizarGastoAds()` — upsert
+  app-level por llave natural (`periodo`, `canal='ads'`, `detalle`=nombre de
+  campaña): si la fila existe (manual o de sync), ACTUALIZA el monto (la API es
+  la fuente de verdad del canal ads); si no y monto>0, inserta. Sin migración.
+- `/api/cron/ads` (Vercel Cron diario 8:30 UTC, `CRON_SECRET`); si las env vars
+  no están, responde ok con nota (no truena).
+- Botón "Sincronizar con Meta" en `/crecimiento` (solo-admin, `SyncAds` +
+  acción `sincronizarGastoMeta`); la tarjeta de captura muestra el estado de la
+  conexión. **El texto de campaña en Meta debe coincidir con
+  `cliente.fuente_detalle` para que el CAC por campaña cuadre** (misma regla de
+  match por texto que v2).
 
 ## Qué hace
 - **Embudo por fuente** (ads/expo/referido/orgánico): leads → con cita → visitaron

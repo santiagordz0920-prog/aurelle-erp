@@ -60,3 +60,26 @@ export async function registrarGasto(
   revalidatePath("/crecimiento");
   return { ok: true };
 }
+
+/**
+ * Sincroniza el gasto de Meta Ads (mes en curso + mes anterior) hacia
+ * gasto_publicitario. Solo-admin; respaldo manual del cron diario /api/cron/ads.
+ */
+export async function sincronizarGastoMeta(): Promise<ResultadoAccion & { detalle?: string }> {
+  const usuario = await getUsuarioActual();
+  if (usuario.rol !== "admin") return { ok: false, error: "Solo un admin puede sincronizar." };
+  if (!supabaseConfigurado()) {
+    return { ok: false, error: "La sincronización corre en producción (aquí hay datos de muestra)." };
+  }
+  try {
+    const { sincronizarGastoAds } = await import("@/lib/data/ads-sync");
+    const r = await sincronizarGastoAds();
+    revalidatePath("/crecimiento");
+    return {
+      ok: true,
+      detalle: `${r.campanas} campañas leídas de Meta: ${r.creados} nuevas, ${r.actualizados} actualizadas.`,
+    };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "No se pudo sincronizar con Meta." };
+  }
+}

@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GastoForm } from "@/components/marketing/gasto-form";
+import { SyncAds } from "@/components/marketing/sync-ads";
+import { metaAdsConfigurado } from "@/lib/meta-ads";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
 import { funnelPorFuente, funnelPorCampana, tasa, type FilaFunnel } from "@/lib/data/marketing";
@@ -190,10 +192,25 @@ export default async function CrecimientoPage() {
           <CardTitle className="text-sm">Capturar gasto de publicidad</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          {metaAdsConfigurado() ? (
+            <>
+              <SyncAds />
+              <p className="text-xs text-muted-foreground">
+                El gasto de <strong>ads</strong> llega solo de Meta cada mañana (y con el botón, ahora mismo);
+                ya no se captura a mano. El formulario queda para expo, referidos y otros canales.
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Conexión con Meta Ads pendiente: al poner <code>META_ADS_ACCESS_TOKEN</code> y{" "}
+              <code>META_AD_ACCOUNT_ID</code> en Vercel, el gasto de ads se sincroniza solo cada mañana.
+              Mientras, captúralo aquí.
+            </p>
+          )}
           <GastoForm mesActual={mesActual} />
           <p className="text-xs text-muted-foreground">
-            Carga manual del gasto de Meta/ads por mes y canal (la sincronización automática con la API de Meta
-            llega después). El gasto alimenta el CAC de la tabla de arriba.
+            El gasto alimenta el CAC de la tabla de arriba. Usa el mismo texto de campaña que en el lead
+            para que el CAC por campaña cuadre.
           </p>
         </CardContent>
       </Card>
