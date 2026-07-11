@@ -5,8 +5,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
-import type { Cita, EstadoCita, ResultadoCita } from "@/lib/citas";
-import { seTraslapan } from "@/lib/citas";
+import type { Cita, EstadoCita, ResultadoCita, TipoCita } from "@/lib/citas";
+import { seTraslapan, fechaMonterrey, TIPO_CITA } from "@/lib/citas";
 import type { EstadoPipeline } from "@/lib/clientes";
 import { PIPELINE_ORDEN } from "@/lib/clientes";
 import { CITAS_MUESTRA } from "@/lib/data/citas-muestra";
@@ -87,7 +87,9 @@ export async function agendarCita(
       updated_at: new Date().toISOString(),
     };
     CITAS_MUESTRA.push(nueva);
+    await crearTareaPreparacion(d.cliente_id, d.tipo, inicio);
     revalidar(d.cliente_id);
+    revalidatePath("/hoy/tareas");
     return { ok: true };
   }
 
@@ -103,8 +105,85 @@ export async function agendarCita(
     sucursal_id: usuario.sucursalId,
   });
   if (error) return { ok: false, error: "No se pudo agendar la cita." };
+  // Enganche §3.15 (espíritu): la cita nueva sugiere una tarea de preparación.
+  await crearTareaPreparacion(d.cliente_id, d.tipo, inicio);
   revalidar(d.cliente_id);
+  revalidatePath("/hoy/tareas");
   return { ok: true };
+}
+
+/**
+ * Cita agendada → tarea SUGERIDA de preparación (ligada al cliente, vence el día
+ * de la cita). Aparece en "Sugerencias nuevas" de Hoy para aceptar/descartar en
+ * un toque. Una por cliente pendiente (no duplica si ya hay una sin atender).
+ */
+async function crearTareaPreparacion(clienteId: string, tipo: TipoCita, inicioISO: string) {
+  const usuario = await getUsuarioActual();
+  const vence = fechaMonterrey(new Date(inicioISO));
+  const etiquetaTipo = TIPO_CITA[tipo].etiqueta;
+  const PREFIJO = "Preparar cita";
+
+  if (!supabaseConfigurado()) {
+    const cli = CLIENTES_MUESTRA.find((c) => c.id === clienteId);
+    const yaHay = TAREAS_MUESTRA.some(
+      (t) =>
+        t.entidad_tipo === "cliente" &&
+        t.entidad_id === clienteId &&
+        t.estado === "pendiente" &&
+        !t.descartada &&
+        t.titulo.startsWith(PREFIJO),
+    );
+    if (yaHay) return;
+    TAREAS_MUESTRA.unshift({
+      id: `d1000000-0000-0000-0000-0000000009${(TAREAS_MUESTRA.length + 30).toString().slice(-2)}`,
+      titulo: `${PREFIJO}: ${cli?.nombre ?? "cliente"} (${etiquetaTipo})`,
+      detalle: "Prepara diseños, opciones y upsells antes de la cita.",
+      responsable_id: usuario.id,
+      responsable_nombre: null,
+      prioridad: "media",
+      estado: "pendiente",
+      fecha_vencimiento: vence,
+      entidad_tipo: "cliente",
+      entidad_id: clienteId,
+      origen: "sugerida",
+      descartada: false,
+      completada_at: null,
+      creada_por: usuario.id,
+      sucursal_id: usuario.sucursalId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    return;
+  }
+
+  const supabase = await createClient();
+  const { data: existentes } = await supabase
+    .from("tarea")
+    .select("id")
+    .eq("entidad_tipo", "cliente")
+    .eq("entidad_id", clienteId)
+    .eq("estado", "pendiente")
+    .eq("descartada", false)
+    .ilike("titulo", `${PREFIJO}%`)
+    .limit(1);
+  if (existentes && existentes.length > 0) return;
+  const { data: cli } = await supabase
+    .from("cliente")
+    .select("nombre")
+    .eq("id", clienteId)
+    .maybeSingle();
+  await supabase.from("tarea").insert({
+    titulo: `${PREFIJO}: ${cli?.nombre ?? "cliente"} (${etiquetaTipo})`,
+    detalle: "Prepara diseños, opciones y upsells antes de la cita.",
+    responsable_id: usuario.id,
+    prioridad: "media",
+    fecha_vencimiento: vence,
+    entidad_tipo: "cliente",
+    entidad_id: clienteId,
+    origen: "sugerida",
+    creada_por: usuario.id,
+    sucursal_id: usuario.sucursalId,
+  });
 }
 
 /** Citas del mismo día y sala (para el chequeo de traslape). */
