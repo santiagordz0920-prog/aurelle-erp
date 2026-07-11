@@ -31,6 +31,7 @@ export async function listarTareas(filtro: FiltroTareas = {}): Promise<Tarea[]> 
   if (!supabaseConfigurado()) {
     return TAREAS_MUESTRA.filter(
       (t) =>
+        !t.descartada &&
         (!filtro.estado || t.estado === filtro.estado) &&
         (!filtro.entidad_tipo || t.entidad_tipo === filtro.entidad_tipo) &&
         (!filtro.entidad_id || t.entidad_id === filtro.entidad_id),
@@ -43,6 +44,7 @@ export async function listarTareas(filtro: FiltroTareas = {}): Promise<Tarea[]> 
   let query = supabase
     .from("tarea")
     .select("*, usuario:responsable_id(nombre)")
+    .eq("descartada", false)
     .order("created_at", { ascending: false });
   if (filtro.estado) query = query.eq("estado", filtro.estado);
   if (filtro.entidad_tipo) query = query.eq("entidad_tipo", filtro.entidad_tipo);

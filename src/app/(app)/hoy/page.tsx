@@ -11,6 +11,7 @@ import {
   PackageCheck,
   Bell,
   Wrench,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
@@ -415,6 +416,9 @@ async function VistaTaller({ tareas }: { tareas: Awaited<ReturnType<typeof tarea
 }
 
 function TareasCard({ tareas }: { tareas: Awaited<ReturnType<typeof tareasDeHoy>> }) {
+  // §3.15: separar "las sugerencias nuevas" de "mis tareas del día".
+  const sugerencias = tareas.filter((t) => t.origen === "sugerida");
+  const mias = tareas.filter((t) => t.origen !== "sugerida");
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
@@ -436,11 +440,28 @@ function TareasCard({ tareas }: { tareas: Awaited<ReturnType<typeof tareasDeHoy>
             className="border-0 bg-transparent py-8"
           />
         ) : (
-          <ul className="divide-y divide-border">
-            {tareas.map((t) => (
-              <TareaItem key={t.id} tarea={t} />
-            ))}
-          </ul>
+          <>
+            {sugerencias.length > 0 ? (
+              <>
+                <p className="flex items-center gap-1.5 px-4 pb-1 pt-3 text-xs font-medium text-accent">
+                  <Sparkles className="size-3.5" />
+                  Sugerencias nuevas — acepta o descarta
+                </p>
+                <ul className="divide-y divide-border">
+                  {sugerencias.map((t) => (
+                    <TareaItem key={t.id} tarea={t} />
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {mias.length > 0 ? (
+              <ul className="divide-y divide-border border-t border-border">
+                {mias.map((t) => (
+                  <TareaItem key={t.id} tarea={t} />
+                ))}
+              </ul>
+            ) : null}
+          </>
         )}
       </CardContent>
     </Card>

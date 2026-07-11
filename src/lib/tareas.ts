@@ -23,6 +23,7 @@ export type Tarea = {
   entidad_tipo: EntidadTarea | null;
   entidad_id: string | null;
   origen: OrigenTarea;
+  descartada?: boolean;
   completada_at: string | null;
   creada_por: string | null;
   sucursal_id: string;
