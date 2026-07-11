@@ -37,6 +37,7 @@ Construido en Fase 3 (primer módulo, sin dependencia de Meta). Última modifica
 - **Anti doble-reserva:** se valida en el Server Action (traslape por sala el mismo día), NO con
   constraint de BD. v2 podría usar exclusion constraint (btree_gist).
 - El **resultado** es el dato de oro (funnel inquiry→visita→cotización→cierre). Captura en un toque.
+- **Cita agendada → tarea de preparación (2026-07-11, §3.15):** `agendarCita` llama `crearTareaPreparacion` → tarea **sugerida** "Preparar cita: <cliente> (<tipo>)" ligada al cliente, vence el día de la cita (anclado a Monterrey). Aparece en "Sugerencias nuevas" de Hoy para aceptar/descartar en un toque. Idempotente: una por cliente pendiente sin descartar. Sin migración.
 - **Resultado → pipeline del cliente (matriz §4, fix 2026-07-09):** al `registrarResultado`, el cliente
   avanza en su `estado_pipeline` **solo hacia adelante** (`asistio→visito`, `cotizo→cotizado`, `cerro→cerrado`;
   mapeo `RESULTADO_A_PIPELINE` + rango por `PIPELINE_ORDEN`). Nunca retrocede ni resucita un `perdido`
