@@ -16,6 +16,9 @@ export type ItemResumenInbox = {
   no_leidos: number;
   borradores: number;
   ultimo_at: string | null;
+  /** Último borrador pendiente: para aprobar at-a-glance desde el widget. */
+  borrador_id: string | null;
+  borrador_texto: string | null;
 };
 
 export async function GET() {
@@ -30,15 +33,19 @@ export async function GET() {
     return NextResponse.json({ error: "sin sesión" }, { status: 401 });
   }
 
-  // Borradores de IA pendientes de aprobar, agrupados por conversación.
+  // Borradores de IA pendientes de aprobar, agrupados por conversación (nos
+  // quedamos con el más reciente de cada una para aprobarlo desde el widget).
   const { data: borradores } = await supabase
     .from("mensaje")
-    .select("conversacion_id")
+    .select("id, conversacion_id, cuerpo, created_at")
     .eq("estado_entrega", "borrador_ia")
+    .order("created_at", { ascending: true })
     .limit(200);
   const porConv = new Map<string, number>();
+  const ultimoBorrador = new Map<string, { id: string; cuerpo: string | null }>();
   for (const b of borradores ?? []) {
     porConv.set(b.conversacion_id, (porConv.get(b.conversacion_id) ?? 0) + 1);
+    ultimoBorrador.set(b.conversacion_id, { id: b.id, cuerpo: b.cuerpo });
   }
 
   // Conversaciones con no-leídos + las que tienen borrador (aunque estén leídas).
@@ -56,6 +63,7 @@ export async function GET() {
   const items: ItemResumenInbox[] = (convs ?? []).map((c) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cli = c.cliente as any;
+    const borrador = ultimoBorrador.get(c.id) ?? null;
     return {
       id: c.id,
       nombre: Array.isArray(cli) ? (cli[0]?.nombre ?? null) : (cli?.nombre ?? null),
@@ -63,6 +71,8 @@ export async function GET() {
       no_leidos: c.no_leidos,
       borradores: porConv.get(c.id) ?? 0,
       ultimo_at: c.ultimo_at,
+      borrador_id: borrador?.id ?? null,
+      borrador_texto: borrador?.cuerpo ?? null,
     };
   });
 

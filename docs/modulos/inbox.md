@@ -20,7 +20,7 @@ Sin migración nueva (el estado `borrador_ia` vive en `mensaje.estado_entrega`).
 - `/clientes/inbox` — lista de conversaciones (nombre/teléfono, último mensaje, no-leídos, hora). Enlace desde `/clientes`.
 - `/clientes/inbox/[id]` — hilo (burbujas entrante/saliente, marca IA, hora, estado de entrega) + **responder** con el compositor asistido (wa.me) hasta que el riel envíe por la API.
 - **Widget flotante global** (`components/inbox/inbox-flotante.tsx`, montado en `AppShell`): burbuja fija abajo-derecha en TODA la app con badge de pendientes (no leídos + borradores por aprobar), panel con las conversaciones que necesitan atención y liga al hilo. Sondea `/api/inbox/resumen` cada 25 s + al volver a la pestaña; Notification API del navegador si hay permiso (pide permiso al primer clic). Oculto dentro del hilo. Mobile: `bottom-20` para librar los tabs.
-- **`/api/inbox/resumen`** (route handler autenticado, RLS): conversaciones con `no_leidos>0` o con `borrador_ia` pendiente + total de pendientes.
+- **`/api/inbox/resumen`** (route handler autenticado, RLS): conversaciones con `no_leidos>0` o con `borrador_ia` pendiente + total de pendientes + **último borrador (id+texto) por conversación** para la aprobación at-a-glance del widget (`AprobarEnLinea` reusa `aprobarBorrador`/`descartarBorrador`).
 
 ## Refresco automático
 `AutoRefresh` (`components/inbox/auto-refresh.tsx`): `router.refresh()` periódico
