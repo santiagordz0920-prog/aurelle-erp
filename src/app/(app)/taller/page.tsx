@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Boxes, Hammer, Image as ImageIcon, ArrowRight } from "lucide-react";
+import { Boxes, Hammer, Image as ImageIcon, BookUser, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,13 @@ const SUBMODULOS = [
     icono: ImageIcon,
     titulo: "Biblioteca",
     descripcion: "Renders, CADs y fotos por pedido y galería general, filtrable por estilo, metal y piedra.",
+    activo: true,
+  },
+  {
+    href: "/taller/contactos",
+    icono: BookUser,
+    titulo: "Contactos útiles",
+    descripcion: "Joyeros, vaciadores y montadores para tercerizar procesos: especialidad, tiempos y precios estimados.",
     activo: true,
   },
 ];
