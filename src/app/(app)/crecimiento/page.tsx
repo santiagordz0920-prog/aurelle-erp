@@ -1,4 +1,5 @@
-import { TrendingUp, Lock } from "lucide-react";
+import Link from "next/link";
+import { TrendingUp, Lock, Tent } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,10 +56,19 @@ export default async function CrecimientoPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        titulo="Crecimiento — Marketing"
-        descripcion="El funnel por fuente y el costo por cliente (CAC). Solo admin."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <PageHeader
+          titulo="Crecimiento — Marketing"
+          descripcion="El funnel por fuente y el costo por cliente (CAC). Solo admin."
+        />
+        <Link
+          href="/crecimiento/expos"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+        >
+          <Tent className="size-4" />
+          Expos y ROI
+        </Link>
+      </div>
 
       {filasVisibles.length === 0 ? (
         <EmptyState
