@@ -33,6 +33,22 @@ bot (el humano responde desde el Inbox).
   coloquialismos de compa ("va que va", "de una") — para invitar: "¿te
   gustaría...?" / "si quieres...", variando. Los vetos nuevos se agregan a esta
   lista conforme Fer/Santiago reporten frases que rechinen.
+- **Datos del negocio en el prompt (2026-07-11, tercer caso real de Fer):** el bot
+  alucinó "showroom Ellion, en Monterrey" y preguntó "¿por qué zona te queda
+  mejor?". Ahora el prompt fija los ÚNICOS hechos afirmables: Plaza Ellion, Av.
+  Gómez Morín, San Pedro Garza García ("nuestro showroom en San Pedro", nunca
+  "showroom Ellion" ni "Monterrey"), link de Maps fijo que se manda directo al
+  preguntar ubicación, horario todos los días 10:00-20:00. Vetado "te acomoda".
+- **Propone horarios REALES (migración 0035 + `lib/data/agenda-bot.ts`):** antes
+  de llamar a la IA se calculan 2 slots libres (citas agendadas/confirmadas de
+  piso_ventas + sugerencias vigentes de otros chats; citas de 60 min, 10:00-19:00
+  última, anticipación mínima 3 h) y se inyectan como contexto AGENDA. El esquema
+  de salida trae `horario_sugerido` (enum restringido a esos slots o "ninguno");
+  si el bot usó uno, `apartarHorario` lo bloquea 24 h para otros chats (unique
+  index (sala, inicio) → si dos bots corren a la vez, el segundo pierde el insert
+  y el slot; validado en Postgres local). El bot solo PROPONE — no confirma citas
+  ni las crea (eso sigue siendo bot v2). Si 0035 no está aplicada en prod, el
+  candado entre chats se omite con gracia y lo demás funciona.
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
