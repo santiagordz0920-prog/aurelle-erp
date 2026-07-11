@@ -11,7 +11,8 @@ Requiere `ANTHROPIC_API_KEY` en Vercel. Si no hay API key, el riel funciona sin
 bot (el humano responde desde el Inbox).
 
 ## Redacción anti-IA + ritmo humano (2026-07-11, reglas de Fer)
-- **Prompt endurecido:** longitud espejo del cliente (máx 3 frases), PROHIBIDOS los
+- **Prompt endurecido:** SIEMPRE de tú (nunca usted, aunque el cliente lo use;
+  regla de Fer 2026-07-11), longitud espejo del cliente (máx 3 frases), PROHIBIDOS los
   emojis / listas / markdown / muletillas de asistente ("¡Claro!", "Con gusto") /
   lenguaje call-center ("no dudes en", "¿en qué más puedo ayudarte?"); no parafrasear
   al cliente; máx 1 pregunta (o ninguna); no repetir el nombre del cliente; variar
