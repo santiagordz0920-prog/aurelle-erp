@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GastoForm } from "@/components/marketing/gasto-form";
 import { getUsuarioActual } from "@/lib/session";
 import { puedeVerAreaAdmin } from "@/lib/roles";
-import { funnelPorFuente, tasa, type FilaFunnel } from "@/lib/data/marketing";
+import { funnelPorFuente, funnelPorCampana, tasa, type FilaFunnel } from "@/lib/data/marketing";
 import { CANAL_FUENTE } from "@/lib/clientes";
 import { pesos } from "@/lib/inventario";
 
@@ -48,8 +48,10 @@ export default async function CrecimientoPage() {
 
   const ahora = new Date();
   const mesActual = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
-  const filas = (await funnelPorFuente()).filter((f) => f.leads > 0 || f.gasto > 0);
-  const tot = totales(filas);
+  const [filas, campanas] = await Promise.all([funnelPorFuente(), funnelPorCampana()]);
+  const filasVisibles = filas.filter((f) => f.leads > 0 || f.gasto > 0);
+  const tot = totales(filasVisibles);
+  const campanasVisibles = campanas.filter((c) => c.leads > 0 || c.gasto > 0);
 
   return (
     <div className="space-y-6">
@@ -58,7 +60,7 @@ export default async function CrecimientoPage() {
         descripcion="El funnel por fuente y el costo por cliente (CAC). Solo admin."
       />
 
-      {filas.length === 0 ? (
+      {filasVisibles.length === 0 ? (
         <EmptyState
           icono={TrendingUp}
           titulo="Aún sin datos de funnel"
@@ -85,7 +87,7 @@ export default async function CrecimientoPage() {
                 </tr>
               </thead>
               <tbody>
-                {filas.map((f) => {
+                {filasVisibles.map((f) => {
                   const iv = tasa(f.visitaron, f.leads);
                   const cac = f.cerraron > 0 ? f.gasto / f.cerraron : null;
                   return (
@@ -124,6 +126,54 @@ export default async function CrecimientoPage() {
           </CardContent>
         </Card>
       )}
+
+      {campanasVisibles.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Por campaña / zona (CAC por campaña)</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                  <th className="py-2 pr-3 font-medium">Campaña / zona</th>
+                  <th className="py-2 px-3 font-medium">Canal</th>
+                  <th className="py-2 px-3 font-medium">Leads</th>
+                  <th className="py-2 px-3 font-medium">Visitas</th>
+                  <th className="py-2 px-3 font-medium">Cierres</th>
+                  <th className="py-2 px-3 font-medium">Inquiry→visita</th>
+                  <th className="py-2 px-3 font-medium">Gasto</th>
+                  <th className="py-2 px-3 font-medium">CAC</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campanasVisibles.map((c) => {
+                  const iv = tasa(c.visitaron, c.leads);
+                  const cac = c.cerraron > 0 ? c.gasto / c.cerraron : null;
+                  return (
+                    <tr key={c.campana} className="border-b border-border/60">
+                      <td className="py-2 pr-3 font-medium text-foreground">{c.campana}</td>
+                      <td className="py-2 px-3 text-muted-foreground">{c.canal ? CANAL_FUENTE[c.canal] : "—"}</td>
+                      <td className="py-2 px-3">{c.leads}</td>
+                      <td className="py-2 px-3">{c.visitaron}</td>
+                      <td className="py-2 px-3 font-medium text-foreground">{c.cerraron}</td>
+                      <td className={`py-2 px-3 font-medium ${c.leads > 0 ? (iv >= KPI_INQUIRY_VISITA ? "text-success" : "text-warning") : "text-muted-foreground"}`}>
+                        {c.leads > 0 ? pct(iv) : "—"}
+                      </td>
+                      <td className="py-2 px-3">{c.gasto > 0 ? pesos(c.gasto) : "—"}</td>
+                      <td className="py-2 px-3">{cac != null ? pesos(cac) : "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <p className="mt-3 text-xs text-muted-foreground">
+              La campaña/zona sale del &ldquo;detalle&rdquo; del lead (`fuente_detalle`) y del gasto. Para que el
+              CAC por campaña cuadre, usa el mismo texto de campaña al capturar el gasto y al registrar el lead.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>
