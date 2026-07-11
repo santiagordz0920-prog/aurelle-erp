@@ -29,6 +29,10 @@ bot (el humano responde desde el Inbox).
   lenguaje de folleto ("desde X hasta Y", "contamos con"). El prompt trae una
   sección EJEMPLOS DE TONO (bien/mal, incluye casos reales) como few-shot de
   estilo; se marca "nunca los copies literal" para que no se vuelvan plantilla.
+- **Vetos puntuales de vocabulario (iteración en prod):** "te late" y
+  coloquialismos de compa ("va que va", "de una") — para invitar: "¿te
+  gustaría...?" / "si quieres...", variando. Los vetos nuevos se agregan a esta
+  lista conforme Fer/Santiago reporten frases que rechinen.
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
