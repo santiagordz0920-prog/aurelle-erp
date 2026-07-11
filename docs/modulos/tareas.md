@@ -28,15 +28,24 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 - `src/lib/tareas.ts`: constantes + `vencimiento()` (semáforo por fecha) y `esDeHoy()` (pendiente vencida/hoy/sin fecha).
 - `src/lib/data/tareas.ts`: `listarTareas(filtro)` (por estado/entidad), `tareasDeHoy()`.
 - `src/lib/data/usuarios.ts`: `listarUsuarios()` — directorio ligero para el selector de responsable (reutilizable).
-- `src/app/(app)/hoy/tareas/actions.ts`: `crearTarea`, `cambiarEstadoTarea` (toggle + completada_at), `eliminarTarea`.
+- `src/app/(app)/hoy/tareas/actions.ts`: `crearTarea`, `cambiarEstadoTarea` (toggle + completada_at), `eliminarTarea`, **`aceptarSugerencia`** (origen→manual), **`descartarSugerencia`** (descartada=true).
 
 ## Eventos que emite / consume
 - Consume (lectura) Clientes, Cotizador y Pedidos para el Dashboard — agregación en `/hoy`, sin escribir.
 - El Dashboard NO muestra costo/margen (esos siguen solo-admin en su módulo); muestra total, saldo y valor de pipeline.
 - Tareas **sugeridas por IA** (`origen='sugerida'`) — generadas por el cron nocturno `generar_tareas_seguimiento`
-  (ver `docs/modulos/seguimiento-cron.md`). Ya cubre: pedido atascado (0025), contrato sin firmar (0025) y
-  **cotización sin respuesta ≥5d (0027, Fase 5)**. Pendientes: stock bajo, conversación caliente abandonada
-  (esta última requiere el riel de WhatsApp). Recurrentes también pendientes.
+  (ver `docs/modulos/seguimiento-cron.md`). Cubre: pedido atascado (0025), contrato sin firmar (0025),
+  **cotización sin respuesta ≥5d (0027)** y **stock bajo (0028)**. Pendiente: conversación caliente abandonada
+  (requiere el riel de WhatsApp). Recurrentes también pendientes.
+
+## Aceptar/descartar sugerencias (0031, §3.15 "en un toque")
+- En `/hoy` (ambas vistas Ventas/Taller) y `/hoy/tareas`, una tarea `origen='sugerida'` pendiente muestra badge
+  **"Sugerida"** + botones **Aceptar / Descartar** (`TareaItem`). El Dashboard las separa en una sección
+  **"Sugerencias nuevas"** arriba de "mis tareas del día".
+- **Aceptar** (`aceptarSugerencia`): `origen` pasa a `manual` → se vuelve tarea normal (checkbox + eliminar).
+- **Descartar** (`descartarSugerencia`, migración **0031**): pone `descartada=true`. Se **oculta** de todas las
+  vistas (`listarTareas` filtra `descartada=false`) pero **sigue `estado='pendiente'`**, así el cron idempotente
+  (checa título + `estado='pendiente'`) **NO la vuelve a crear** cada noche. Validado en Postgres local.
 
 ## Lógica no obvia / trampas
 - "Tareas del día" = pendientes con fecha vencida, para hoy, o **sin fecha** (para que nada se pierda).
@@ -45,6 +54,8 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 - `crearTarea` sin responsable asigna al usuario actual (`responsable_id ?? usuario.id`).
 
 ## Pendientes conocidos de este módulo
+- **Tareas recurrentes** (§3.15: "revisar precios mensual", "conteo de vitrinas semanal") — aún manuales.
+- No hay "ver descartadas" / des-descartar (una sugerencia descartada queda oculta permanentemente).
 - **Recordar la vista preferida por usuario** (hoy el toggle no persiste entre visitas; default = Ventas). Falta la columna/preferencia; v2. La distinción real Santiago/Fer necesitará distinguir usuarios (hoy ambos admin).
 - Notificaciones push/in-app configurables (§3.16, fase posterior).
 - Tareas sugeridas por IA + recurrentes (§3.15).

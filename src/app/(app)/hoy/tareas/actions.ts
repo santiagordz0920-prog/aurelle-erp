@@ -128,3 +128,37 @@ export async function eliminarTarea(id: string): Promise<ResultadoAccion> {
   revalidar();
   return { ok: true };
 }
+
+/**
+ * §3.15 "acepta o descarta en un toque":
+ * - ACEPTAR una sugerencia → `origen` pasa a 'manual' (se vuelve tarea normal).
+ * - DESCARTAR → `descartada=true`: se oculta pero sigue 'pendiente', así el cron
+ *   idempotente (por título + estado='pendiente') NO la vuelve a crear.
+ */
+export async function aceptarSugerencia(id: string): Promise<ResultadoAccion> {
+  if (!supabaseConfigurado()) {
+    const t = TAREAS_MUESTRA.find((x) => x.id === id);
+    if (t) t.origen = "manual";
+    revalidar();
+    return { ok: true };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.from("tarea").update({ origen: "manual" }).eq("id", id);
+  if (error) return { ok: false, error: "No se pudo aceptar la sugerencia." };
+  revalidar();
+  return { ok: true };
+}
+
+export async function descartarSugerencia(id: string): Promise<ResultadoAccion> {
+  if (!supabaseConfigurado()) {
+    const t = TAREAS_MUESTRA.find((x) => x.id === id);
+    if (t) t.descartada = true;
+    revalidar();
+    return { ok: true };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.from("tarea").update({ descartada: true }).eq("id", id);
+  if (error) return { ok: false, error: "No se pudo descartar la sugerencia." };
+  revalidar();
+  return { ok: true };
+}

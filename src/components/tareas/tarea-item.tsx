@@ -2,12 +2,15 @@
 
 import { useTransition } from "react";
 import Link from "next/link";
-import { Check, Trash2, Link2 } from "lucide-react";
+import { Check, Trash2, Link2, Sparkles, X } from "lucide-react";
 import {
   cambiarEstadoTarea,
   eliminarTarea,
+  aceptarSugerencia,
+  descartarSugerencia,
 } from "@/app/(app)/hoy/tareas/actions";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   ENTIDAD_TAREA,
   PRIORIDAD_TAREA,
@@ -24,6 +27,7 @@ export function TareaItem({
 }) {
   const [pending, start] = useTransition();
   const hecha = tarea.estado === "hecha";
+  const esSugerencia = tarea.origen === "sugerida" && tarea.estado === "pendiente";
   const v = vencimiento(tarea.fecha_vencimiento, tarea.estado);
   const entidad =
     tarea.entidad_tipo && tarea.entidad_id
@@ -33,23 +37,32 @@ export function TareaItem({
 
   return (
     <li className="flex items-start gap-3 px-4 py-3">
-      <button
-        type="button"
-        aria-label={hecha ? "Marcar como pendiente" : "Marcar como hecha"}
-        disabled={pending}
-        onClick={() =>
-          start(async () => {
-            await cambiarEstadoTarea(tarea.id, hecha ? "pendiente" : "hecha");
-          })
-        }
-        className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
-          hecha
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-input hover:border-primary"
-        }`}
-      >
-        {hecha ? <Check className="size-3.5" /> : null}
-      </button>
+      {esSugerencia ? (
+        <span
+          className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent"
+          title="Sugerida por el sistema"
+        >
+          <Sparkles className="size-3" />
+        </span>
+      ) : (
+        <button
+          type="button"
+          aria-label={hecha ? "Marcar como pendiente" : "Marcar como hecha"}
+          disabled={pending}
+          onClick={() =>
+            start(async () => {
+              await cambiarEstadoTarea(tarea.id, hecha ? "pendiente" : "hecha");
+            })
+          }
+          className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+            hecha
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-input hover:border-primary"
+          }`}
+        >
+          {hecha ? <Check className="size-3.5" /> : null}
+        </button>
+      )}
 
       <div className="min-w-0 flex-1">
         <p
@@ -63,6 +76,9 @@ export function TareaItem({
           <p className="mt-0.5 text-xs text-muted-foreground">{tarea.detalle}</p>
         ) : null}
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+          {esSugerencia ? (
+            <Badge className="bg-accent-soft text-accent">Sugerida</Badge>
+          ) : null}
           <Badge className={PRIORIDAD_TAREA[tarea.prioridad].clase}>
             {PRIORIDAD_TAREA[tarea.prioridad].etiqueta}
           </Badge>
@@ -89,19 +105,42 @@ export function TareaItem({
         </div>
       </div>
 
-      <button
-        type="button"
-        aria-label="Eliminar tarea"
-        disabled={pending}
-        onClick={() =>
-          start(async () => {
-            await eliminarTarea(tarea.id);
-          })
-        }
-        className="mt-0.5 shrink-0 text-muted-foreground transition-colors hover:text-destructive"
-      >
-        <Trash2 className="size-4" />
-      </button>
+      {esSugerencia ? (
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={pending}
+            onClick={() => start(async () => { await aceptarSugerencia(tarea.id); })}
+          >
+            <Check className="size-3.5 text-success" />
+            Aceptar
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Descartar sugerencia"
+            disabled={pending}
+            onClick={() => start(async () => { await descartarSugerencia(tarea.id); })}
+          >
+            <X className="size-4 text-muted-foreground" />
+          </Button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          aria-label="Eliminar tarea"
+          disabled={pending}
+          onClick={() =>
+            start(async () => {
+              await eliminarTarea(tarea.id);
+            })
+          }
+          className="mt-0.5 shrink-0 text-muted-foreground transition-colors hover:text-destructive"
+        >
+          <Trash2 className="size-4" />
+        </button>
+      )}
     </li>
   );
 }
