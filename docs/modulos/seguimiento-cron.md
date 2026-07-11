@@ -48,3 +48,6 @@ Corre cada noche (Vercel Cron, `0 8 * * *` UTC ≈ 2 am Monterrey) y crea tareas
   (hoy solo crean tarea en `/hoy/tareas`).
 - Config de umbrales (7 días / 48 h) por ahora en la función SQL; editable por
   Santiago sería una mejora posterior.
+
+## Tareas recurrentes (0032, función aparte)
+- `generar_tareas_recurrentes()` (SECURITY DEFINER) — NO toca `generar_tareas_seguimiento`; el **mismo route** del cron llama ambas por RPC. Por cada `tarea_recurrente` activa, genera una instancia en `tarea` (origen='manual', `recurrente_id`) cuando el día del período ya llegó (`isodow>=dia` semanal / `day>=dia` mensual) y no existe otra instancia de esa plantilla en el período actual (`date_trunc('week'/'month')`). Idempotente: una por semana/mes. Config en `/hoy/tareas/recurrentes`.

@@ -24,5 +24,14 @@ export async function GET(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, creadas: (data as number) ?? 0 });
+  // Tareas recurrentes (§3.15): plantillas semanales/mensuales (0032).
+  const { data: recurrentes, error: errRec } = await supabase.rpc("generar_tareas_recurrentes");
+  if (errRec) {
+    return NextResponse.json({ error: errRec.message }, { status: 500 });
+  }
+  return NextResponse.json({
+    ok: true,
+    creadas: (data as number) ?? 0,
+    recurrentes: (recurrentes as number) ?? 0,
+  });
 }
