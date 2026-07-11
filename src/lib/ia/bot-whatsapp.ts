@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAnthropic, iaConfigurada, MODELO_IA } from "./anthropic";
 import { enviarTextoWa, indicarEscribiendoWa } from "@/lib/whatsapp";
+import { proximosHorarios, apartarHorario } from "@/lib/data/agenda-bot";
 
 /*
   Bot de WhatsApp con IA (§4: "Mensaje entrante → IA clasifica; si sensible →
@@ -37,9 +38,17 @@ CÓMO ESCRIBES (lo más importante — si un mensaje suena a asistente virtual, 
 - PROHIBIDO hablar como catálogo o folleto: "desde X hasta Y", "contamos con", "manejamos", "amplia variedad", "opciones para todos los gustos". No enumeres lo que hay; conversa.
 - Sin despedidas formales ni firmas: es un chat, no una carta.
 - VETADO "te late" (y coloquialismos de compa: "va que va", "sale y vale", "de una"): demasiado informal para Aurelle. Para invitar usa "¿te gustaría...?" o "si quieres..." — casual pero con clase, y varía entre ellas.
+- VETADO "te acomoda" / "¿qué día te acomoda?". Para agendar: propón un horario disponible concreto (te lo damos en el contexto AGENDA) y remata con "¿te gustaría?" o "¿puedes ese día?"; si el cliente prefiere otro, "¿qué día podrías?".
+
+DATOS DEL NEGOCIO (los ÚNICOS hechos de lugar/horario que puedes afirmar; nada de inventar):
+- El showroom está en Plaza Ellion, Av. Gómez Morín, San Pedro Garza García. Di "nuestro showroom en San Pedro" — NUNCA "showroom Ellion" (Ellion es la plaza, no nuestra marca) y NUNCA digas que estamos en Monterrey.
+- Si preguntan ubicación o cómo llegar, manda directo la dirección con este link (tal cual, es el único link que puedes enviar): https://maps.app.goo.gl/545b4PT4WK5bHsTh6 — NO preguntes "por qué zona te queda mejor" ni nada parecido: el showroom no se mueve.
+- Horario de visitas: todos los días de 10:00 a 20:00.
 
 EJEMPLOS DE TONO (guía de estilo, NUNCA los copies literal):
 - Invitar al showroom → MAL: "¿Te late que agendemos una visita?" (compa). BIEN: "¿Te gustaría venir al showroom a verlos en persona?" o "Si quieres, agendamos una visita y los ves con calma."
+- Proponer horario → MAL: "¿Qué día te acomoda para venir?" (vetado y en frío). BIEN: "Si quieres, mañana a las 5 tenemos espacio. ¿Puedes?" (usando un horario REAL de AGENDA; la fecha en palabras naturales, no "2026-07-12").
+- Preguntan ubicación → MAL: "Estamos en el showroom Ellion, en Monterrey. ¿Por qué zona te queda mejor?" (nombre inventado, ciudad mal, pregunta sin sentido). BIEN: "Estamos en Plaza Ellion, sobre Gómez Morín en San Pedro. Aquí está la ubicación: https://maps.app.goo.gl/545b4PT4WK5bHsTh6"
 - Cliente: "busco ver diseños" → MAL: "Tenemos varios estilos en el showroom, desde solitarios clásicos hasta diseños a la medida. ¿Lo imaginas más clásico o algo distinto?" (catálogo + comodín vago). BIEN: "¿Ya tienes idea de lo que le gusta o apenas andas explorando?"
 - Cliente: "cuánto cuesta un anillo?" → MAL: "Los precios varían dependiendo de múltiples factores." BIEN: "Depende mucho de la piedra y el diseño. ¿Traes algo en mente? Así te digo por dónde andaría." (y sensible=true: el número lo da una persona)
 - Cliente: "hola, información" → MAL: "¡Hola! Con gusto te comparto información sobre nuestros servicios." BIEN: "Hola, claro. ¿Andas buscando anillo de compromiso o argollas?"
@@ -56,34 +65,44 @@ REGLAS DE NEGOCIO (duras):
 
 Marca sensible=true cuando el mensaje implique: piedra central grande o de alto valor (2 quilates o más), negociación de precio o descuento, una queja/inconformidad/reclamo, algo que requiera un compromiso (precio, fecha, garantía), datos legales, que pregunten con quién hablan o si es un bot, o cualquier caso donde una persona del equipo deba decidir. En esos casos igual redacta la respuesta propuesta (para que el humano la use o la edite), pero no se enviará automáticamente.`;
 
-const ESQUEMA = {
-  type: "object" as const,
-  additionalProperties: false,
-  properties: {
-    intencion: {
-      type: "string",
-      enum: [
-        "saludo",
-        "informacion",
-        "agendar_cita",
-        "cotizacion",
-        "queja",
-        "seguimiento",
-        "otro",
-      ],
+/** Esquema de salida; `horario_sugerido` se restringe a los slots ofrecidos. */
+function esquemaBot(horariosIso: string[]) {
+  return {
+    type: "object" as const,
+    additionalProperties: false,
+    properties: {
+      intencion: {
+        type: "string",
+        enum: [
+          "saludo",
+          "informacion",
+          "agendar_cita",
+          "cotizacion",
+          "queja",
+          "seguimiento",
+          "otro",
+        ],
+      },
+      sensible: { type: "boolean" },
+      motivo: { type: "string" },
+      respuesta: { type: "string" },
+      horario_sugerido: {
+        type: "string",
+        enum: [...horariosIso, "ninguno"],
+        description:
+          "El ISO del horario de AGENDA que usaste en la respuesta, o 'ninguno' si no propusiste horario.",
+      },
     },
-    sensible: { type: "boolean" },
-    motivo: { type: "string" },
-    respuesta: { type: "string" },
-  },
-  required: ["intencion", "sensible", "motivo", "respuesta"],
-};
+    required: ["intencion", "sensible", "motivo", "respuesta", "horario_sugerido"],
+  };
+}
 
 type SalidaBot = {
   intencion: string;
   sensible: boolean;
   motivo: string;
   respuesta: string;
+  horario_sugerido?: string;
 };
 
 export type EntradaBot = {
@@ -160,12 +179,24 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
       ? `El cliente se llama ${entrada.clienteNombre}.`
       : "Aún no sabemos el nombre del cliente.";
 
+    // Horarios reales disponibles (citas + candado entre chats): el bot propone
+    // uno concreto en vez de preguntar "¿qué día podrías?" en frío.
+    const horarios = await proximosHorarios(supabase, entrada.conversacionId, 2);
+    const agenda =
+      horarios.length > 0
+        ? `AGENDA (horarios del showroom REALMENTE disponibles ahora; si invitas a agendar, propón el primero — el segundo es tu alternativa si el cliente dice que no puede; JAMÁS inventes otros horarios ni confirmes una cita como cerrada, solo propón):\n${horarios
+            .map((h) => `- ${h.iso} = ${h.etiqueta}`)
+            .join("\n")}`
+        : "AGENDA: no hay horarios disponibles a la mano; si el cliente quiere agendar, dile que le confirmas horario en un momento (y marca sensible=true para que el equipo lo agende).";
+
     const anthropic = getAnthropic();
     const resp = await anthropic.messages.create({
       model: MODELO_IA,
       max_tokens: 700,
-      system: `${SISTEMA}\n\nContexto: ${contexto}`,
-      output_config: { format: { type: "json_schema", schema: ESQUEMA } },
+      system: `${SISTEMA}\n\nContexto: ${contexto}\n\n${agenda}`,
+      output_config: {
+        format: { type: "json_schema", schema: esquemaBot(horarios.map((h) => h.iso)) },
+      },
       messages: mensajes,
     });
     const bloque = resp.content.find((b) => b.type === "text");
@@ -179,6 +210,12 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
 
   const respuesta = sinEmojis((salida.respuesta || "").trim());
   if (!respuesta) return;
+
+  // Si propuso un horario, apártalo: otro chat simultáneo ya no lo recibirá.
+  // Aplica también a borradores (reserva el slot mientras el humano aprueba).
+  if (salida.horario_sugerido && salida.horario_sugerido !== "ninguno") {
+    await apartarHorario(supabase, entrada.conversacionId, salida.horario_sugerido);
+  }
 
   if (salida.sensible) {
     // Cola humana: guardar como borrador para aprobar/editar, NO enviar.
