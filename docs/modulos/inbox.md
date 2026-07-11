@@ -4,12 +4,11 @@
 > Cloud API, y bot con IA (redacta y responde; cola de aprobación para lo sensible).
 
 ## Estado
-Construido en Fase 3. Shell (0018, 2026-07-06) + **riel vivo 2026-07-08 (webhook +
-envío por Cloud API + bot con IA + marcar leído)**. Sin migración nueva (el estado
-`borrador_ia` de la IA vive en `mensaje.estado_entrega`, columna text). Requiere
-variables de entorno de WhatsApp/Anthropic en Vercel (ver `docs/GUIA_WHATSAPP.md`).
-Build+lint verdes; webhook (verify GET / POST) probado local; el bot completo se
-verifica en prod con credenciales de Meta.
+Construido en Fase 3. Shell (0018, 2026-07-06) + **riel vivo 2026-07-08** + **EN
+PRODUCCIÓN REAL desde 2026-07-11** (Meta verificó el negocio, app publicada, env
+vars en Vercel; prueba de fuego pasada: mensaje real → ficha sola → bot respondió).
+**2026-07-11:** widget flotante global (`InboxFlotante`) + `/api/inbox/resumen`.
+Sin migración nueva (el estado `borrador_ia` vive en `mensaje.estado_entrega`).
 
 ## Tablas (migración 0018)
 - `conversacion` — RLS por sucursal. cliente_id (nullable), **telefono** (identificador natural, único por sucursal),
@@ -20,6 +19,8 @@ verifica en prod con credenciales de Meta.
 ## Rutas / pantallas
 - `/clientes/inbox` — lista de conversaciones (nombre/teléfono, último mensaje, no-leídos, hora). Enlace desde `/clientes`.
 - `/clientes/inbox/[id]` — hilo (burbujas entrante/saliente, marca IA, hora, estado de entrega) + **responder** con el compositor asistido (wa.me) hasta que el riel envíe por la API.
+- **Widget flotante global** (`components/inbox/inbox-flotante.tsx`, montado en `AppShell`): burbuja fija abajo-derecha en TODA la app con badge de pendientes (no leídos + borradores por aprobar), panel con las conversaciones que necesitan atención y liga al hilo. Sondea `/api/inbox/resumen` cada 25 s + al volver a la pestaña; Notification API del navegador si hay permiso (pide permiso al primer clic). Oculto dentro del hilo. Mobile: `bottom-20` para librar los tabs.
+- **`/api/inbox/resumen`** (route handler autenticado, RLS): conversaciones con `no_leidos>0` o con `borrador_ia` pendiente + total de pendientes.
 
 ## Capa de datos
 - `src/lib/inbox.ts`: tipos + `horaMensaje` (Monterrey).

@@ -103,6 +103,34 @@ export async function enviarPlantillaWa(
   }
 }
 
+/**
+ * Marca leído Y enciende el indicador "escribiendo..." en el WhatsApp del
+ * cliente (dura hasta 25 s o hasta que enviemos el mensaje). Junto con el
+ * retraso humanizado del bot, hace que la respuesta se sienta de una persona:
+ * palomitas azules → "escribiendo..." → mensaje.
+ */
+export async function indicarEscribiendoWa(waMessageId: string): Promise<void> {
+  if (!whatsappConfigurado()) return;
+  const url = `https://graph.facebook.com/${API_VERSION}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        status: "read",
+        message_id: waMessageId,
+        typing_indicator: { type: "text" },
+      }),
+    });
+  } catch {
+    // No es crítico: si falla, solo no se ve el "escribiendo...".
+  }
+}
+
 /** Marca como leídos los mensajes en Meta (los ✓✓ azules del lado del cliente). */
 export async function marcarLeidoWa(waMessageId: string): Promise<void> {
   if (!whatsappConfigurado()) return;
