@@ -24,6 +24,11 @@ bot (el humano responde desde el Inbox).
   **leído + "escribiendo..."** (`indicarEscribiendoWa`, typing indicator de Meta,
   dura hasta 25 s). El webhook declara `maxDuration=60` para que quepa en `after()`.
   En caso sensible NO hay typing (no prometer respuesta que tardará en llegar).
+- **Anti comodín vago + anti catálogo (2026-07-11, iteración con Fer en prod):**
+  prohibido "¿...o algo distinto?" (opciones concretas o pregunta abierta) y el
+  lenguaje de folleto ("desde X hasta Y", "contamos con"). El prompt trae una
+  sección EJEMPLOS DE TONO (bien/mal, incluye casos reales) como few-shot de
+  estilo; se marca "nunca los copies literal" para que no se vuelvan plantilla.
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
