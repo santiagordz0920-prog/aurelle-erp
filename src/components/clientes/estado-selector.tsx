@@ -74,3 +74,47 @@ export function EstadoSelector({
     </div>
   );
 }
+
+/*
+  Variante compacta para la LISTA de leads (override manual de etapa en un
+  toque, pedido de Santiago para Fer). Solo el select; si eligen "perdido" se
+  pide el motivo con un prompt para no ensanchar la fila.
+*/
+export function EstadoSelectorMini({
+  clienteId,
+  estado,
+}: {
+  clienteId: string;
+  estado: EstadoPipeline;
+}) {
+  const [sel, setSel] = useState<EstadoPipeline>(estado);
+  const [pending, start] = useTransition();
+
+  function onChange(nuevo: EstadoPipeline) {
+    setSel(nuevo);
+    const motivo =
+      nuevo === "perdido"
+        ? (window.prompt("Motivo de pérdida (opcional):") ?? undefined)
+        : undefined;
+    start(async () => {
+      await cambiarEstado(clienteId, nuevo, motivo);
+    });
+  }
+
+  return (
+    <Select
+      value={sel}
+      disabled={pending}
+      onChange={(e) => onChange(e.target.value as EstadoPipeline)}
+      onClick={(e) => e.stopPropagation()}
+      className="h-9 w-36 shrink-0 text-xs"
+      aria-label="Etapa del lead"
+    >
+      {TODOS.map((s) => (
+        <option key={s} value={s}>
+          {ESTADO_PIPELINE[s].etiqueta}
+        </option>
+      ))}
+    </Select>
+  );
+}

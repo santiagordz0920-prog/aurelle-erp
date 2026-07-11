@@ -103,14 +103,24 @@ export async function eliminarExpo(id: string): Promise<ResultadoAccion> {
   return { ok: true };
 }
 
-const leadSchema = z.object({
-  expo_nombre: z.string().trim().min(1),
-  nombre: z.string().trim().min(2, "El nombre es obligatorio."),
-  telefono: z.string().trim().optional().nullable(),
-  fecha_boda: z.string().optional().nullable(),
-});
+const leadSchema = z
+  .object({
+    expo_nombre: z.string().trim().min(1),
+    nombre: z.string().trim().min(2, "El nombre es obligatorio."),
+    telefono: z.string().trim().optional().nullable(),
+    correo: z.string().trim().email("Correo no válido.").optional().nullable(),
+    otro_contacto: z.string().trim().optional().nullable(),
+    fecha_boda: z.string().optional().nullable(),
+  })
+  .refine((d) => d.telefono || d.correo || d.otro_contacto, {
+    message: "Captura al menos un contacto (teléfono, correo u otro).",
+  });
 
-/** Captura rápida de lead en el stand → cliente con fuente=expo, detalle=nombre. */
+/**
+ * Captura rápida de lead en el stand → cliente con fuente=expo, detalle=nombre.
+ * En expo el contacto puede ser teléfono, correo u otro — mínimo uno; el
+ * preferido queda en el primero capturado. Teléfono sin espacios (regla 0036).
+ */
 export async function capturarLeadExpo(
   _prev: ResultadoAccion,
   formData: FormData,
@@ -119,10 +129,14 @@ export async function capturarLeadExpo(
     expo_nombre: formData.get("expo_nombre"),
     nombre: formData.get("nombre"),
     telefono: (formData.get("telefono") as string) || null,
+    correo: (formData.get("correo") as string) || null,
+    otro_contacto: (formData.get("otro_contacto") as string) || null,
     fecha_boda: (formData.get("fecha_boda") as string) || null,
   });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos no válidos." };
   const d = parsed.data;
+  const telefono = d.telefono ? d.telefono.replace(/[^0-9+]/g, "") : null;
+  const contacto_preferido = telefono ? "telefono" : d.correo ? "correo" : "otro";
   const usuario = await getUsuarioActual();
 
   if (!supabaseConfigurado()) {
@@ -130,7 +144,10 @@ export async function capturarLeadExpo(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       id: `10000000-0000-0000-0000-0000000009${(CLIENTES_MUESTRA.length + 10).toString().slice(-2)}` as any,
       nombre: d.nombre,
-      telefono: d.telefono ?? null,
+      telefono,
+      correo: d.correo ?? null,
+      otro_contacto: d.otro_contacto ?? null,
+      contacto_preferido,
       fecha_nacimiento: null,
       fecha_boda: d.fecha_boda || null,
       pareja_nombre: null,
@@ -147,7 +164,10 @@ export async function capturarLeadExpo(
   const supabase = await createClient();
   const { error } = await supabase.from("cliente").insert({
     nombre: d.nombre,
-    telefono: d.telefono ?? null,
+    telefono,
+    correo: d.correo ?? null,
+    otro_contacto: d.otro_contacto ?? null,
+    contacto_preferido,
     fecha_boda: d.fecha_boda || null,
     fuente_canal: "expo",
     fuente_detalle: d.expo_nombre,

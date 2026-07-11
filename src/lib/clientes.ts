@@ -4,6 +4,7 @@
 */
 
 export type CanalFuente = "ads" | "expo" | "referido" | "organico";
+export type MetodoContacto = "telefono" | "correo" | "instagram" | "facebook" | "otro";
 export type EstadoPipeline =
   | "nuevo"
   | "conversando"
@@ -17,6 +18,12 @@ export type Cliente = {
   id: string;
   nombre: string;
   telefono: string | null;
+  correo: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  otro_contacto: string | null;
+  contacto_preferido: MetodoContacto | null;
+  interes: string | null;
   fecha_nacimiento: string | null;
   fecha_boda: string | null;
   pareja_nombre: string | null;
@@ -47,6 +54,68 @@ export const CANAL_FUENTE: Record<CanalFuente, string> = {
   referido: "Referido",
   organico: "Orgánico",
 };
+
+export const METODO_CONTACTO: Record<MetodoContacto, string> = {
+  telefono: "WhatsApp",
+  correo: "Correo",
+  instagram: "Instagram",
+  facebook: "Messenger",
+  otro: "Otro",
+};
+
+// Orden de fallback cuando no hay contacto_preferido marcado.
+const ORDEN_CONTACTO: MetodoContacto[] = [
+  "telefono",
+  "correo",
+  "instagram",
+  "facebook",
+  "otro",
+];
+
+export function valorContacto(
+  c: Pick<Cliente, "telefono" | "correo" | "instagram" | "facebook" | "otro_contacto">,
+  metodo: MetodoContacto,
+): string | null {
+  switch (metodo) {
+    case "telefono":
+      return c.telefono;
+    case "correo":
+      return c.correo;
+    case "instagram":
+      return c.instagram;
+    case "facebook":
+      return c.facebook;
+    case "otro":
+      return c.otro_contacto;
+  }
+}
+
+/**
+ * El contacto PRINCIPAL del cliente: el preferido si está marcado y tiene
+ * valor; si no, el primero con valor en el orden de fallback. Es el único que
+ * muestra el CRM en listas — los demás solo se registran en la ficha.
+ */
+export function contactoPrincipal(
+  c: Pick<
+    Cliente,
+    "telefono" | "correo" | "instagram" | "facebook" | "otro_contacto" | "contacto_preferido"
+  >,
+): { metodo: MetodoContacto; valor: string } | null {
+  if (c.contacto_preferido) {
+    const v = valorContacto(c, c.contacto_preferido);
+    if (v) return { metodo: c.contacto_preferido, valor: v };
+  }
+  for (const m of ORDEN_CONTACTO) {
+    const v = valorContacto(c, m);
+    if (v) return { metodo: m, valor: v };
+  }
+  return null;
+}
+
+/** Teléfono sin separadores: solo dígitos y "+" (WhatsApp lo copia con espacios). */
+export function normalizarTelefono(tel: string): string {
+  return tel.replace(/[^0-9+]/g, "");
+}
 
 // Orden del pipeline de lead (§3.1). El último 'perdido' se maneja aparte.
 export const PIPELINE_ORDEN: EstadoPipeline[] = [

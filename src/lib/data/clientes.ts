@@ -9,27 +9,36 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { CLIENTES_MUESTRA, NOTAS_MUESTRA } from "./clientes-muestra";
+import { CONVERSACIONES_MUESTRA, MENSAJES_MUESTRA } from "./inbox-muestra";
 
 /*
   Capa de acceso a datos del CRM. En producción usa Supabase (RLS filtra por
   sucursal y rol automáticamente). En local sin llaves usa datos de muestra.
 */
 
-function filtrar(clientes: Cliente[], q?: string): Cliente[] {
-  if (!q) return clientes;
+function filtrar(clientes: Cliente[], q?: string, etapa?: EstadoPipeline): Cliente[] {
+  const base = etapa ? clientes.filter((c) => c.estado_pipeline === etapa) : clientes;
+  if (!q) return base;
   const t = q.toLowerCase();
-  return clientes.filter(
+  // Búsqueda de teléfono insensible a espacios/guiones: se comparan solo dígitos.
+  const telQ = q.replace(/\D/g, "");
+  return base.filter(
     (c) =>
       c.nombre.toLowerCase().includes(t) ||
-      (c.telefono ?? "").toLowerCase().includes(t) ||
+      (telQ.length >= 4 && (c.telefono ?? "").replace(/\D/g, "").includes(telQ)) ||
+      (c.correo ?? "").toLowerCase().includes(t) ||
+      (c.instagram ?? "").toLowerCase().includes(t) ||
       (c.fuente_detalle ?? "").toLowerCase().includes(t) ||
       c.etiquetas.some((e) => e.toLowerCase().includes(t)),
   );
 }
 
-export async function listarClientes(q?: string): Promise<Cliente[]> {
+export async function listarClientes(
+  q?: string,
+  etapa?: EstadoPipeline,
+): Promise<Cliente[]> {
   if (!supabaseConfigurado()) {
-    return filtrar(CLIENTES_MUESTRA, q).sort((a, b) =>
+    return filtrar(CLIENTES_MUESTRA, q, etapa).sort((a, b) =>
       b.created_at.localeCompare(a.created_at),
     );
   }
@@ -38,14 +47,106 @@ export async function listarClientes(q?: string): Promise<Cliente[]> {
     .from("cliente")
     .select("*")
     .order("created_at", { ascending: false });
+  if (etapa) query = query.eq("estado_pipeline", etapa);
   if (q) {
-    query = query.or(
-      `nombre.ilike.%${q}%,telefono.ilike.%${q}%,fuente_detalle.ilike.%${q}%`,
-    );
+    // Comas/paréntesis rompen la sintaxis de or() de PostgREST.
+    const qs = q.replace(/[,()]/g, " ").trim();
+    const filtros = [
+      `nombre.ilike.%${qs}%`,
+      `fuente_detalle.ilike.%${qs}%`,
+      `correo.ilike.%${qs}%`,
+      `instagram.ilike.%${qs}%`,
+    ];
+    // Teléfonos guardados sin espacios (0036): buscar por solo-dígitos del query.
+    const telQ = q.replace(/\D/g, "");
+    if (telQ.length >= 4) filtros.push(`telefono.ilike.%${telQ}%`);
+    if (qs) query = query.or(filtros.join(","));
   }
   const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as Cliente[];
+}
+
+/*
+  Lista de leads at-a-glance (feedback de Santiago 2026-07-11): cada cliente con
+  su última interacción de WhatsApp, mensajes sin contestar y respuestas de IA
+  esperando aprobación — para que /clientes diga de un vistazo quién necesita
+  atención y qué busca cada quien.
+*/
+export type LeadResumen = Cliente & {
+  conversacion_id: string | null;
+  ultima_interaccion: string | null;
+  no_leidos: number;
+  borradores: number;
+};
+
+export async function listarLeads(
+  q?: string,
+  etapa?: EstadoPipeline,
+): Promise<LeadResumen[]> {
+  const clientes = await listarClientes(q, etapa);
+  if (clientes.length === 0) return [];
+
+  if (!supabaseConfigurado()) {
+    return clientes.map((c) => {
+      const conv = CONVERSACIONES_MUESTRA.find((x) => x.cliente_id === c.id);
+      const borradores = conv
+        ? MENSAJES_MUESTRA.filter(
+            (m) => m.conversacion_id === conv.id && m.estado_entrega === "borrador_ia",
+          ).length
+        : 0;
+      return {
+        ...c,
+        conversacion_id: conv?.id ?? null,
+        ultima_interaccion: conv?.ultimo_at ?? null,
+        no_leidos: conv?.no_leidos ?? 0,
+        borradores,
+      };
+    });
+  }
+
+  const supabase = await createClient();
+  const { data: convs } = await supabase
+    .from("conversacion")
+    .select("id, cliente_id, ultimo_at, no_leidos")
+    .in("cliente_id", clientes.map((c) => c.id));
+
+  type ConvMini = { id: string; cliente_id: string; ultimo_at: string | null; no_leidos: number };
+  const porCliente = new Map<string, ConvMini>();
+  for (const cv of (convs ?? []) as ConvMini[]) {
+    const previa = porCliente.get(cv.cliente_id);
+    if (!previa || (cv.ultimo_at ?? "") > (previa.ultimo_at ?? "")) {
+      porCliente.set(cv.cliente_id, cv);
+    }
+  }
+
+  // Borradores de IA pendientes por conversación (cola de aprobación).
+  const borradoresPorConv = new Map<string, number>();
+  const convIds = [...porCliente.values()].map((cv) => cv.id);
+  if (convIds.length > 0) {
+    const { data: borradores } = await supabase
+      .from("mensaje")
+      .select("conversacion_id")
+      .eq("estado_entrega", "borrador_ia")
+      .in("conversacion_id", convIds);
+    for (const b of borradores ?? []) {
+      borradoresPorConv.set(
+        b.conversacion_id,
+        (borradoresPorConv.get(b.conversacion_id) ?? 0) + 1,
+      );
+    }
+  }
+
+  return clientes.map((c) => {
+    const conv = porCliente.get(c.id);
+    return {
+      ...c,
+      conversacion_id: conv?.id ?? null,
+      ultima_interaccion: conv?.ultimo_at ?? null,
+      no_leidos: conv?.no_leidos ?? 0,
+      borradores: conv ? (borradoresPorConv.get(conv.id) ?? 0) : 0,
+    };
+  });
 }
 
 export async function getCliente(id: string): Promise<Cliente | null> {

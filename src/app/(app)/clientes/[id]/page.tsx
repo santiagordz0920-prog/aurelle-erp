@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   Phone,
+  Mail,
+  AtSign,
+  MessageCircle,
+  Link2,
+  Sparkles,
   Heart,
   Cake,
   Users,
@@ -18,6 +23,7 @@ import { EmptyState } from "@/components/empty-state";
 import { CanalBadge } from "@/components/clientes/estado-badge";
 import { EstadoSelector } from "@/components/clientes/estado-selector";
 import { NotaForm } from "@/components/clientes/nota-form";
+import { ContactoForm } from "@/components/clientes/contacto-form";
 import { TareaForm } from "@/components/tareas/tarea-form";
 import { TareaItem } from "@/components/tareas/tarea-item";
 import { CitaForm } from "@/components/citas/cita-form";
@@ -33,7 +39,7 @@ import { getUsuarioActual } from "@/lib/session";
 import { EliminarCliente } from "@/components/clientes/eliminar-cliente";
 import { listarDocumentosDeCliente } from "@/lib/data/documentos";
 import { listarMedia } from "@/lib/data/media";
-import { CANAL_FUENTE } from "@/lib/clientes";
+import { CANAL_FUENTE, METODO_CONTACTO, contactoPrincipal } from "@/lib/clientes";
 
 export async function generateMetadata({
   params,
@@ -252,12 +258,15 @@ export default async function FichaClientePage({
             ))}
           </div>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-            {cliente.telefono ? (
-              <span className="inline-flex items-center gap-1">
-                <Phone className="size-3.5" />
-                {cliente.telefono}
-              </span>
-            ) : null}
+            {(() => {
+              const contacto = contactoPrincipal(cliente);
+              return contacto ? (
+                <span className="inline-flex items-center gap-1">
+                  <Phone className="size-3.5" />
+                  {contacto.valor}
+                </span>
+              ) : null;
+            })()}
             <CanalBadge canal={cliente.fuente_canal} detalle={cliente.fuente_detalle} />
           </div>
         </div>
@@ -283,8 +292,20 @@ function Resumen({
   cliente: Awaited<ReturnType<typeof getCliente>>;
 }) {
   if (!cliente) return null;
+  // "· preferido" marca el contacto principal (el único que muestran las listas).
+  const pref = (m: string, valor: string | null) =>
+    valor && cliente.contacto_preferido === m ? `${valor} · preferido` : valor;
   const filas: { icono: typeof Phone; label: string; valor: string | null }[] = [
-    { icono: Phone, label: "Teléfono", valor: cliente.telefono },
+    {
+      icono: Sparkles,
+      label: "Qué busca",
+      valor: cliente.interes,
+    },
+    { icono: Phone, label: METODO_CONTACTO.telefono, valor: pref("telefono", cliente.telefono) },
+    { icono: Mail, label: METODO_CONTACTO.correo, valor: pref("correo", cliente.correo) },
+    { icono: AtSign, label: METODO_CONTACTO.instagram, valor: pref("instagram", cliente.instagram) },
+    { icono: MessageCircle, label: METODO_CONTACTO.facebook, valor: pref("facebook", cliente.facebook) },
+    { icono: Link2, label: METODO_CONTACTO.otro, valor: pref("otro", cliente.otro_contacto) },
     {
       icono: Heart,
       label: "Fecha de boda",
@@ -313,21 +334,24 @@ function Resumen({
   ];
 
   return (
-    <dl className="grid gap-4 sm:grid-cols-2">
-      {filas.map((f, i) => (
-        <div key={i} className="flex items-start gap-3">
-          <div className="mt-0.5 flex size-8 items-center justify-center rounded-md bg-secondary text-muted-foreground">
-            <f.icono className="size-4" />
+    <div className="space-y-5">
+      <dl className="grid gap-4 sm:grid-cols-2">
+        {filas.map((f, i) => (
+          <div key={i} className="flex items-start gap-3">
+            <div className="mt-0.5 flex size-8 items-center justify-center rounded-md bg-secondary text-muted-foreground">
+              <f.icono className="size-4" />
+            </div>
+            <div>
+              <dt className="text-xs text-muted-foreground">{f.label}</dt>
+              <dd className="text-sm text-foreground">
+                {f.valor ?? <span className="text-muted-foreground">—</span>}
+              </dd>
+            </div>
           </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">{f.label}</dt>
-            <dd className="text-sm text-foreground">
-              {f.valor ?? <span className="text-muted-foreground">—</span>}
-            </dd>
-          </div>
-        </div>
-      ))}
-    </dl>
+        ))}
+      </dl>
+      <ContactoForm cliente={cliente} />
+    </div>
   );
 }
 

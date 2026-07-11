@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
-import { clienteSchema, notaSchema } from "@/lib/validaciones";
-import type { EstadoPipeline } from "@/lib/clientes";
+import { clienteSchema, contactoSchema, notaSchema } from "@/lib/validaciones";
+import type { EstadoPipeline, MetodoContacto } from "@/lib/clientes";
 import { CLIENTES_MUESTRA, NOTAS_MUESTRA } from "@/lib/data/clientes-muestra";
 
 export type ResultadoAccion = { ok: boolean; error?: string };
@@ -17,6 +17,24 @@ function parseEtiquetas(raw?: string): string[] {
     .split(",")
     .map((e) => e.trim())
     .filter(Boolean);
+}
+
+/** Preferido efectivo: el elegido, o el primer campo de contacto con valor. */
+function preferidoDefault(d: {
+  telefono?: string;
+  correo?: string;
+  instagram?: string;
+  facebook?: string;
+  otro_contacto?: string;
+  contacto_preferido?: MetodoContacto;
+}): MetodoContacto | null {
+  if (d.contacto_preferido) return d.contacto_preferido;
+  if (d.telefono) return "telefono";
+  if (d.correo) return "correo";
+  if (d.instagram) return "instagram";
+  if (d.facebook) return "facebook";
+  if (d.otro_contacto) return "otro";
+  return null;
 }
 
 /** Alta de cliente. En éxito, redirige a su ficha. */
@@ -38,6 +56,12 @@ export async function crearCliente(
       id: nuevoId,
       nombre: d.nombre,
       telefono: d.telefono ?? null,
+      correo: d.correo ?? null,
+      instagram: d.instagram ?? null,
+      facebook: d.facebook ?? null,
+      otro_contacto: d.otro_contacto ?? null,
+      contacto_preferido: preferidoDefault(d),
+      interes: null,
       fecha_nacimiento: d.fecha_nacimiento ?? null,
       fecha_boda: d.fecha_boda ?? null,
       pareja_nombre: d.pareja_nombre ?? null,
@@ -59,6 +83,11 @@ export async function crearCliente(
       .insert({
         nombre: d.nombre,
         telefono: d.telefono ?? null,
+        correo: d.correo ?? null,
+        instagram: d.instagram ?? null,
+        facebook: d.facebook ?? null,
+        otro_contacto: d.otro_contacto ?? null,
+        contacto_preferido: preferidoDefault(d),
         fecha_nacimiento: d.fecha_nacimiento ?? null,
         fecha_boda: d.fecha_boda ?? null,
         pareja_nombre: d.pareja_nombre ?? null,
@@ -144,6 +173,53 @@ export async function cambiarEstado(
   }
   revalidatePath("/clientes");
   revalidatePath(`/clientes/${clienteId}`);
+  return { ok: true };
+}
+
+/**
+ * Actualiza los datos de contacto desde la ficha (intake multicanal): teléfono,
+ * correo, Instagram, Messenger, otro + método preferido. Mínimo un contacto
+ * (regla compartida con el alta). El teléfono se guarda sin espacios.
+ */
+export async function actualizarContacto(
+  _prev: ResultadoAccion,
+  formData: FormData,
+): Promise<ResultadoAccion> {
+  const parsed = contactoSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos no válidos." };
+  }
+  const d = parsed.data;
+  const patch = {
+    telefono: d.telefono ?? null,
+    correo: d.correo ?? null,
+    instagram: d.instagram ?? null,
+    facebook: d.facebook ?? null,
+    otro_contacto: d.otro_contacto ?? null,
+    contacto_preferido: preferidoDefault(d),
+  };
+
+  if (!supabaseConfigurado()) {
+    const c = CLIENTES_MUESTRA.find((x) => x.id === d.cliente_id);
+    if (c) Object.assign(c, patch);
+  } else {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("cliente")
+      .update(patch)
+      .eq("id", d.cliente_id);
+    if (error) {
+      const dup = error.code === "23505";
+      return {
+        ok: false,
+        error: dup
+          ? "Ya existe otro cliente con ese teléfono."
+          : "No se pudo actualizar el contacto.",
+      };
+    }
+  }
+  revalidatePath(`/clientes/${d.cliente_id}`);
+  revalidatePath("/clientes");
   return { ok: true };
 }
 
