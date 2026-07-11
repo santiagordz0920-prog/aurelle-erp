@@ -29,9 +29,15 @@ export async function GET(request: Request) {
   if (errRec) {
     return NextResponse.json({ error: errRec.message }, { status: 500 });
   }
+  // Postventa (§3.7): garantía por vencer + aniversarios de entrega/boda (0033).
+  const { data: postventa, error: errPost } = await supabase.rpc("generar_tareas_postventa");
+  if (errPost) {
+    return NextResponse.json({ error: errPost.message }, { status: 500 });
+  }
   return NextResponse.json({
     ok: true,
     creadas: (data as number) ?? 0,
     recurrentes: (recurrentes as number) ?? 0,
+    postventa: (postventa as number) ?? 0,
   });
 }

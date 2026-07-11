@@ -49,10 +49,12 @@ espera el riel de WhatsApp;** aquí quedan los registros y las oportunidades vis
   RLS por sucursal, no solo-admin.
 
 ## Pendientes / v2
-- **Lifecycle que ENVÍA** (limpieza gratis al año, felicitación de aniversario de
-  boda, campaña churumbela/eternity) — requiere el riel de WhatsApp. Hoy las
-  oportunidades se ven en `/clientes/postventa` para contacto manual.
-- Aniversario de entrega y garantía por vencer → **cron** que sugiera tarea/recordatorio.
+- **Lifecycle que ENVÍA** (limpieza gratis al año, felicitación de aniversario, campaña
+  churumbela/eternity) — requiere el riel de WhatsApp. Hoy las oportunidades se ven en
+  `/clientes/postventa` y **se sugieren como tarea** (ver abajo) para contacto manual.
 - **Ingreso por servicios → Finanzas** (asiento) y **cita de servicio → Citas**.
 - Garantía configurable por tipo de pieza (hoy 12m fijo).
 - Valor y ticket de segunda compra en la métrica de recompra.
+
+## Cron de postventa (0033, v2)
+- `generar_tareas_postventa()` (función aparte, la llama el mismo route del cron nocturno) crea **tareas sugeridas** ligadas al cliente: (A) **garantía por vencer** ≤30d, (B) **aniversario de entrega** ≤14d (mes-día), (C) **aniversario de boda** ≤14d. Idempotente por prefijo de título + cliente pendiente (incluye descartadas → no re-molesta). Aniversarios: match por mes-día en la ventana (sin `make_date`, sin problema de 29-feb). El **envío** por WhatsApp llega con el riel; hoy es tarea para contacto manual. Validado en Postgres local.
