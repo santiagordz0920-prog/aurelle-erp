@@ -181,11 +181,32 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
       ? `El cliente se llama ${entrada.clienteNombre}.`
       : "Aún no sabemos el nombre del cliente.";
 
+    /*
+      ¿Hay una respuesta del bot atorada esperando aprobación en este hilo?
+      (Bug 2026-07-11: con un borrador de horario sin aprobar, cada mensaje
+      nuevo del cliente generaba OTRO borrador con horario — nunca se enviaba
+      nada y el bot enmudecía hasta que un socio aprobara.) Con borrador
+      pendiente el bot sigue conversando: no ofrece horarios nuevos y, si el
+      cliente insiste en agendar, le dice que en un momento le confirma.
+    */
+    const { data: pendientes } = await supabase
+      .from("mensaje")
+      .select("cuerpo")
+      .eq("conversacion_id", entrada.conversacionId)
+      .eq("estado_entrega", "borrador_ia")
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const borradorPendiente: string | null = pendientes?.[0]?.cuerpo ?? null;
+
     // Horarios reales disponibles (citas + candado entre chats): el bot propone
-    // uno concreto en vez de preguntar "¿qué día podrías?" en frío.
-    const horarios = await proximosHorarios(supabase, entrada.conversacionId, 2);
-    const agenda =
-      horarios.length > 0
+    // uno concreto en vez de preguntar "¿qué día podrías?" en frío. Con un
+    // borrador pendiente NO se ofrecen (evita apilar propuestas sin enviar).
+    const horarios = borradorPendiente
+      ? []
+      : await proximosHorarios(supabase, entrada.conversacionId, 2);
+    const agenda = borradorPendiente
+      ? `RESPUESTA PENDIENTE DE APROBACIÓN (contexto interno; el cliente NO la ha visto, para él no existe): "${borradorPendiente.slice(0, 400)}". El equipo la está revisando antes de enviarla. Por eso, en ESTE mensaje: no propongas ni menciones ningún horario o día de cita concreto (horario_sugerido="ninguno" y JAMÁS inventes horarios) y no repitas lo que dice esa respuesta pendiente. Si el cliente pregunta por agendar, pide horario o se impacienta, dile natural que estás checando la agenda y en un momento le confirmas — eso por sí solo NO es motivo de sensible=true. Todo lo demás contéstalo normal (las reglas de sensible siguen aplicando).`
+      : horarios.length > 0
         ? `AGENDA (horarios del showroom REALMENTE disponibles ahora; si invitas a agendar, propón el primero — el segundo es tu alternativa si el cliente dice que no puede; JAMÁS inventes otros horarios ni confirmes una cita como cerrada, solo propón):\n${horarios
             .map((h) => `- ${h.iso} = ${h.etiqueta}`)
             .join("\n")}`

@@ -64,6 +64,18 @@ bot (el humano responde desde el Inbox).
   regresa al envío directo cuando el ranking esté calibrado. La aprobación es
   at-a-glance: el widget flotante muestra el texto del borrador con Aprobar y
   enviar / Descartar en cualquier pantalla (editar antes de enviar = en el hilo).
+- **Bugfix: borrador pendiente ya no enmudece al bot (2026-07-11):** con un
+  borrador sin aprobar, cada mensaje nuevo del cliente generaba OTRO borrador
+  con horario (el hilo se veía "sin responder" porque los borradores se excluyen
+  del historial y la intención seguía siendo agendar) — nada se enviaba y el bot
+  dejaba de contestar hasta que un socio aprobara. Ahora `responderConBot`
+  detecta borradores `borrador_ia` pendientes en el hilo y, si hay uno: NO
+  calcula ni ofrece AGENDA (el enum fuerza `horario_sugerido="ninguno"`) e
+  inyecta el borrador como contexto interno con la instrucción de no repetirlo,
+  no inventar horarios y, si el cliente insiste en agendar, decirle natural que
+  en un momento le confirma (sin marcar sensible solo por eso). El resto de las
+  reglas de sensible siguen aplicando. Al aprobar/descartar el borrador, el
+  siguiente mensaje vuelve al flujo normal con horarios.
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
