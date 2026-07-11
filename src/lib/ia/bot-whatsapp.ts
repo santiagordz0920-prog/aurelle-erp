@@ -213,13 +213,25 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
   const respuesta = sinEmojis((salida.respuesta || "").trim());
   if (!respuesta) return;
 
+  const proponeHorario = Boolean(
+    salida.horario_sugerido && salida.horario_sugerido !== "ninguno",
+  );
+
   // Si propuso un horario, apártalo: otro chat simultáneo ya no lo recibirá.
   // Aplica también a borradores (reserva el slot mientras el humano aprueba).
-  if (salida.horario_sugerido && salida.horario_sugerido !== "ninguno") {
-    await apartarHorario(supabase, entrada.conversacionId, salida.horario_sugerido);
+  if (proponeHorario) {
+    await apartarHorario(supabase, entrada.conversacionId, salida.horario_sugerido!);
   }
 
-  if (salida.sensible) {
+  /*
+    Human-in-the-loop (Fer 2026-07-11): TODA propuesta de horario pasa por
+    aprobación de un socio antes de enviarse (cola de borradores; se aprueba
+    at-a-glance desde el widget flotante). Cuando el ranking de horarios esté
+    calibrado y agarren confianza, poner esto en false regresa al envío directo.
+  */
+  const HORARIOS_REQUIEREN_APROBACION = true;
+
+  if (salida.sensible || (proponeHorario && HORARIOS_REQUIEREN_APROBACION)) {
     // Cola humana: guardar como borrador para aprobar/editar, NO enviar.
     // Sin "escribiendo..." aquí: prometería una respuesta que tardará en llegar.
     await supabase.from("mensaje").insert({

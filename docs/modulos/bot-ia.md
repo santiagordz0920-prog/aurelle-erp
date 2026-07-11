@@ -57,6 +57,13 @@ bot (el humano responde desde el Inbox).
   comentadas, para iterar; cuando haya volumen, calibrar con datos reales
   (resultado de cita por franja). Vetado "aquí la ubicación" (usar "es esta la
   ubicación:" y variantes); horas SIEMPRE am/pm, nunca 24 h ("10 a 20").
+- **Human-in-the-loop de horarios (pedido de Fer 2026-07-11):** toda respuesta
+  que proponga horario entra a la cola de borradores (NO se envía sola), con el
+  slot ya apartado mientras se aprueba. Constante
+  `HORARIOS_REQUIEREN_APROBACION` en `bot-whatsapp.ts` — ponerla en false
+  regresa al envío directo cuando el ranking esté calibrado. La aprobación es
+  at-a-glance: el widget flotante muestra el texto del borrador con Aprobar y
+  enviar / Descartar en cualquier pantalla (editar antes de enviar = en el hilo).
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 

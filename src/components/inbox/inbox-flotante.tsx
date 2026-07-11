@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquareText, X } from "lucide-react";
+import { Check, MessageSquareText, X } from "lucide-react";
+import { aprobarBorrador, descartarBorrador } from "@/app/(app)/clientes/inbox/actions";
 import { cn } from "@/lib/utils";
 
 /*
@@ -21,9 +22,68 @@ type Item = {
   no_leidos: number;
   borradores: number;
   ultimo_at: string | null;
+  borrador_id: string | null;
+  borrador_texto: string | null;
 };
 
 const INTERVALO_MS = 25_000;
+
+/*
+  Aprobación at-a-glance (pedido de Fer 2026-07-11): el borrador del bot (p.ej.
+  una propuesta de horario) se lee y se aprueba/descarta AQUÍ, desde cualquier
+  pantalla, sin abrir el hilo. Para editar el texto antes de mandar, el nombre
+  de arriba lleva al hilo (ahí está el flujo completo).
+*/
+function AprobarEnLinea({
+  borradorId,
+  texto,
+  alResolver,
+}: {
+  borradorId: string;
+  texto: string;
+  alResolver: () => void;
+}) {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const resolver = (accion: "aprobar" | "descartar") =>
+    start(async () => {
+      setError(null);
+      const r =
+        accion === "aprobar"
+          ? await aprobarBorrador(borradorId)
+          : await descartarBorrador(borradorId);
+      if (!r.ok) setError(r.error ?? "No se pudo.");
+      alResolver();
+    });
+
+  return (
+    <div className="mt-2 rounded-md border border-border bg-secondary/40 p-2.5">
+      <p className="text-xs italic text-foreground">&ldquo;{texto}&rdquo;</p>
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => resolver("aprobar")}
+          className="inline-flex items-center gap-1 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-50"
+        >
+          <Check className="size-3.5" />
+          {pending ? "Enviando…" : "Aprobar y enviar"}
+        </button>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => resolver("descartar")}
+          className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+        >
+          <X className="size-3.5" />
+          Descartar
+        </button>
+      </div>
+      {error ? <p className="mt-1.5 text-xs text-destructive">{error}</p> : null}
+    </div>
+  );
+}
 
 export function InboxFlotante() {
   const pathname = usePathname();
@@ -118,16 +178,16 @@ export function InboxFlotante() {
               Nada pendiente por contestar.
             </p>
           ) : (
-            <ul className="max-h-80 divide-y divide-border overflow-y-auto">
+            <ul className="max-h-96 divide-y divide-border overflow-y-auto">
               {items.map((i) => (
-                <li key={i.id}>
+                <li key={i.id} className="px-4 py-3">
                   <Link
                     href={`/clientes/inbox/${i.id}`}
                     onClick={() => setAbierto(false)}
-                    className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-secondary/50"
+                    className="flex items-center justify-between gap-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">
+                      <p className="truncate text-sm font-medium text-foreground hover:underline">
                         {i.nombre ?? i.telefono}
                       </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
@@ -149,6 +209,13 @@ export function InboxFlotante() {
                       </span>
                     ) : null}
                   </Link>
+                  {i.borrador_id && i.borrador_texto ? (
+                    <AprobarEnLinea
+                      borradorId={i.borrador_id}
+                      texto={i.borrador_texto}
+                      alResolver={cargar}
+                    />
+                  ) : null}
                 </li>
               ))}
             </ul>
