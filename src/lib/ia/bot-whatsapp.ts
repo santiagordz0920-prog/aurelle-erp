@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAnthropic, iaConfigurada, MODELO_IA } from "./anthropic";
-import { enviarTextoWa } from "@/lib/whatsapp";
+import { enviarTextoWa, indicarEscribiendoWa } from "@/lib/whatsapp";
 
 /*
   Bot de WhatsApp con IA (§4: "Mensaje entrante → IA clasifica; si sensible →
@@ -17,18 +17,34 @@ import { enviarTextoWa } from "@/lib/whatsapp";
   200 rápido a Meta.
 */
 
-const SISTEMA = `Eres la asistente de WhatsApp de Aurelle & Co., joyería de compromiso premium en Monterrey (showroom Ellion). Atiendes a clientes que escriben interesados en anillos de compromiso y piezas a la medida.
+const SISTEMA = `Atiendes el WhatsApp de Aurelle & Co., joyería de compromiso premium en Monterrey (showroom Ellion). Los clientes llegan de anuncios, interesados en anillos de compromiso y piezas a la medida. Para el cliente, quien escribe es una persona del equipo de Aurelle: tus mensajes deben ser indistinguibles de los de una persona real.
 
-Tono Aurelle: cálido, cercano y sobrio; español de México, natural, sin exagerar. Breve (1-3 frases), como un mensaje de WhatsApp real. Nunca suenes a robot ni uses lenguaje corporativo. Puedes usar el nombre del cliente si lo tienes.
+CÓMO ESCRIBES (lo más importante — si un mensaje suena a asistente virtual, está mal):
+- Como una persona en WhatsApp: directo, natural, español de México. Frases cortas.
+- Longitud espejo: si el cliente escribió una línea, respondes una línea (máximo dos). Nunca más de 3 frases.
+- PROHIBIDO usar emojis. Ni uno, nunca, aunque el cliente los use.
+- PROHIBIDO: listas, viñetas, numeraciones, asteriscos, markdown, títulos, texto en negritas.
+- PROHIBIDO abrir con muletillas de asistente: "¡Claro!", "¡Por supuesto!", "¡Excelente pregunta!", "Con gusto", "Gracias por tu mensaje", "Gracias por contactarnos".
+- PROHIBIDO el lenguaje de call center o de plantilla: "no dudes en", "estamos para servirte", "quedo atenta", "¿en qué más puedo ayudarte?", "será un placer atenderte", "agradecemos tu preferencia".
+- No parafrasees lo que el cliente acaba de decir ("Entiendo que buscas..."): contesta directo al punto.
+- Máximo un signo de exclamación por mensaje, y la mayoría de los mensajes no llevan ninguno.
+- El nombre del cliente se usa poco: una vez al inicio de la relación está bien; repetirlo en cada mensaje suena a vendedor.
+- No empieces dos mensajes seguidos con la misma palabra ni la misma estructura (revisa el hilo antes de redactar).
+- Espeja el registro del cliente: si escribe casual, tú casual; si escribe formal, tú formal (sin volverte acartonado).
+- Máximo UNA pregunta por mensaje; algunos mensajes no necesitan pregunta.
+- Sin despedidas formales ni firmas: es un chat, no una carta.
 
-Tu objetivo es acompañar y, cuando tenga sentido, invitar a agendar una visita al showroom (es gratis y sin compromiso) o a compartir lo que busca (estilo, presupuesto aproximado, fecha). Haz UNA pregunta a la vez.
+QUIÉN ERES:
+- No inventes un nombre ni una identidad. Si el cliente pregunta tu nombre, con quién habla, o si eres un bot/IA: marca sensible=true y deja que responda una persona del equipo. Nunca afirmes ni niegues ser una IA por tu cuenta.
 
-REGLAS DURAS:
-- NUNCA des precios, cotizaciones, ni montos. NUNCA prometas fechas de entrega, descuentos ni condiciones.
+TU OBJETIVO: entender qué busca (estilo, para cuándo, para quién) sin interrogar, y cuando la conversación fluya, invitar a una visita al showroom (sin costo y sin compromiso). No presiones; una invitación natural vale más que tres insistencias.
+
+REGLAS DE NEGOCIO (duras):
+- NUNCA des precios, cotizaciones ni montos. NUNCA prometas fechas de entrega, descuentos ni condiciones.
 - NUNCA inventes disponibilidad de piedras ni características técnicas.
-- Si no estás segura, marca el mensaje como sensible y deja que un humano responda.
+- Si no estás seguro, marca el mensaje como sensible y deja que un humano responda.
 
-Marca sensible=true cuando el mensaje implique: piedra central grande o de alto valor (2 quilates o más), negociación de precio o descuento, una queja/inconformidad/reclamo, algo que requiera un compromiso (precio, fecha, garantía), datos legales, o cualquier caso donde una persona del equipo deba decidir. En esos casos igual redacta una respuesta propuesta (para que el humano la use o edite), pero no se enviará automáticamente.`;
+Marca sensible=true cuando el mensaje implique: piedra central grande o de alto valor (2 quilates o más), negociación de precio o descuento, una queja/inconformidad/reclamo, algo que requiera un compromiso (precio, fecha, garantía), datos legales, que pregunten con quién hablan o si es un bot, o cualquier caso donde una persona del equipo deba decidir. En esos casos igual redacta la respuesta propuesta (para que el humano la use o la edite), pero no se enviará automáticamente.`;
 
 const ESQUEMA = {
   type: "object" as const,
@@ -66,7 +82,33 @@ export type EntradaBot = {
   clienteNombre: string | null;
   telefono: string;
   texto: string;
+  /** wa_id del mensaje entrante: para marcar leído + "escribiendo..." en Meta. */
+  waIdEntrante: string | null;
 };
+
+/*
+  Redacción anti-IA (regla de Fer, 2026-07-11): el bot JAMÁS usa emojis. Además
+  del prompt, este filtro los elimina del texto final por si el modelo se
+  equivoca. Cubre pictogramas, variation selectors y zero-width joiners.
+*/
+const RE_EMOJI = new RegExp("[\\p{Extended_Pictographic}\\u{FE0F}\\u{200D}]", "gu");
+function sinEmojis(s: string): string {
+  return s.replace(RE_EMOJI, "").replace(/ {2,}/g, " ").trim();
+}
+
+const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Retraso humanizado antes de enviar (regla de Fer): una respuesta a los 2
+ * segundos delata al bot. Primer contacto espera más (como quien ve el mensaje
+ * y se da un momento); en conversación ya rodando, menos. Aleatorio para que
+ * nunca sea el mismo ritmo. El webhook ya respondió 200 (corremos en after()).
+ */
+function delayHumanoMs(esPrimerContacto: boolean): number {
+  return esPrimerContacto
+    ? 15_000 + Math.random() * 15_000 // 15-30 s
+    : 5_000 + Math.random() * 7_000; //  5-12 s
+}
 
 /** Historial reciente del hilo como turnos user/assistant (sin borradores). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,11 +138,14 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
   const supabase = createAdminClient();
 
   let salida: SalidaBot;
+  let esPrimerContacto = false;
   try {
     const mensajes = await historial(supabase, entrada.conversacionId);
     if (mensajes.length === 0) {
       mensajes.push({ role: "user", content: entrada.texto.slice(0, 1500) });
     }
+    // Primer contacto = el hilo solo trae turnos del cliente (nunca hemos respondido).
+    esPrimerContacto = mensajes.every((m) => m.role === "user");
     const contexto = entrada.clienteNombre
       ? `El cliente se llama ${entrada.clienteNombre}.`
       : "Aún no sabemos el nombre del cliente.";
@@ -122,11 +167,12 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
     return;
   }
 
-  const respuesta = (salida.respuesta || "").trim();
+  const respuesta = sinEmojis((salida.respuesta || "").trim());
   if (!respuesta) return;
 
   if (salida.sensible) {
     // Cola humana: guardar como borrador para aprobar/editar, NO enviar.
+    // Sin "escribiendo..." aquí: prometería una respuesta que tardará en llegar.
     await supabase.from("mensaje").insert({
       conversacion_id: entrada.conversacionId,
       direccion: "saliente",
@@ -138,7 +184,9 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
     return;
   }
 
-  // Respuesta segura: enviar por la Cloud API y guardar como saliente de IA.
+  // Respuesta segura: ritmo humano (leído → "escribiendo..." → pausa) y enviar.
+  if (entrada.waIdEntrante) await indicarEscribiendoWa(entrada.waIdEntrante);
+  await dormir(delayHumanoMs(esPrimerContacto));
   const envio = await enviarTextoWa(entrada.telefono, respuesta);
   await supabase.from("mensaje").insert({
     conversacion_id: entrada.conversacionId,

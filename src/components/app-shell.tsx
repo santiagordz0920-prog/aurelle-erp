@@ -8,6 +8,7 @@ import { ROLES } from "@/lib/roles";
 import { LogOut } from "lucide-react";
 import { BrandWordmark } from "./brand-wordmark";
 import { GlobalSearch } from "./global-search";
+import { InboxFlotante } from "./inbox/inbox-flotante";
 import { cn } from "@/lib/utils";
 
 /*
@@ -130,6 +131,9 @@ export function AppShell({
           );
         })}
       </nav>
+
+      {/* ── Inbox flotante (todas las pantallas) ───────────────────── */}
+      <InboxFlotante />
     </div>
   );
 }

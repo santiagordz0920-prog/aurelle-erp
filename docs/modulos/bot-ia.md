@@ -5,10 +5,26 @@
 > se envía solo, lo sensible va a una cola de aprobación humana.
 
 ## Estado
-Construido 2026-07-08 junto con el riel vivo. Sin migración (usa `mensaje` de 0018).
-Requiere `ANTHROPIC_API_KEY` en Vercel. Build+lint verdes; el flujo completo se
-verifica en prod (necesita Meta + API key). Si no hay API key, el riel funciona sin
+Construido 2026-07-08 junto con el riel vivo; **operando en prod desde 2026-07-11**
+(prueba de fuego: respondió a un mensaje real). Sin migración (usa `mensaje` de 0018).
+Requiere `ANTHROPIC_API_KEY` en Vercel. Si no hay API key, el riel funciona sin
 bot (el humano responde desde el Inbox).
+
+## Redacción anti-IA + ritmo humano (2026-07-11, reglas de Fer)
+- **Prompt endurecido:** longitud espejo del cliente (máx 3 frases), PROHIBIDOS los
+  emojis / listas / markdown / muletillas de asistente ("¡Claro!", "Con gusto") /
+  lenguaje call-center ("no dudes en", "¿en qué más puedo ayudarte?"); no parafrasear
+  al cliente; máx 1 pregunta (o ninguna); no repetir el nombre del cliente; variar
+  arranques entre mensajes; espejar registro casual/formal; sin despedidas de carta.
+- **CERO emojis** también por código: `sinEmojis()` (RE_EMOJI con
+  `\p{Extended_Pictographic}` + FE0F + ZWJ) filtra la salida antes de guardar/enviar.
+- **Delay humanizado antes de enviar** (`delayHumanoMs`): 15-30 s en primer contacto
+  (hilo sin turnos nuestros), 5-12 s después, aleatorio. Antes del delay se manda
+  **leído + "escribiendo..."** (`indicarEscribiendoWa`, typing indicator de Meta,
+  dura hasta 25 s). El webhook declara `maxDuration=60` para que quepa en `after()`.
+  En caso sensible NO hay typing (no prometer respuesta que tardará en llegar).
+- **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
+  humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
 ## Piezas
 - `src/lib/ia/anthropic.ts`: cliente Anthropic (`@anthropic-ai/sdk`), `iaConfigurada()`,

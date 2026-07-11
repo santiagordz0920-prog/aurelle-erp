@@ -22,14 +22,14 @@ export default async function InboxPage() {
 
       <PageHeader
         titulo="Inbox"
-        descripcion="Conversaciones de WhatsApp. (El riel en vivo se conecta cuando Meta esté listo; por ahora, muestra.)"
+        descripcion="Conversaciones del número oficial de WhatsApp. Los mensajes entran solos; el bot responde lo simple y deja borradores para aprobar lo delicado."
       />
 
       {conversaciones.length === 0 ? (
         <EmptyState
           icono={MessageSquareText}
           titulo="Sin conversaciones"
-          descripcion="Cuando el riel oficial de WhatsApp esté activo, cada mensaje entrante creará aquí su conversación."
+          descripcion="Cuando un cliente escriba al número oficial, su conversación aparecerá aquí."
         />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">

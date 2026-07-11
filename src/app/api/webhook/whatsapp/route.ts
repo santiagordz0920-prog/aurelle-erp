@@ -16,6 +16,10 @@ import { responderConBot, type EntradaBot } from "@/lib/ia/bot-whatsapp";
     los salientes. Respondemos 200 SIEMPRE y rápido (Meta reintenta si no).
 */
 
+// El bot corre en after() con retraso humanizado (hasta ~30 s) + la llamada a la
+// IA: ampliamos la duración máxima para que Vercel no corte la función.
+export const maxDuration = 60;
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const mode = url.searchParams.get("hub.mode");
@@ -71,6 +75,7 @@ export async function POST(request: Request) {
           clienteNombre: res.clienteNombre,
           telefono: m.telefono,
           texto: m.cuerpo,
+          waIdEntrante: m.wa_id || null,
         });
       }
     } catch {
