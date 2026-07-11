@@ -43,9 +43,8 @@ Construido 2026-07-09. Migración **0029** (`gasto_publicitario`). v1: funnel po
   devuelve `[]` si el usuario no es admin.
 - `pesos()` se reusa de `src/lib/inventario.ts` (cliente-safe).
 
-## Pendientes / v2
-- Desglose por **campaña/zona** (`fuente_detalle`) además de por canal; casar
-  `gasto.detalle` ↔ `cliente.fuente_detalle` para CAC por campaña (headline §3.13).
+## Pendientes / v3
+- ~~Desglose por campaña/zona + CAC por campaña~~ **HECHO v2** (`funnelPorCampana`, casa `gasto.detalle`↔`cliente.fuente_detalle`; campañas con gasto pero sin leads también se listan; texto de campaña debe coincidir).
 - Filtro por **periodo/mes** en la UI (la data ya acepta `periodo`).
 - Costo por visita y por cotización; ticket promedio por canal.
 - **Sincronización con Meta Marketing API** (hoy carga manual) + atribución
