@@ -54,7 +54,7 @@ Construido en Fase 1. Última modificación: 2026-07-05. Migración 0009.
 - `crearTarea` sin responsable asigna al usuario actual (`responsable_id ?? usuario.id`).
 
 ## Pendientes conocidos de este módulo
-- **Tareas recurrentes** (§3.15: "revisar precios mensual", "conteo de vitrinas semanal") — aún manuales.
+- ~~Tareas recurrentes~~ **HECHO (0032):** plantillas `tarea_recurrente` (semanal/mensual) en `/hoy/tareas/recurrentes`; el cron nocturno (`generar_tareas_recurrentes`, función aparte llamada por el mismo route) genera la instancia en `tarea` (origen='manual', `recurrente_id`), **idempotente por período** (una por semana/mes). Ver `docs/modulos/seguimiento-cron.md`.
 - No hay "ver descartadas" / des-descartar (una sugerencia descartada queda oculta permanentemente).
 - **Recordar la vista preferida por usuario** (hoy el toggle no persiste entre visitas; default = Ventas). Falta la columna/preferencia; v2. La distinción real Santiago/Fer necesitará distinguir usuarios (hoy ambos admin).
 - Notificaciones push/in-app configurables (§3.16, fase posterior).

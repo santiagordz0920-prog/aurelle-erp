@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft, ListTodo } from "lucide-react";
+import { ArrowLeft, ListTodo, Repeat } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TareaForm } from "@/components/tareas/tarea-form";
 import { TareaItem } from "@/components/tareas/tarea-item";
@@ -31,6 +32,14 @@ export default async function TareasPage() {
       <PageHeader
         titulo="Tareas"
         descripcion="Los pendientes del equipo, vinculados a la realidad del negocio."
+        accion={
+          <Button asChild variant="outline">
+            <Link href="/hoy/tareas/recurrentes">
+              <Repeat className="size-4" />
+              Recurrentes
+            </Link>
+          </Button>
+        }
       />
 
       <TareaForm usuarios={usuarios.map((u) => ({ id: u.id, nombre: u.nombre }))} />
