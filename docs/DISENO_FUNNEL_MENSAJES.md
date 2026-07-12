@@ -187,11 +187,77 @@ retira aunque "convierta" (el número vale más que cualquier plantilla).
   demuestre que el clic humano no está agregando juicio, igual que la llave
   HORARIOS_REQUIEREN_APROBACION).
 
-## 7. Decisiones funcionales pendientes (Fer/Santiago)
+## 7. Decisiones funcionales (respondidas por Fer 2026-07-12)
 
-1. ¿OK los tiempos de cadencia de §1? (son los del spec con ajustes finos)
-2. ¿OK la asignación de incentivos por fase (§2.5)?
-3. F2: ¿de acuerdo en que lo primero auto-enviado sean SOLO recordatorios de
-   cita y pieza lista?
-4. ¿El "informe semanal" les llega como tarea en /hoy + sección en
-   /crecimiento, o también por WhatsApp al número de ustedes?
+1. Tiempos de cadencia §1: **OK.**
+2. Incentivos por fase: **NECESITAN TRABAJO — sesión aparte con Fer/Santiago
+   antes de redactar las plantillas de arquetipo INCENTIVO.** Mientras, las
+   cadencias se construyen con ese toque como "pendiente de contenido".
+3. F2 auto-envío solo recordatorios de cita + pieza lista: **OK.**
+4. Informe semanal **por WhatsApp a los socios** (además de /crecimiento).
+   **Regla de Fer: nada de spam, mensajes mega cortos.** ⚠️ LIMITACIÓN
+   TÉCNICA: la Cloud API NO puede escribir en grupos de WhatsApp (solo 1:1).
+   El plan del grupo de NuboMarket no funciona con el número de la API;
+   el informe se manda 1:1 a Santiago y a Fer (plantilla utility
+   `aurelle_informe_semanal`, ~3 líneas: leads, citas, mejor/peor plantilla
+   + liga al detalle en /crecimiento).
+
+## 8. SIMULADOR de leads (requisito de Fer para salir en vivo)
+
+**Objetivo:** demostrar con decenas de leads falsos, en tiempo acelerado, que
+el sistema completo (bot + cadencias + plantillas + regla de oro +
+escalamiento) se comporta EXACTAMENTE como lo haría en 6 meses de operación
+real — sin mandar un solo WhatsApp real y sin ensuciar métricas. Salir en
+vivo la próxima semana ya con esa evidencia.
+
+### Arquitectura (mismo código real, transporte falso, reloj virtual)
+- **Flag `es_simulacion`** en cliente/conversación/toque/cita de prueba:
+  TODO lo simulado queda marcado, se excluye de dashboards/informes reales,
+  y se borra con un clic al terminar.
+- **Entrada por el mismo riel:** el simulador inyecta mensajes llamando a
+  `registrarEntrante` directo (el mismo camino que el webhook), con números
+  reservados (+52555000XXXX). El bot corre REAL: Claude clasifica, redacta,
+  consulta agenda, escala — idéntico a producción.
+- **Transporte capturado:** si `es_simulacion`, `enviarTextoWa`/
+  `enviarPlantillaWa` NO llaman a Meta: registran el mensaje como "enviado
+  (sim)". El delay humanizado se salta en sim.
+- **Reloj virtual:** el motor de cadencias recibe `ahora` como parámetro
+  (default: reloj real). El simulador avanza el reloj por escenario ("pasaron
+  3 días") y dispara el motor — 6 meses de cadencia corren en minutos.
+- **El lead lo actúa otra IA:** biblioteca de PERSONAS (otra llamada a Claude
+  con guion): el decidido que agenda a la primera · el ghosteador (contesta
+  T1 y desaparece) · el negociador de precio · el 2ct+ (debe escalar) · el
+  que pregunta "¿eres bot?" · el que cambia de tema a mitad de agendar · el
+  que agenda y hace no-show · el de queja · el que responde a los 40 días
+  desde FRIO · el que pide ubicación/horarios. Bot contra bot, conversación
+  completa.
+
+### Batería de pruebas y veredicto
+- Cada escenario = persona + guion de eventos (en qué toque contesta, si
+  agenda, si asiste) + **ASSERTS automáticos**: estado final esperado, regla
+  de oro respetada (cero toques sobre conversación activa), plantilla
+  correcta por fase y toque, sin emojis, sin precios, escalamiento disparado
+  cuando toca, horario propuesto real y no colisionado, ficha viva
+  actualizada.
+- **Salida legible para los socios:** cada conversación simulada se ve en el
+  Inbox normal con etiqueta "SIMULACIÓN" (se lee como un chat real) + un
+  reporte PASS/FAIL por escenario en `/sistema/simulador` (solo-admin), con
+  botones "correr batería" y "borrar simulación".
+- Criterio de salida a vivo: batería completa en verde 2 corridas seguidas +
+  Fer/Santiago leyeron los transcripts y les suenan a Aurelle.
+
+### Costo y límites
+- Las llamadas a Claude del bot y de las personas son reales (es el punto);
+  ~50 leads × ~10 turnos es ruido en el presupuesto de la API.
+- Lo ÚNICO que el simulador no ejercita es la entrega física por Meta
+  (plantillas aprobadas, ventana de 24 h real): eso se cubre con las pruebas
+  de humo que ya hacemos con el número real de Fer.
+
+## 9. Plan de la semana (para estar vivos la próxima)
+1. **F1 + simulador se construyen JUNTOS** (el simulador es quien ejercita el
+   motor; sin él, F1 no se puede validar de todos modos).
+2. Correr batería → iterar redacción/cadencia con los transcripts.
+3. Sesión de incentivos con Fer/Santiago → redactar arquetipo INCENTIVO.
+4. Tanda 2 de plantillas a Meta (los textos ya validados en el simulador).
+5. Encendido gradual: F2 (recordatorios auto) + toques manuales desde
+   "Toques de hoy"; el resto conforme los informes den confianza.
