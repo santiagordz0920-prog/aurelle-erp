@@ -92,6 +92,21 @@ export const notaSchema = z.object({
   texto: z.string().trim().min(1, "La nota no puede estar vacía."),
 });
 
+/* Contacto del gremio (tercerización): solo el nombre es obligatorio — el
+   resto es data de referencia que se enriquece con el tiempo. */
+export const contactoUtilSchema = z.object({
+  id: opcional(z.string().uuid()),
+  nombre: z.string().trim().min(2, "El nombre es obligatorio."),
+  tipo: opcional(z.string().trim()),
+  contacto: opcional(z.string().trim()),
+  especialidad: opcional(z.string().trim()),
+  tiempo_entrega: opcional(z.string().trim()),
+  precios_estimados: opcional(z.string().trim()),
+  notas: opcional(z.string().trim()),
+});
+
+export type ContactoUtilInput = z.infer<typeof contactoUtilSchema>;
+
 /* Alta de item de inventario. */
 export const itemSchema = z.object({
   sku: z.string().trim().min(1, "El SKU es obligatorio."),
