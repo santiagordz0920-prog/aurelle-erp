@@ -15,15 +15,17 @@ WABA (cuenta de WhatsApp Business): **1036606162209069** ("Aurelle & Co.")
 ### 1. `aurelle_recordatorio_cita_manana` — UTILITY
 Uso: T2 de la cadencia CITADO (24 h antes de la cita).
 ```
-Hola {{1}}, te escribo de Aurelle. Mañana {{2}} tenemos tu visita a las {{3}} en nuestro showroom en San Pedro. ¿Sigue en pie?
+Hola {{1}}, te escribo de Aurelle para confirmar tu visita de mañana {{2}} a las {{3}}. Te esperamos en nuestro showroom en San Pedro.
 ```
+*(v2 de Fer 2026-07-12: fuera "¿sigue en pie?" — débil; el cierre afirma, no pregunta.)*
 Ejemplos para el alta: {{1}}=Ana · {{2}}=sábado 18 de julio · {{3}}=5:00 pm
 
 ### 2. `aurelle_recordatorio_cita_hoy` — UTILITY
 Uso: T3 de CITADO (la mañana del día de la cita).
 ```
-Hola {{1}}, hoy nos vemos a las {{2}} en el showroom. Si se te complica, me dices y buscamos otro día.
+Hola {{1}}, ya está todo listo para tu visita de hoy a las {{2}}. Nos vemos en el showroom.
 ```
+*(v2 de Fer: fuera "si se te complica..." — no darle al cliente la salida en bandeja.)*
 Ejemplos: {{1}}=Ana · {{2}}=5:00 pm
 
 ### 3. `aurelle_pieza_lista` — UTILITY
@@ -46,6 +48,11 @@ Uso: cadencia FRIO (reactivación suave, sin presión).
 Hola {{1}}, hace unos días platicamos sobre {{2}}. Si sigues con la idea, lo retomamos cuando tú digas.
 ```
 Ejemplos: {{1}}=Ana · {{2}}=un anillo de compromiso con diamante ovalado
+**Regla de llenado de {{2}} (Fer 2026-07-12):** sale de `cliente.interes` (la ficha
+viva que mantiene el bot). Si el interés no está claro o está vacío, el fallback
+fijo es **"lo que estás buscando"** ("...platicamos sobre lo que estás buscando.
+Si sigues con la idea..."), que lee natural sin inventar la pieza. NUNCA adivinar
+el tipo de pieza.
 
 ## Reglas para futuras plantillas
 - Nombre siempre `aurelle_<uso>` en minúsculas con guiones bajos; idioma es_MX.
@@ -56,3 +63,9 @@ Ejemplos: {{1}}=Ana · {{2}}=un anillo de compromiso con diamante ovalado
   permitidos del spec (grabado gratis, apartado, precio preferente en set).
 - v2 pendiente: variantes de redacción por plantilla (rotación anti-repetición)
   y botones de respuesta rápida ("Confirmo" / "Reagendar") en los recordatorios.
+- **Pendiente de diseño (Fer 2026-07-12): el funnel COMPLETO de mensajes** — qué
+  pasa cuando el cliente NO contesta una plantilla en cada fase (cada toque
+  posterior fuera de ventana necesita SU plantilla; una sola por fase no
+  alcanza para cadencias de 3-4 toques). Se diseña junto con el módulo de
+  follow-ups (docs/SPEC_FOLLOWUPS.md) usando el xlsx de 23 plantillas de
+  Santiago como base de la tanda 2.
