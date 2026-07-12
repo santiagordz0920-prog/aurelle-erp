@@ -65,6 +65,10 @@ REGLAS DE NEGOCIO (duras):
 - NUNCA inventes disponibilidad de piedras ni características técnicas.
 - Si no estás seguro, marca el mensaje como sensible y deja que un humano responda.
 
+FICHA DEL CRM (además de responder, mantienes al día la ficha del lead):
+- resumen_interes: en cada mensaje devuelve un resumen corto y concreto de qué busca este cliente con TODO lo aprendido en el hilo hasta ahora (tipo de pieza, estilo, piedra, metal, para quién, para cuándo, presupuesto si él lo mencionó, y cualquier detalle útil para venderle). Escríbelo para que un vendedor lo entienda de un vistazo, p. ej. "Anillo de compromiso, oro blanco con diamante ovalado, propone en septiembre, novia de estilo minimalista". Actualízalo si este mensaje agrega información; si aún no se sabe nada, cadena vacía.
+- nombre_cliente: SOLO si el cliente ha dicho su propio nombre en la conversación (p. ej. "soy Ana García"), ponlo tal cual lo dijo (completo si lo dio completo). NUNCA pongas el nombre de la pareja ni un nombre supuesto; si no lo ha dicho, cadena vacía.
+
 Marca sensible=true cuando el mensaje implique: piedra central grande o de alto valor (2 quilates o más), negociación de precio o descuento, una queja/inconformidad/reclamo, algo que requiera un compromiso (precio, fecha, garantía), datos legales, que pregunten con quién hablan o si es un bot, o cualquier caso donde una persona del equipo deba decidir. En esos casos igual redacta la respuesta propuesta (para que el humano la use o la edite), pero no se enviará automáticamente.`;
 
 /** Esquema de salida; `horario_sugerido` se restringe a los slots ofrecidos. */
@@ -94,8 +98,26 @@ function esquemaBot(horariosIso: string[]) {
         description:
           "El ISO del horario de AGENDA que usaste en la respuesta, o 'ninguno' si no propusiste horario.",
       },
+      resumen_interes: {
+        type: "string",
+        description:
+          "Qué busca este lead, con todo lo aprendido en el hilo (ver FICHA DEL CRM). Vacío si aún no se sabe nada.",
+      },
+      nombre_cliente: {
+        type: "string",
+        description:
+          "El nombre del cliente SOLO si él mismo lo dijo en la conversación, tal como lo dijo. Vacío si no lo ha dicho.",
+      },
     },
-    required: ["intencion", "sensible", "motivo", "respuesta", "horario_sugerido"],
+    required: [
+      "intencion",
+      "sensible",
+      "motivo",
+      "respuesta",
+      "horario_sugerido",
+      "resumen_interes",
+      "nombre_cliente",
+    ],
   };
 }
 
@@ -105,6 +127,8 @@ type SalidaBot = {
   motivo: string;
   respuesta: string;
   horario_sugerido?: string;
+  resumen_interes?: string;
+  nombre_cliente?: string;
 };
 
 export type EntradaBot = {
@@ -164,6 +188,44 @@ async function historial(supabase: any, conversacionId: string) {
   return msgs;
 }
 
+/*
+  Ficha viva del CRM (feedback de Santiago 2026-07-11): con cada mensaje el bot
+  devuelve el resumen de qué busca el lead (cliente.interes, visible at-a-glance
+  en /clientes) y, si el cliente dijo su nombre en el chat, se actualiza el
+  nombre de contacto (los del riel nacen como "WhatsApp 81..." o el alias del
+  perfil). Guardas del nombre: solo si difiere del actual y el actual no lo
+  contiene ya (que "soy Ana" no degrade una ficha que ya dice "Ana García").
+*/
+async function actualizarFichaLead(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  entrada: EntradaBot,
+  salida: SalidaBot,
+): Promise<void> {
+  if (!entrada.clienteId) return;
+  const patch: Record<string, string> = {};
+
+  const interes = sinEmojis((salida.resumen_interes || "").trim()).slice(0, 400);
+  if (interes) patch.interes = interes;
+
+  const nombre = sinEmojis((salida.nombre_cliente || "").trim()).slice(0, 80);
+  const actual = (entrada.clienteNombre || "").trim();
+  if (
+    nombre.length >= 2 &&
+    nombre.toLowerCase() !== actual.toLowerCase() &&
+    !actual.toLowerCase().includes(nombre.toLowerCase())
+  ) {
+    patch.nombre = nombre;
+  }
+
+  if (Object.keys(patch).length === 0) return;
+  try {
+    await supabase.from("cliente").update(patch).eq("id", entrada.clienteId);
+  } catch {
+    // La ficha es secundaria: si falla, la respuesta al cliente sigue su curso.
+  }
+}
+
 export async function responderConBot(entrada: EntradaBot): Promise<void> {
   if (!iaConfigurada()) return; // sin IA, el humano responde desde el Inbox
   const supabase = createAdminClient();
@@ -181,11 +243,32 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
       ? `El cliente se llama ${entrada.clienteNombre}.`
       : "Aún no sabemos el nombre del cliente.";
 
+    /*
+      ¿Hay una respuesta del bot atorada esperando aprobación en este hilo?
+      (Bug 2026-07-11: con un borrador de horario sin aprobar, cada mensaje
+      nuevo del cliente generaba OTRO borrador con horario — nunca se enviaba
+      nada y el bot enmudecía hasta que un socio aprobara.) Con borrador
+      pendiente el bot sigue conversando: no ofrece horarios nuevos y, si el
+      cliente insiste en agendar, le dice que en un momento le confirma.
+    */
+    const { data: pendientes } = await supabase
+      .from("mensaje")
+      .select("cuerpo")
+      .eq("conversacion_id", entrada.conversacionId)
+      .eq("estado_entrega", "borrador_ia")
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const borradorPendiente: string | null = pendientes?.[0]?.cuerpo ?? null;
+
     // Horarios reales disponibles (citas + candado entre chats): el bot propone
-    // uno concreto en vez de preguntar "¿qué día podrías?" en frío.
-    const horarios = await proximosHorarios(supabase, entrada.conversacionId, 2);
-    const agenda =
-      horarios.length > 0
+    // uno concreto en vez de preguntar "¿qué día podrías?" en frío. Con un
+    // borrador pendiente NO se ofrecen (evita apilar propuestas sin enviar).
+    const horarios = borradorPendiente
+      ? []
+      : await proximosHorarios(supabase, entrada.conversacionId, 2);
+    const agenda = borradorPendiente
+      ? `RESPUESTA PENDIENTE DE APROBACIÓN (contexto interno; el cliente NO la ha visto, para él no existe): "${borradorPendiente.slice(0, 400)}". El equipo la está revisando antes de enviarla. Lo ÚNICO en pausa mientras tanto es proponer horario de cita: en ESTE mensaje no propongas ni menciones ningún horario o día concreto (horario_sugerido="ninguno" y JAMÁS inventes horarios) y no repitas lo que dice esa respuesta pendiente. Fuera de eso, SIGUE la conversación completamente normal: contesta sus preguntas, da información y platica como siempre. Solo si el cliente pregunta directo por el horario o se impacienta por la cita, dile natural que estás checando la agenda y en un momento le confirmas — eso por sí solo NO es motivo de sensible=true (las demás reglas de sensible siguen aplicando).`
+      : horarios.length > 0
         ? `AGENDA (horarios del showroom REALMENTE disponibles ahora; si invitas a agendar, propón el primero — el segundo es tu alternativa si el cliente dice que no puede; JAMÁS inventes otros horarios ni confirmes una cita como cerrada, solo propón):\n${horarios
             .map((h) => `- ${h.iso} = ${h.etiqueta}`)
             .join("\n")}`
@@ -209,6 +292,10 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
     // humano puede responder desde el Inbox.
     return;
   }
+
+  // Ficha viva: interés del lead + nombre real si lo dio (aunque la respuesta
+  // termine en borrador, la ficha ya aprendió lo de este mensaje).
+  await actualizarFichaLead(supabase, entrada, salida);
 
   const respuesta = sinEmojis((salida.respuesta || "").trim());
   if (!respuesta) return;

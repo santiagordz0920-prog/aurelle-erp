@@ -104,9 +104,14 @@ export function ExpoCard({ expo }: { expo: Expo }) {
         ) : (
           <form ref={formRef} action={actionLead} className="space-y-2">
             <input type="hidden" name="expo_nombre" value={expo.nombre} />
+            {/* Mínimo un contacto: teléfono, correo u otro (en expo no siempre dan teléfono). */}
             <div className="grid gap-2 sm:grid-cols-3">
               <Input name="nombre" placeholder="Nombre*" required />
               <Input name="telefono" placeholder="Teléfono" inputMode="tel" />
+              <Input name="correo" type="email" placeholder="Correo" />
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              <Input name="otro_contacto" placeholder="Otro contacto (IG, etc.)" />
               <Input name="fecha_boda" type="date" aria-label="Fecha de boda" />
             </div>
             <div className="flex items-center gap-2">

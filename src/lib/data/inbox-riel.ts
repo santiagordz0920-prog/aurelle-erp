@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizarTelefono } from "@/lib/clientes";
 import type { MensajeEntrante, EstadoSaliente } from "@/lib/whatsapp";
 
 /*
@@ -31,6 +32,8 @@ export type ResultadoEntrante = {
  */
 export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEntrante | null> {
   const supabase = createAdminClient();
+  // Teléfono siempre sin espacios ni separadores (regla del CRM, 0037).
+  const telefono = normalizarTelefono(m.telefono);
 
   // 1) Dedup: si ya guardamos este wa_id, no repetir (Meta reintenta el webhook).
   if (m.wa_id) {
@@ -70,7 +73,8 @@ export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEn
         .from("cliente")
         .insert({
           nombre: m.nombre_perfil ?? `WhatsApp ${last10}`,
-          telefono: m.telefono,
+          telefono,
+          contacto_preferido: "telefono",
           fuente_canal: "organico",
           sucursal_id: SUCURSAL_DEFAULT,
         })
@@ -89,7 +93,7 @@ export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEn
     .from("conversacion")
     .select("id, no_leidos, cliente_id")
     .eq("sucursal_id", SUCURSAL_DEFAULT)
-    .eq("telefono", m.telefono)
+    .eq("telefono", telefono)
     .maybeSingle();
 
   let conversacionId: string;
@@ -108,7 +112,7 @@ export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEn
     const { data: nuevaConv } = await supabase
       .from("conversacion")
       .insert({
-        telefono: m.telefono,
+        telefono,
         cliente_id: clienteId,
         no_leidos: 1,
         ultimo_at: new Date().toISOString(),

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { CANAL_FUENTE } from "@/lib/clientes";
+import { CANAL_FUENTE, METODO_CONTACTO, type MetodoContacto } from "@/lib/clientes";
 
 const estadoInicial: ResultadoAccion = { ok: false };
 
@@ -30,8 +30,14 @@ export function ClienteForm() {
         <Input id="nombre" name="nombre" required placeholder="Ana López" />
       </Campo>
 
+      {/* Intake multicanal: mínimo UN dato de contacto; el preferido es el que
+          se muestra como principal en el CRM (los demás solo se registran). */}
       <div className="grid gap-5 sm:grid-cols-2">
-        <Campo label="Teléfono (WhatsApp)" htmlFor="telefono">
+        <Campo
+          label="Teléfono (WhatsApp)"
+          htmlFor="telefono"
+          ayuda="Se guarda sin espacios; pégalo como venga."
+        >
           <Input
             id="telefono"
             name="telefono"
@@ -39,10 +45,47 @@ export function ClienteForm() {
             placeholder="+52 81 1234 5678"
           />
         </Campo>
-        <Campo label="Nombre de la pareja" htmlFor="pareja_nombre">
-          <Input id="pareja_nombre" name="pareja_nombre" placeholder="Diego" />
+        <Campo label="Correo" htmlFor="correo">
+          <Input id="correo" name="correo" type="email" placeholder="ana@correo.com" />
         </Campo>
       </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Campo label="Instagram" htmlFor="instagram">
+          <Input id="instagram" name="instagram" placeholder="@usuario" />
+        </Campo>
+        <Campo label="Messenger / Facebook" htmlFor="facebook">
+          <Input id="facebook" name="facebook" placeholder="Nombre de perfil" />
+        </Campo>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Campo
+          label="Otro contacto"
+          htmlFor="otro_contacto"
+          ayuda="Ej. Telegram, teléfono de la oficina."
+        >
+          <Input id="otro_contacto" name="otro_contacto" placeholder="Otro medio" />
+        </Campo>
+        <Campo
+          label="Contacto preferido"
+          htmlFor="contacto_preferido"
+          ayuda="El principal que se muestra en la lista de leads."
+        >
+          <Select id="contacto_preferido" name="contacto_preferido" defaultValue="">
+            <option value="">Automático (el primero con dato)</option>
+            {(Object.keys(METODO_CONTACTO) as MetodoContacto[]).map((m) => (
+              <option key={m} value={m}>
+                {METODO_CONTACTO[m]}
+              </option>
+            ))}
+          </Select>
+        </Campo>
+      </div>
+
+      <Campo label="Nombre de la pareja" htmlFor="pareja_nombre">
+        <Input id="pareja_nombre" name="pareja_nombre" placeholder="Diego" />
+      </Campo>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Campo label="Fecha de boda" htmlFor="fecha_boda">

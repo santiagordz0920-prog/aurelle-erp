@@ -18,7 +18,27 @@ function cumpleEnDias(dias: number, anioNacimiento: number): string {
   return `${anioNacimiento}-${mm}-${dd}`;
 }
 
-export const CLIENTES_MUESTRA: Cliente[] = [
+/* Campos de contacto/interés (0037): defaults + overrides por id abajo, para no
+   repetir null en cada registro. Teléfonos normalizados como en producción. */
+type ClienteBase = Omit<
+  Cliente,
+  "correo" | "instagram" | "facebook" | "otro_contacto" | "contacto_preferido" | "interes"
+>;
+
+const EXTRA: Record<string, Partial<Cliente>> = {
+  "10000000-0000-0000-0000-000000000001": {
+    interes:
+      "Anillo de compromiso, solitario ovalado 2.2ct en oro blanco; boda en noviembre, presupuesto flexible.",
+    correo: "ana.lopez@gmail.com",
+  },
+  "10000000-0000-0000-0000-000000000003": {
+    interes: "Argollas de boda a juego, estilo clásico; vio piezas en la expo.",
+    instagram: "@carla.mdz",
+    contacto_preferido: "instagram",
+  },
+};
+
+const CLIENTES_BASE: ClienteBase[] = [
   {
     id: "10000000-0000-0000-0000-000000000001",
     nombre: "Ana López",
@@ -110,6 +130,18 @@ export const CLIENTES_MUESTRA: Cliente[] = [
     updated_at: "2026-06-20T18:00:00Z",
   },
 ];
+
+export const CLIENTES_MUESTRA: Cliente[] = CLIENTES_BASE.map((c) => ({
+  ...c,
+  telefono: c.telefono ? c.telefono.replace(/[^0-9+]/g, "") : null,
+  correo: null,
+  instagram: null,
+  facebook: null,
+  otro_contacto: null,
+  contacto_preferido: c.telefono ? ("telefono" as const) : null,
+  interes: null,
+  ...EXTRA[c.id],
+}));
 
 export const NOTAS_MUESTRA: NotaCliente[] = [
   {

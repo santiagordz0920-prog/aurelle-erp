@@ -64,6 +64,32 @@ bot (el humano responde desde el Inbox).
   regresa al envío directo cuando el ranking esté calibrado. La aprobación es
   at-a-glance: el widget flotante muestra el texto del borrador con Aprobar y
   enviar / Descartar en cualquier pantalla (editar antes de enviar = en el hilo).
+- **Bugfix: borrador pendiente ya no enmudece al bot (2026-07-11):** con un
+  borrador sin aprobar, cada mensaje nuevo del cliente generaba OTRO borrador
+  con horario (el hilo se veía "sin responder" porque los borradores se excluyen
+  del historial y la intención seguía siendo agendar) — nada se enviaba y el bot
+  dejaba de contestar hasta que un socio aprobara. Ahora `responderConBot`
+  detecta borradores `borrador_ia` pendientes en el hilo y, si hay uno: NO
+  calcula ni ofrece AGENDA (el enum fuerza `horario_sugerido="ninguno"`) e
+  inyecta el borrador como contexto interno con la instrucción de no repetirlo,
+  no inventar horarios y, si el cliente insiste en agendar, decirle natural que
+  en un momento le confirma (sin marcar sensible solo por eso). El resto de las
+  reglas de sensible siguen aplicando. Al aprobar/descartar el borrador, el
+  siguiente mensaje vuelve al flujo normal con horarios. **v2 (mismo día,
+  feedback de Santiago):** la instrucción enfatiza que la conversación sigue
+  COMPLETAMENTE normal (contesta preguntas, da información) — lo único en pausa
+  es proponer horario; "te confirmo en un momento" solo si preguntan directo
+  por la cita.
+- **Ficha viva del CRM (2026-07-11, feedback de Santiago):** el structured
+  output trae dos campos más — `resumen_interes` (qué busca el lead con todo lo
+  aprendido en el hilo: pieza, estilo, piedra, para quién/cuándo, presupuesto si
+  lo dijo) y `nombre_cliente` (SOLO si el cliente dijo su propio nombre en el
+  chat). `actualizarFichaLead` los escribe en `cliente.interes` y
+  `cliente.nombre` con cada mensaje (también cuando la respuesta queda en
+  borrador). Guardas del nombre: nunca el de la pareja (prompt), y no se
+  degrada un nombre existente que ya contiene al detectado ("soy Ana" no pisa
+  "Ana García"). El interés se muestra at-a-glance en la lista de leads
+  (`/clientes`).
 - **Identidad:** si preguntan nombre / "¿eres bot?" → sensible=true (responde un
   humano); el bot no lo afirma ni lo niega, y no se inventa nombre.
 
