@@ -4,10 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { CONTACTOS_UTILES_MUESTRA } from "./contactos-utiles-muestra";
 
-/*
-  Capa de datos de Contactos del gremio (tercerización). RLS: lectura/escritura
-  por sucursal para todo el equipo (a diferencia de `proveedor`, solo-admin).
-*/
+/* Capa de datos de Contactos útiles. Visible para todos los usuarios
+   (la RLS filtra por sucursal; admin ve todo). */
 
 export async function listarContactosUtiles(): Promise<ContactoUtil[]> {
   if (!supabaseConfigurado()) {
@@ -19,7 +17,7 @@ export async function listarContactosUtiles(): Promise<ContactoUtil[]> {
   const { data, error } = await supabase
     .from("contacto_util")
     .select("*")
-    .order("nombre", { ascending: true });
+    .order("nombre");
   if (error) throw error;
   return (data ?? []) as ContactoUtil[];
 }

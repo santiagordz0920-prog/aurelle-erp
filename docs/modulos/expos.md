@@ -29,7 +29,7 @@ Construido en Fase 6. Última modificación: 2026-07-11.
 - El costo es un solo número; desglose (stand vs viáticos vs material) queda para después si se necesita.
 - Sincronización de gasto de expo con Finanzas: hoy el costo vive solo en `expo` (no genera asiento en el ledger). Registrarlo como gasto real es mejora posterior.
 
-## Captura de lead con contacto multicanal (2026-07-11, 0036)
+## Captura de lead con contacto multicanal (2026-07-11, 0037)
 El form del stand ahora pide teléfono, correo u "otro contacto" (mínimo UNO,
 regla compartida del CRM); el teléfono se guarda sin espacios y
 `contacto_preferido` queda en el primero capturado (teléfono→correo→otro).

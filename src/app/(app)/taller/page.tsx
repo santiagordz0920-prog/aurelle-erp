@@ -31,8 +31,8 @@ const SUBMODULOS = [
   {
     href: "/taller/contactos",
     icono: BookUser,
-    titulo: "Contactos del gremio",
-    descripcion: "Joyeros, vaciadores y montadores para tercerizar: especialidad, tiempos y precios de referencia.",
+    titulo: "Contactos útiles",
+    descripcion: "Joyeros, vaciadores y montadores para tercerizar procesos: especialidad, tiempos y precios estimados.",
     activo: true,
   },
 ];

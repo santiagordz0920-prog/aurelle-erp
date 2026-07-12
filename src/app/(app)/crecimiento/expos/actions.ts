@@ -119,7 +119,7 @@ const leadSchema = z
 /**
  * Captura rápida de lead en el stand → cliente con fuente=expo, detalle=nombre.
  * En expo el contacto puede ser teléfono, correo u otro — mínimo uno; el
- * preferido queda en el primero capturado. Teléfono sin espacios (regla 0036).
+ * preferido queda en el primero capturado. Teléfono sin espacios (regla 0037).
  */
 export async function capturarLeadExpo(
   _prev: ResultadoAccion,

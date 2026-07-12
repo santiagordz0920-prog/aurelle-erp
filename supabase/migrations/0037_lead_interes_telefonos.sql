@@ -1,4 +1,4 @@
--- 0036 — CRM de leads (feedback de Santiago 2026-07-11):
+-- 0037 — CRM de leads (feedback de Santiago 2026-07-11):
 --   1) cliente.interes: qué busca el lead (resumen corto que mantiene el bot
 --      de WhatsApp con cada mensaje; visible at-a-glance en /clientes).
 --   2) Teléfonos guardados SIN espacios ni separadores (WhatsApp los copia con

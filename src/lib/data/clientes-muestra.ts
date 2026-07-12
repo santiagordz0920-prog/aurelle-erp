@@ -18,7 +18,7 @@ function cumpleEnDias(dias: number, anioNacimiento: number): string {
   return `${anioNacimiento}-${mm}-${dd}`;
 }
 
-/* Campos de contacto/interés (0036): defaults + overrides por id abajo, para no
+/* Campos de contacto/interés (0037): defaults + overrides por id abajo, para no
    repetir null en cada registro. Teléfonos normalizados como en producción. */
 type ClienteBase = Omit<
   Cliente,

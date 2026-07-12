@@ -32,7 +32,7 @@ export type ResultadoEntrante = {
  */
 export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEntrante | null> {
   const supabase = createAdminClient();
-  // Teléfono siempre sin espacios ni separadores (regla del CRM, 0036).
+  // Teléfono siempre sin espacios ni separadores (regla del CRM, 0037).
   const telefono = normalizarTelefono(m.telefono);
 
   // 1) Dedup: si ya guardamos este wa_id, no repetir (Meta reintenta el webhook).

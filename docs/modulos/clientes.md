@@ -4,11 +4,13 @@
 > bot), IA y lifecycle son Fases 3/5 y aparecen como pestañas "por venir".
 
 ## Estado
-Construido en Fase 1. Última modificación: 2026-07-11 (lista de leads + intake multicanal, 0036).
+Construido en Fase 1. Última modificación: 2026-07-11 (lista de leads + intake multicanal, 0037).
 
 ## Tablas (migración 0004)
 - `cliente` — nombre, telefono (identificador natural, único cuando existe), fecha_nacimiento, fecha_boda, pareja_nombre, fuente_canal (enum `canal_fuente`: ads/expo/referido/organico) + fuente_detalle libre, referido_por_cliente_id (self-FK) / referido_por_externo, etiquetas (text[]), estado_pipeline (enum), motivo_perdida, sucursal_id. Índices: telefono único parcial, estado, canal, gin(etiquetas), lower(nombre).
-- **0036 (2026-07-11):** + `interes` (qué busca el lead; lo mantiene el bot con cada mensaje), `correo`, `instagram`, `facebook` (Messenger), `otro_contacto`, `contacto_preferido` (check: telefono/correo/instagram/facebook/otro). La migración normaliza teléfonos existentes (sin espacios/guiones, fila por fila con manejo de colisión de duplicados) y backfillea `contacto_preferido='telefono'` donde hay teléfono.
+- **0037 (2026-07-11):** + `interes` (qué busca el lead; lo mantiene el bot con cada mensaje), `correo`, `instagram`, `facebook` (Messenger), `otro_contacto`, `contacto_preferido` (check: telefono/correo/instagram/facebook/otro). La migración normaliza teléfonos existentes (sin espacios/guiones, fila por fila con manejo de colisión de duplicados) y backfillea `contacto_preferido='telefono'` donde hay teléfono.
+- `nota_cliente` — notas internas (invisibles al cliente), con autor_id y timestamp.
+- Enums nuevos: `canal_fuente`, `estado_pipeline` (nuevo→conversando→cita_agendada→visito→cotizado→cerrado / perdido).
 
 ## Lista de leads at-a-glance (feedback de Santiago 2026-07-11)
 - `/clientes` (vista lista) ahora es la **lista de leads**: por fila muestra nombre + etiquetas, **qué busca** (`interes`, lo escribe el bot), **contacto principal** con icono, fuente, **última interacción** ("hace 2 h", del `ultimo_at` de la conversación) y blurbs de atención: **"N sin contestar"** (`no_leidos`) y **"Respuesta por aprobar"** (borradores `borrador_ia`).
@@ -16,14 +18,12 @@ Construido en Fase 1. Última modificación: 2026-07-11 (lista de leads + intake
 - **Override manual de etapa en la fila** (`EstadoSelectorMini`): cualquier socio mueve el lead sin entrar a la ficha; "perdido" pide motivo con prompt. La ficha conserva su selector completo.
 - Datos: `listarLeads(q, etapa)` en `lib/data/clientes.ts` (clientes + conversación más reciente por cliente + conteo de borradores). En local usa muestras de clientes+inbox.
 
-## Contacto multicanal (intake WhatsApp/IG/Messenger/Expos, 0036)
+## Contacto multicanal (intake WhatsApp/IG/Messenger/Expos, 0037)
 - **Regla: mínimo UN dato de contacto** (teléfono, correo, Instagram, Messenger u otro). Se valida en zod (`validarContacto`, compartida por alta/edición) — NO con CHECK en BD: hay clientes históricos solo-nombre y un CHECK bloquearía sus updates.
 - **`contacto_preferido` = el principal**: es el ÚNICO que muestran las listas; los demás solo quedan registrados en la ficha (Resumen los lista todos y marca "· preferido"). Si no se elige, es el primero con dato (orden: teléfono→correo→IG→FB→otro, `contactoPrincipal()` en `lib/clientes.ts`).
-- **Teléfono SIEMPRE sin espacios/guiones** (`normalizarTelefono`): normaliza el zod del alta/edición, el riel de WhatsApp y la captura de expo; 0036 normalizó los existentes. La **búsqueda** de `/clientes` es insensible a espacios: compara solo dígitos cuando el query trae ≥4 dígitos (también busca en correo/instagram).
+- **Teléfono SIEMPRE sin espacios/guiones** (`normalizarTelefono`): normaliza el zod del alta/edición, el riel de WhatsApp y la captura de expo; 0037 normaliza los existentes. La **búsqueda** de `/clientes` es insensible a espacios: compara solo dígitos cuando el query trae ≥4 dígitos (también busca en correo/instagram).
 - Edición: tarjeta **"Datos de contacto"** en la pestaña Resumen de la ficha (`ContactoForm` → `actualizarContacto`). La captura de lead en expo acepta teléfono/correo/otro (mínimo uno).
 - **El bot actualiza la ficha**: `interes` con cada mensaje y `nombre` cuando el cliente dice su nombre completo (ver `docs/modulos/bot-ia.md`).
-- `nota_cliente` — notas internas (invisibles al cliente), con autor_id y timestamp.
-- Enums nuevos: `canal_fuente`, `estado_pipeline` (nuevo→conversando→cita_agendada→visito→cotizado→cerrado / perdido).
 
 ## Rutas / pantallas
 - `/clientes` — lista + tablero de pipeline (toggle `?vista=pipeline`), búsqueda (`?q=`), botón "Nuevo cliente". Todos los roles.

@@ -57,7 +57,7 @@ export async function listarClientes(
       `correo.ilike.%${qs}%`,
       `instagram.ilike.%${qs}%`,
     ];
-    // Teléfonos guardados sin espacios (0036): buscar por solo-dígitos del query.
+    // Teléfonos guardados sin espacios (0037): buscar por solo-dígitos del query.
     const telQ = q.replace(/\D/g, "");
     if (telQ.length >= 4) filtros.push(`telefono.ilike.%${telQ}%`);
     if (qs) query = query.or(filtros.join(","));
