@@ -3,7 +3,10 @@
 > Plan maestro de la migración (sesión con Fer 2026-07-12). Las 4 sheets que el
 > ERP reemplaza + expos. Fer avisa: hay datos incompletos y conciliaciones
 > pendientes — el diseño asume huecos desde el inicio.
-> Estado: PLAN. El escaneo aún no corre.
+> Estado: **Fase 1 HECHA** (escaneo vía Cowork, 2026-07-13): el paquete de migración
+> vive en `docs/migracion/` (INVENTARIO, MAPEO, FALTANTES + 8 CSV en `csv/`).
+> **Fase 2 EN CURSO:** contestar las 31 preguntas — hoja de trabajo en
+> `docs/migracion/CONCILIACION.md`. Fase 3 (import) no arranca sin eso.
 
 ## Fuentes (Google Drive de nubomarket@gmail.com, acceso ya conectado)
 | Sheet | ID | Destino principal en el ERP |

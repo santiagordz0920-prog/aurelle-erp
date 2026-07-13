@@ -1,0 +1,903 @@
+fecha,tipo,categoria,concepto,monto,metodo,relacionado_con,notas,_fila_origen,_confianza,_nota,_pregunta_pendiente
+2025-02-15,deuda,Deuda,Deuda Fer 1,2434.03,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R3,media,,Q-FIN
+2025-02-15,gasto,Gasto,AliExpress cajitas,2434.03,,,,Contabilidad v1/Transacciones/R4,alta,,
+2025-02-24,deuda,Deuda,Deuda inicial papá fer,47113.32,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R5,media,,Q-FIN
+2025-02-24,gasto,Gasto,Gastos iniciales,47113.32,,,,Contabilidad v1/Transacciones/R6,alta,,
+2025-02-24,capital,Capital,Capital inicio post-Expo tu Boda,69500,,,"Flujo de financiamiento/capital (Clasif. 'Capital'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R7,media,,Q-FIN
+2025-02-24,capital,Capital,Capital inicio,1347.71,,,"Flujo de financiamiento/capital (Clasif. 'Capital'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R8,media,,Q-FIN
+2025-02-28,ingreso,Ingreso,Anticipo Victor,500,,,,Contabilidad v1/Transacciones/R9,alta,,
+2025-02-28,ingreso,Ingreso,Anticipo Luis,3500,,,,Contabilidad v1/Transacciones/R10,alta,,
+2025-03-02,gasto,Costo,Compra diamantes 1,21294.81,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R11,alta,,
+2025-03-02,gasto,Costo,Forte Anticipo 1,44052.24,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R12,alta,,
+2025-03-02,ingreso,Ingreso,Anticipo Eber 1,1800,,,,Contabilidad v1/Transacciones/R13,alta,,
+2025-03-02,gasto,Costo,Pago fees Mercado,73.08,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R14,alta,,
+2025-03-04,gasto,Costo,Piedras color,6953.58,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R15,alta,,
+2025-03-08,ingreso,Ingreso,Anticipo Eber 2,4200,,,,Contabilidad v1/Transacciones/R16,alta,,
+2025-03-09,gasto,Gasto,Robo tio fer,5000,,,,Contabilidad v1/Transacciones/R17,alta,,
+2025-03-09,ingreso,Ingreso,Anticipo Victor 2,500,,,,Contabilidad v1/Transacciones/R18,alta,,
+2025-03-10,gasto,Gasto,Fashion Show Pago 1,4000,,,,Contabilidad v1/Transacciones/R19,alta,,
+2025-03-13,gasto,Costo,Compra diamantes 2,14461.27,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R20,alta,,
+2025-03-16,gasto,Gasto,GIA,15794.8,,,,Contabilidad v1/Transacciones/R21,alta,,
+2025-03-19,gasto,Costo,Joyero trabajo y oro,42500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R22,alta,,
+2025-03-21,deuda,Deuda,Deuda papá fer 2,73256.07,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R23,media,,Q-FIN
+2025-03-23,deuda,Deuda,Deuda papá fer 3,8000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R24,media,,Q-FIN
+2025-03-23,ingreso,Ingreso,Victor Anticipo 2,1500,,,,Contabilidad v1/Transacciones/R25,alta,,
+2025-03-23,deuda,Deuda,Deuda Fer,1500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R26,media,,Q-FIN
+2025-03-23,pago_deuda,Pago Deuda,Pago deuda Fer,1500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R27,media,,Q-FIN
+2025-03-23,pago_deuda,Pago Deuda,Pago deuda Papá Fer,500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R28,media,,Q-FIN
+2025-03-24,gasto,Costo,Aduanas diamantes 2,2767,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R29,alta,,
+2025-03-24,gasto,Gasto,Aduanas IGI,3065,,,,Contabilidad v1/Transacciones/R30,alta,,
+2025-03-24,gasto,Costo,Aduanas Piedras color,142,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R31,alta,,
+2025-03-24,gasto,Gasto,Expo Tu Boda,3500,,,,Contabilidad v1/Transacciones/R32,alta,,
+2025-03-25,capital,Capital,Inversión Santi,693.76,,,"Flujo de financiamiento/capital (Clasif. 'Capital'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R33,media,,Q-FIN
+2025-03-25,gasto,Costo,Bolsas,459,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R34,alta,,
+2025-03-25,gasto,Costo,Anillero doble,234.76,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R35,alta,,
+2025-03-26,gasto,Costo,Aduanas Eber 2,290.5,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R36,alta,,
+2025-03-26,gasto,Costo,Anilleros Amazon,802.18,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R37,alta,,
+2025-03-26,gasto,Gasto,Microscopio pitero,1411.7,,,,Contabilidad v1/Transacciones/R38,alta,,
+2025-03-26,gasto,Costo,Caja collar fer,507.85,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R39,alta,,
+2025-03-26,deuda,Deuda,Deuda Fer Amazon,2721.73,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R40,media,,Q-FIN
+2025-03-26,gasto,Costo,Aduana 1,262.5,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R41,alta,,
+2025-03-26,deuda,Deuda,Deuda fer Aduanas,553,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R42,media,,Q-FIN
+2025-03-27,deuda,Deuda,Amazon,506.1,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R43,media,,Q-FIN
+2025-03-27,gasto,Gasto,Báscula Digital,323.1,,,,Contabilidad v1/Transacciones/R44,alta,,
+2025-03-27,gasto,Gasto,Vernier,183,,,,Contabilidad v1/Transacciones/R45,alta,,
+2025-03-27,gasto,Gasto,Sellos cera,398.59,,,,Contabilidad v1/Transacciones/R46,alta,,
+2025-03-27,deuda,Deuda,Deuda Fer,398.59,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R47,media,,Q-FIN
+2025-03-27,deuda,Deuda,Deuda piedras de color,48195.51,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R48,media,,Q-FIN
+2025-03-27,gasto,Costo,Piedras de color,48195.51,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R49,alta,,
+2025-03-28,ingreso,Ingreso,Victor Anticipo 3,1500,,,,Contabilidad v1/Transacciones/R50,alta,,
+2025-03-28,pago_deuda,Pago Deuda,Pago Deuda Fer,1500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R51,media,,Q-FIN
+2025-03-28,pago_deuda,Pago Deuda,Pago Deuda Fer,5113.45,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R52,media,,Q-FIN
+2025-03-28,ingreso,Ingreso,Eber 1,16200,,,,Contabilidad v1/Transacciones/R53,alta,,
+2025-03-28,ingreso,Ingreso,Eber 2,37800,,,,Contabilidad v1/Transacciones/R54,alta,,
+2025-03-28,gasto,Costo,Pago fees Mercado Eber 1,657.7199999999999,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R55,alta,,
+2025-03-28,gasto,Costo,Pago fees Mercado Eber 2,1534.6799999999998,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R56,alta,,
+2025-03-28,ingreso,Ingreso,Rendimientos,1.2399999999179272,,,,Contabilidad v1/Transacciones/R57,alta,,
+2025-03-28,gasto,Gasto,Papel 1,299.5,,,,Contabilidad v1/Transacciones/R58,alta,,
+2025-03-28,gasto,Gasto,Papel 2,537.6,,,,Contabilidad v1/Transacciones/R59,alta,,
+2025-03-28,capital,Capital,Inversión Santi,837.1,,,"Flujo de financiamiento/capital (Clasif. 'Capital'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R60,media,,Q-FIN
+2025-03-28,gasto,Costo,Diamantes Expo Grande 1,150021.14,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R61,alta,,
+2025-03-28,gasto,Costo,Diamantes Expo Grande 3,167859.87,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R62,alta,,
+2025-03-29,gasto,Gasto,AliExpress cajitas 2,463.6,,,,Contabilidad v1/Transacciones/R63,alta,,
+2025-03-29,gasto,Costo,Diamantes Expo Grande 2,155815.44,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R64,alta,,
+2025-03-29,deuda,Deuda,Deuda Diamantes Expo Grande,473696.45,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R65,media,,Q-FIN
+2025-04-02,deuda,Deuda,Deuda joyero Argollas lisas,175000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R66,media,,Q-FIN
+2025-04-03,gasto,Gasto,Joyapak Expo tu Boda,5355.12,,,,Contabilidad v1/Transacciones/R67,alta,,
+2025-04-04,gasto,Costo,Pago joyero argollas lisas,174500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R68,alta,,
+2025-04-04,deuda,Deuda,Deuda Churumbelas,121711.09,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R69,media,,Q-FIN
+2025-04-04,gasto,Costo,Churumbelas Wholesale,121711.09,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R70,alta,,
+2025-04-05,ingreso,Ingreso,Liquidación Argolla Javier,10000,,,,Contabilidad v1/Transacciones/R71,alta,,
+2025-04-05,gasto,Costo,Mercado Pago Liq Argolla Javier,406,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R72,alta,,
+2025-04-08,gasto,Costo,Ajuste diamantes Expo Grande,1064.24,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R73,alta,,
+2025-04-08,ingreso,Ingreso,Luis Entrega Anillo,31500,,,,Contabilidad v1/Transacciones/R74,alta,,
+2025-04-10,gasto,Costo,Aduanas piedras color grande,939.61,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R75,alta,,
+2025-04-21,gasto,Costo,Aduanas diamantes 3 grande,19560,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R76,alta,,
+2025-04-21,deuda,Deuda,Deuda aduanas papá fer,71895,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R77,media,,Q-FIN
+2025-04-21,gasto,Costo,Pago klar aduanas,3500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R78,alta,,
+2025-04-23,gasto,Costo,Aduanas diamantes 2 grande,29335,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R79,alta,,
+2025-04-23,gasto,Costo,Forte Parte 2,42214.37,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R80,alta,,
+2025-04-24,gasto,Costo,Aduanas diamantes 1 grande,26500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R81,alta,,
+2025-04-26,ingreso,Ingreso,Liquidación Anillo Victor,29000,,,,Contabilidad v1/Transacciones/R82,alta,,
+2025-04-26,gasto,Costo,Fees Mercado Pago Anillo Victor,1177.3999999999999,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R83,alta,,
+2025-04-26,ingreso,Ingreso,Ingreso piedra papá fer,16653,,,,Contabilidad v1/Transacciones/R84,alta,,
+2025-04-26,pago_deuda,Pago Deuda,Pago deuda papá fer anillo cecy,16653,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R85,media,,Q-FIN
+2025-05-04,ingreso,Ingreso,Argollas raritos 2,12951.9,,,,Contabilidad v1/Transacciones/R86,alta,,
+2025-05-04,gasto,Gasto,Kickoff Marketing,9500,,,,Contabilidad v1/Transacciones/R87,alta,,
+2025-05-06,deuda,Deuda,Oro 10 anillos papá fer,55500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R88,media,,Q-FIN
+2025-05-06,gasto,Costo,Oro 10 anillos agustín,55500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R89,alta,,
+2025-05-07,gasto,Costo,Melees,4372.34,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R90,alta,,
+2025-05-12,gasto,Gasto,Pago Expo tu Boda,8600,,,,Contabilidad v1/Transacciones/R91,alta,,
+2025-05-15,gasto,Gasto,Vitrinas anticipo,6500,,,,Contabilidad v1/Transacciones/R92,alta,,
+2025-05-18,ingreso,Ingreso,Anillo Merlo,50000,,Efectivo,,Contabilidad v1/Transacciones/R93,alta,,
+2025-05-18,gasto,Costo,DHL pago,764.88,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R94,alta,,
+2025-05-21,gasto,Gasto,Tema Shopify,9366.24,,,,Contabilidad v1/Transacciones/R95,alta,,
+2025-05-22,gasto,Gasto,Logos metal adelanto,6400,,,,Contabilidad v1/Transacciones/R96,alta,,
+2025-05-23,gasto,Gasto,Local reserv,10000,,,,Contabilidad v1/Transacciones/R97,alta,,
+2025-05-25,gasto,Gasto,Viniles,1990,,,,Contabilidad v1/Transacciones/R98,alta,,
+2025-05-25,gasto,Gasto,GoDaddy Transf Dominio,253.59,transferencia,,,Contabilidad v1/Transacciones/R99,alta,,
+2025-05-27,gasto,Gasto,Muebles anticipo,212,,,,Contabilidad v1/Transacciones/R100,alta,,
+2025-05-29,ingreso,Ingreso,Manolo anillo anticipo,5000,,Efectivo,,Contabilidad v1/Transacciones/R101,alta,,
+2025-05-30,gasto,Gasto,Mamadas Expo,947.69,,,,Contabilidad v1/Transacciones/R102,alta,,
+2025-05-30,gasto,Gasto,Gastos Cash Expo Sabado,7000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R103,alta,,
+2025-05-30,gasto,Gasto,Deuda Fer Expo,1850,,,,Contabilidad v1/Transacciones/R104,alta,,
+2025-05-30,gasto,Gasto,Lamparas,1187.97,,,,Contabilidad v1/Transacciones/R105,alta,,
+2025-06-02,gasto,Gasto,Instalación Letreros metal,4300,,,,Contabilidad v1/Transacciones/R106,alta,,
+2025-06-02,gasto,Gasto,Estacionamiento Expo 2,100,,,,Contabilidad v1/Transacciones/R107,alta,,
+2025-06-02,gasto,Costo,Diamante jodido,2340.84,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R108,alta,,
+2025-06-02,ingreso,Ingreso,Anticipo Monica,2500,,Efectivo,,Contabilidad v1/Transacciones/R109,alta,,
+2025-06-02,gasto,Costo,Diamante Jodido +,1608.05,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R110,alta,,
+2025-06-11,gasto,Gasto,Sintesis,30000,,Efectivo,,Contabilidad v1/Transacciones/R111,alta,,
+2025-06-12,ingreso,Ingreso,Merlo Anticipo 2,5500,,Efectivo,,Contabilidad v1/Transacciones/R112,alta,,
+2025-06-17,gasto,Gasto,Lamparas,1216,,,,Contabilidad v1/Transacciones/R113,alta,,
+2025-06-17,gasto,Costo,Aduanas Forte,4000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R114,alta,,
+2025-06-18,gasto,Gasto,Expo tu Boda Pago 2,14000,,,,Contabilidad v1/Transacciones/R115,alta,,
+2025-06-18,gasto,Gasto,Transf Cash a cuenta,14000,transferencia,Efectivo,,Contabilidad v1/Transacciones/R116,alta,,
+2025-06-18,ingreso,Ingreso,Transf Cash a cuenta,14000,transferencia,,,Contabilidad v1/Transacciones/R117,alta,,
+2025-06-19,gasto,Gasto,Oficialía,300,,,,Contabilidad v1/Transacciones/R118,alta,,
+2025-06-19,ingreso,Ingreso,Merlo liquidación,7000,,Efectivo,,Contabilidad v1/Transacciones/R119,alta,,
+2025-06-19,deuda,Deuda,Gilsa y sintesis y agustin,105000,,Efectivo,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R120,media,,Q-FIN
+2025-06-19,gasto,Costo,Agustin,41500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R121,alta,,
+2025-06-19,gasto,Gasto,Sintesis naming,14616,,,,Contabilidad v1/Transacciones/R122,alta,,
+2025-06-19,gasto,Gasto,Taller Joyería,1000,,,,Contabilidad v1/Transacciones/R123,alta,,
+2025-06-19,gasto,Gasto,Gilsa,5000,,Efectivo,,Contabilidad v1/Transacciones/R124,alta,,
+2025-06-19,gasto,Gasto,Mueble Joyero,5300,,Efectivo,,Contabilidad v1/Transacciones/R125,alta,,
+2025-06-19,gasto,Gasto,Transf Cash a cuenta,19500,transferencia,Efectivo,,Contabilidad v1/Transacciones/R126,alta,,
+2025-06-19,ingreso,Ingreso,Transf Cash a cuenta,19500,transferencia,,,Contabilidad v1/Transacciones/R127,alta,,
+2025-06-20,deuda,Deuda,Piedra Gilsa,17882.84,,,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R128,media,,Q-FIN
+2025-06-20,gasto,Gasto,Piedra Gilsa,17882.84,,,,Contabilidad v1/Transacciones/R129,alta,,
+2025-06-22,gasto,Gasto,Muebles,390,,,,Contabilidad v1/Transacciones/R130,alta,,
+2025-06-22,ingreso,Ingreso,Anticipo Catherine,959.4,,,,Contabilidad v1/Transacciones/R131,alta,,
+2025-06-22,ingreso,Ingreso,Anticipo David,1000,,Efectivo,,Contabilidad v1/Transacciones/R132,alta,,
+2025-06-22,ingreso,Ingreso,Anticipo Juan Vega,1000,,Efectivo,,Contabilidad v1/Transacciones/R133,alta,,
+2025-06-22,ingreso,Ingreso,Anticipo Anna Georgina,1000,,Efectivo,,Contabilidad v1/Transacciones/R134,alta,,
+2025-06-22,ingreso,Ingreso,Anticipo Adrián Alejandro,1000,,Efectivo,,Contabilidad v1/Transacciones/R135,alta,,
+2025-06-23,gasto,Gasto,Gastos Expo tu Boda,1815,,,,Contabilidad v1/Transacciones/R136,alta,,
+2025-06-23,gasto,Gasto,Joyero,6000,,Efectivo,,Contabilidad v1/Transacciones/R137,alta,,
+2025-06-25,gasto,Gasto,Liquidacion sintesis,27500,,Efectivo,,Contabilidad v1/Transacciones/R138,alta,,
+2025-06-27,gasto,Gasto,Joyero curso 2,4000,,Efectivo,,Contabilidad v1/Transacciones/R139,alta,,
+2025-06-27,gasto,Gasto,Gastos plata piedras y centro,2440,,,,Contabilidad v1/Transacciones/R140,alta,,
+2025-06-27,gasto,Gasto,Gastos plata piedras y centro,1000,,Efectivo,,Contabilidad v1/Transacciones/R141,alta,,
+2025-06-28,ingreso,Ingreso,Liquidación Catherine,12472.6,,,,Contabilidad v1/Transacciones/R142,alta,,
+2025-07-04,deuda,Deuda,Churumbelas Wholesale,16920,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R143,media,,Q-FIN
+2025-07-04,gasto,Costo,Churumbelas Wholesale,16920,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R144,alta,,
+2025-07-04,gasto,Gasto,Gastos impresora 3D,14291.460000000001,,,,Contabilidad v1/Transacciones/R145,alta,,
+2025-07-04,deuda,Deuda,Deuda Fer Impresora 3D,1403.10999999987,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R146,media,,Q-FIN
+2025-07-04,deuda,Deuda,Deuda Fer Piedras y laminadora,4750,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R147,media,,Q-FIN
+2025-07-04,gasto,Gasto,Deuda Fer Piedras y laminadora conversión cash,4750,efectivo,,,Contabilidad v1/Transacciones/R148,alta,,
+2025-07-04,ingreso,Ingreso,Deuda Fer Piedras y laminadora conversión cash,4750,efectivo,Efectivo,,Contabilidad v1/Transacciones/R149,alta,,
+2025-07-04,gasto,Gasto,Piedras decoración,1250,,Efectivo,,Contabilidad v1/Transacciones/R150,alta,,
+2025-07-04,gasto,Gasto,Laminadora,3500,,Efectivo,,Contabilidad v1/Transacciones/R151,alta,,
+2025-07-04,deuda,Deuda,Deuda compra nivoda,22000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R152,media,,Q-FIN
+2025-07-04,gasto,Gasto,Compra nivoda,22000,,,,Contabilidad v1/Transacciones/R153,alta,,
+2025-07-07,deuda,Deuda,Deuda Papá Fer,20000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R154,media,,Q-FIN
+2025-07-07,deuda,Deuda,Deuda Fer,100,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R155,media,,Q-FIN
+2025-07-07,gasto,Gasto,Conversión a cash  Fer y Papá Fer,20100,efectivo,,,Contabilidad v1/Transacciones/R156,alta,,
+2025-07-07,ingreso,Ingreso,Conversión a cash  Fer y Papá Fer,20100,efectivo,Efectivo,,Contabilidad v1/Transacciones/R157,alta,,
+2025-07-07,gasto,Gasto,JosaPHAT,1500,,Efectivo,,Contabilidad v1/Transacciones/R158,alta,,
+2025-07-07,gasto,Gasto,Agustin trabajo,3400,,Efectivo,,Contabilidad v1/Transacciones/R159,alta,,
+2025-07-08,gasto,Gasto,Transf Cash a cuenta,28900,transferencia,Efectivo,,Contabilidad v1/Transacciones/R160,alta,,
+2025-07-08,ingreso,Ingreso,Transf Cash a cuenta,28900,transferencia,,,Contabilidad v1/Transacciones/R161,alta,,
+2025-07-08,gasto,Gasto,Pearl MKT,12500,,,,Contabilidad v1/Transacciones/R162,alta,,
+2025-07-08,gasto,Gasto,SinTesis pago rebrand,12528,,,,Contabilidad v1/Transacciones/R163,alta,,
+2025-07-08,ingreso,Ingreso,Anticipo Raquel Alejandra,1500,,,,Contabilidad v1/Transacciones/R164,alta,,
+2025-07-08,gasto,Gasto,Fany Joyería Taller,3065,,,,Contabilidad v1/Transacciones/R165,alta,,
+2025-07-08,gasto,Gasto,Dolor Suchiate,129500,,,,Contabilidad v1/Transacciones/R166,alta,,
+2025-07-08,deuda,Deuda,Deuda Suchiate,129500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R167,media,,Q-FIN
+2025-07-09,pago_deuda,Pago Deuda,Pago falso,5372,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R168,media,,Q-FIN
+2025-07-09,deuda,Deuda,Hojas e impresión,239,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R169,media,,Q-FIN
+2025-07-09,gasto,Gasto,Hojas e impresión,239,,,,Contabilidad v1/Transacciones/R170,alta,,
+2025-07-09,ingreso,Ingreso,Pago Monica,7000,,,,Contabilidad v1/Transacciones/R171,alta,,
+2025-07-09,ingreso,Ingreso,Pago Manolo porcion tarjeta,8000,tarjeta,,,Contabilidad v1/Transacciones/R172,alta,,
+2025-07-09,ingreso,Ingreso,Pago Manolo porcion cash,37000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R173,alta,,
+2025-07-10,gasto,Gasto,Taller Humberto,6000,,Efectivo,,Contabilidad v1/Transacciones/R174,alta,,
+2025-07-10,gasto,Gasto,Gasto tanque de gas parte 1,500,,Efectivo,,Contabilidad v1/Transacciones/R175,alta,,
+2025-07-10,deuda,Deuda,Deuda Fer,200,,,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R176,media,,Q-FIN
+2025-07-10,gasto,Gasto,Gasto deuda fer a cash,200,efectivo,,,Contabilidad v1/Transacciones/R177,alta,,
+2025-07-10,ingreso,Ingreso,Gasto deuda fer a cash,200,efectivo,Efectivo,,Contabilidad v1/Transacciones/R178,alta,,
+2025-07-10,gasto,Gasto,Gasto tanque de gas parte 2,200,,Efectivo,,Contabilidad v1/Transacciones/R179,alta,,
+2025-07-10,deuda,Deuda,Deuda Fer Fany,3065,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R180,media,,Q-FIN
+2025-07-10,gasto,Gasto,Caja Herramienta,700,,Efectivo,,Contabilidad v1/Transacciones/R181,alta,,
+2025-07-10,gasto,Gasto,Cava,2500,,Efectivo,,Contabilidad v1/Transacciones/R182,alta,,
+2025-07-11,pago_deuda,Pago Deuda,Liquidación Deuda Fer Limpieza,2000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R183,media,,Q-FIN
+2025-07-11,ingreso,Ingreso,Depósito Monica,3000,,,,Contabilidad v1/Transacciones/R184,alta,,
+2025-07-12,gasto,Gasto,HEB dolor,4093.1,,,,Contabilidad v1/Transacciones/R185,alta,,
+2025-07-12,pago_deuda,Pago Deuda,Pago deuda Fer HEB diferencia,906.9000000000001,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R186,media,,Q-FIN
+2025-07-12,gasto,Gasto,Modelos 3D dolor,500,,,,Contabilidad v1/Transacciones/R187,alta,,
+2025-07-12,deuda,Deuda,Tanque Gas,200,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R188,media,,Q-FIN
+2025-07-12,gasto,Gasto,Tanque Gas,200,,,,Contabilidad v1/Transacciones/R189,alta,,
+2025-07-12,gasto,Gasto,Copas,600,,Efectivo,,Contabilidad v1/Transacciones/R190,alta,,
+2025-07-12,ingreso,Ingreso,Ingreso Zafiro Pitero Anticipo,3000,,,,Contabilidad v1/Transacciones/R191,alta,,
+2025-07-12,pago_deuda,Pago Deuda,Pago Deuda Fer cosas café,2500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R192,media,,Q-FIN
+2025-07-12,pago_deuda,Pago Deuda,Pago Deuda Fer cosas bar,1500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R193,media,,Q-FIN
+2025-07-12,pago_deuda,Pago Deuda,Pago Deuda Fer cosas pizarrón,1200,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R194,media,,Q-FIN
+2025-07-13,pago_deuda,Pago Deuda,Pago Deuda Fer cosas vino,1000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R195,media,,Q-FIN
+2025-07-14,deuda,Deuda,Amazon Deuda DOLOR MASIVO,17135.43,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R196,media,,Q-FIN
+2025-07-14,gasto,Gasto,"Señora sabrosa ""servicios""",1500,,Efectivo,,Contabilidad v1/Transacciones/R197,alta,,
+2025-07-14,gasto,Gasto,Llaves Copias,500,,Efectivo,,Contabilidad v1/Transacciones/R198,alta,,
+2025-07-14,pago_deuda,Pago Deuda,Pago Deuda Fer cosas hielo,2000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R199,media,,Q-FIN
+2025-07-14,gasto,Gasto,Amazon Gastos DOLOR MASIVO,17135.43,,,,Contabilidad v1/Transacciones/R200,alta,,
+2025-07-15,gasto,Gasto,Cafetera Gasto Efectivo,1700,efectivo,Efectivo,,Contabilidad v1/Transacciones/R201,alta,,
+2025-07-15,ingreso,Ingreso,Anticipo Sergio Guadiana,2000,,Efectivo,,Contabilidad v1/Transacciones/R202,alta,,
+2025-07-15,gasto,Gasto,"""Modelo""",2500,,Efectivo,,Contabilidad v1/Transacciones/R203,alta,,
+2025-07-15,pago_deuda,Pago Deuda,Gastos limpiadora,1400,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R204,media,,Q-FIN
+2025-07-16,pago_deuda,Pago Deuda,Pago deuda Fer tipografia,1900,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R205,media,,Q-FIN
+2025-07-16,deuda,Deuda,Deuda Fer Tipografia,1875.1,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R206,media,,Q-FIN
+2025-07-16,gasto,Gasto,Tipografias,1875.1,,,,Contabilidad v1/Transacciones/R207,alta,,
+2025-07-16,gasto,Gasto,Teléfono Telcel,1849,,Efectivo,,Contabilidad v1/Transacciones/R208,alta,,
+2025-07-16,gasto,Gasto,Gasto Pago deuda Fer,151,,Efectivo,,Contabilidad v1/Transacciones/R209,alta,,
+2025-07-16,ingreso,Ingreso,Gasto Pago deuda Fer,151,,,,Contabilidad v1/Transacciones/R210,alta,,
+2025-07-16,pago_deuda,Pago Deuda,Pago Deuda Fer,151,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R211,media,,Q-FIN
+2025-07-16,deuda,Deuda,Zafiro Bicolor Nivoda,5206,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R212,media,,Q-FIN
+2025-07-16,gasto,Gasto,Zafiro Bicolor Nivoda,5206,,,,Contabilidad v1/Transacciones/R213,alta,,
+2025-07-16,gasto,Gasto,Humidificador,200,,,,Contabilidad v1/Transacciones/R214,alta,,
+2025-07-17,ingreso,Ingreso,Mensualidad Mónica,7500,,,,Contabilidad v1/Transacciones/R215,alta,,
+2025-07-21,gasto,Gasto,Gastos Aduana,1500,,Efectivo,,Contabilidad v1/Transacciones/R216,alta,,
+2025-07-22,ingreso,Ingreso,Liquidacion José Sandoval,35000,,Efectivo,,Contabilidad v1/Transacciones/R217,alta,,
+2025-07-22,gasto,Gasto,Expo,4000,,,,Contabilidad v1/Transacciones/R218,alta,,
+2025-07-22,deuda,Deuda,Facebook Ads,10,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R219,media,,Q-FIN
+2025-07-22,gasto,Gasto,Facebook Ads,10,,,,Contabilidad v1/Transacciones/R220,alta,,
+2025-07-23,gasto,Gasto,Conversión cash a Klar 1,27500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R221,alta,,
+2025-07-23,ingreso,Ingreso,Conversión cash a Klar 2,27500,efectivo,,,Contabilidad v1/Transacciones/R222,alta,,
+2025-07-23,gasto,Gasto,Ads,15000,,,,Contabilidad v1/Transacciones/R223,alta,,
+2025-07-24,deuda,Deuda,Amazon compras DOLOR MASIVO 2,3090.49,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R224,media,,Q-FIN
+2025-07-24,gasto,Gasto,Pago Agustín Trabajo,7500,,Efectivo,,Contabilidad v1/Transacciones/R225,alta,,
+2025-07-24,gasto,Gasto,Pago Agustín Oro,17500,,Efectivo,,Contabilidad v1/Transacciones/R226,alta,,
+2025-07-24,gasto,Gasto,Gasto Amazon compras DOLOR MASIVO 2,3090.49,,,,Contabilidad v1/Transacciones/R227,alta,,
+2025-07-28,deuda,Deuda,Deuda Fer zafiro aduanas,1052,,,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R228,media,,Q-FIN
+2025-07-28,gasto,Gasto,Zafiro Aduanas,1052,,,,Contabilidad v1/Transacciones/R229,alta,,
+2025-07-28,gasto,Gasto,Expo gasto 1,1500,,,,Contabilidad v1/Transacciones/R230,alta,,
+2025-07-28,deuda,Deuda,Deuda Santi Dolor Masivo,1604.38,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R231,media,,Q-FIN
+2025-07-28,gasto,Gasto,Gasto Amazon Santi Dolor Masivo,1604.38,,,,Contabilidad v1/Transacciones/R232,alta,,
+2025-07-28,deuda,Deuda,Deuda Fer para Expo,750,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R233,media,,Q-FIN
+2025-07-28,gasto,Gasto,Abogada IMPI,9800,,,,Contabilidad v1/Transacciones/R234,alta,,
+2025-07-28,gasto,Gasto,Página web,7250,,,,Contabilidad v1/Transacciones/R235,alta,,
+2025-07-30,ingreso,Ingreso,Juan Vera,51000,,Efectivo,,Contabilidad v1/Transacciones/R236,alta,,
+2025-07-30,gasto,Gasto,Gasto mesas mármol,2500,,Efectivo,,Contabilidad v1/Transacciones/R237,alta,,
+2025-07-31,deuda,Deuda,Hojas impresión y ferretería,300,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R238,media,,Q-FIN
+2025-07-31,gasto,Gasto,Hojas impresión y ferretería,300,,,,Contabilidad v1/Transacciones/R239,alta,,
+2025-07-31,deuda,Deuda,Ferretería,90,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R240,media,,Q-FIN
+2025-07-31,gasto,Gasto,Ferretería,90,,,,Contabilidad v1/Transacciones/R241,alta,,
+2025-07-31,gasto,Gasto,Contadora billullos,38280,,,,Contabilidad v1/Transacciones/R242,alta,,
+2025-07-31,gasto,Gasto,Cambio efvo a cuenta,46500,,Efectivo,,Contabilidad v1/Transacciones/R243,alta,,
+2025-07-31,ingreso,Ingreso,Cambio efvo a cuenta,46500,,,,Contabilidad v1/Transacciones/R244,alta,,
+2025-08-01,deuda,Deuda,Deuda albañiles,2000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R245,media,,Q-FIN
+2025-08-01,gasto,Gasto,Gasto Albañiles,4000,,Efectivo,,Contabilidad v1/Transacciones/R246,alta,,
+2025-08-01,gasto,Gasto,Gasto Albañiles,2000,,,,Contabilidad v1/Transacciones/R247,alta,,
+2025-08-02,deuda,Deuda,Impresion Aurelle,204,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R248,media,,Q-FIN
+2025-08-02,gasto,Gasto,Impresion Aurelle,204,,,,Contabilidad v1/Transacciones/R249,alta,,
+2025-08-15,deuda,Deuda,Deuda herrería,5000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R250,media,,Q-FIN
+2025-08-15,deuda,Deuda,Deuda máquina,49256.41,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R251,media,,Q-FIN
+2025-08-15,gasto,Gasto,Gasto Herrería,5000,,,,Contabilidad v1/Transacciones/R252,alta,,
+2025-08-15,gasto,Gasto,Gasto Máquina,49256.41,,,,Contabilidad v1/Transacciones/R253,alta,,
+2025-08-15,ingreso,Ingreso,Ingreso Zafiro Pitero Liquidación,27000,,,,Contabilidad v1/Transacciones/R254,alta,,
+2025-08-15,pago_deuda,Pago Deuda,Pago Deuda amazon,12539.229999999872,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R255,media,,Q-FIN
+2025-08-15,pago_deuda,Pago Deuda,Pago Deuda amazon,2747.38,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R256,media,,Q-FIN
+2025-08-15,gasto,Gasto,Conversion Cash a cuenta,400,efectivo,Efectivo,,Contabilidad v1/Transacciones/R257,alta,,
+2025-08-15,ingreso,Ingreso,Conversion Cash a cuenta,400,efectivo,,,Contabilidad v1/Transacciones/R258,alta,,
+2025-08-15,deuda,Deuda,Deuda Renta,50000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R259,media,,Q-FIN
+2025-08-15,gasto,Gasto,Conversion Deuda a cash,50000,efectivo,,,Contabilidad v1/Transacciones/R260,alta,,
+2025-08-15,ingreso,Ingreso,Conversion Deuda a cash,50000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R261,alta,,
+2025-08-15,gasto,Gasto,Renta,47500,,Efectivo,,Contabilidad v1/Transacciones/R262,alta,,
+2025-08-15,ingreso,Ingreso,Hilario Ingreso,1000,,,,Contabilidad v1/Transacciones/R263,alta,,
+2025-08-15,gasto,Costo,Compra Oro,11500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R264,alta,,
+2025-08-15,ingreso,Ingreso,Liquidación Mónica,5000,,,,Contabilidad v1/Transacciones/R265,alta,,
+2025-08-15,ingreso,Ingreso,Pago argolla grande y churumbela 2,4500,,,,Contabilidad v1/Transacciones/R266,alta,,
+2025-08-15,gasto,Gasto,Followers,211.59,,,,Contabilidad v1/Transacciones/R267,alta,,
+2025-08-22,gasto,Gasto,Marketing Luna,2000,,,,Contabilidad v1/Transacciones/R268,alta,,
+2025-08-22,ingreso,Ingreso,Mónica Argolla,1500,,,,Contabilidad v1/Transacciones/R269,alta,,
+2025-08-30,ingreso,Ingreso,Pago argolla grande y churumbela,4500,,Efectivo,,Contabilidad v1/Transacciones/R270,alta,,
+2025-09-06,gasto,Gasto,Modelo 1500,1500,,Efectivo,,Contabilidad v1/Transacciones/R271,alta,,
+2025-09-06,gasto,Gasto,Stand anticipo 1 porción cuenta,19500,,,,Contabilidad v1/Transacciones/R272,alta,,
+2025-09-06,gasto,Gasto,Stand anticipo 1 porción cash,5500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R273,alta,,
+2025-09-09,deuda,Deuda,Luna Creative,5500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R274,media,,Q-FIN
+2025-09-09,gasto,Gasto,Luna Creative Gasto,5500,,,,Contabilidad v1/Transacciones/R275,alta,,
+2025-09-09,deuda,Deuda,Fashion Show,4000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R276,media,,Q-FIN
+2025-09-09,gasto,Gasto,Fashion Show,4000,,,,Contabilidad v1/Transacciones/R277,alta,,
+2025-09-09,deuda,Deuda,Diamante Sergio,14664.48,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R278,media,,Q-FIN
+2025-09-09,gasto,Gasto,Diamante Sergio,14664.48,,,,Contabilidad v1/Transacciones/R279,alta,,
+2025-09-09,deuda,Deuda,Churumbela Alejandra,6194.44,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R280,media,,Q-FIN
+2025-09-09,gasto,Gasto,Churumbela Alejandra,6194.44,,,,Contabilidad v1/Transacciones/R281,alta,,
+2025-09-12,ingreso,Ingreso,Anticipo Edson,30000,,,,Contabilidad v1/Transacciones/R282,alta,,
+2025-09-12,gasto,Gasto,Agustin,12000,,,,Contabilidad v1/Transacciones/R283,alta,,
+2025-09-12,gasto,Gasto,Oro,10000,,,,Contabilidad v1/Transacciones/R284,alta,,
+2025-09-12,gasto,Gasto,DESAPARICIÓN 5000,5000,,,,Contabilidad v1/Transacciones/R285,alta,,
+2025-09-15,deuda,Deuda,Deuda Renta,47500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R286,media,,Q-FIN
+2025-09-15,gasto,Gasto,Renta,47500,,,,Contabilidad v1/Transacciones/R287,alta,,
+2025-09-20,ingreso,Ingreso,Anticipo Miguel,2878.2,,,,Contabilidad v1/Transacciones/R288,alta,,
+2025-09-20,gasto,Gasto,Conversion a cash,4000,efectivo,,,Contabilidad v1/Transacciones/R289,alta,,
+2025-09-20,ingreso,Ingreso,Conversion a cash,4000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R290,alta,,
+2025-09-22,deuda,Deuda,Deuda Carro Dolor,2500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R291,media,,Q-FIN
+2025-09-22,gasto,Gasto,Deuda Carro Dolor,2500,,,,Contabilidad v1/Transacciones/R292,alta,,
+2025-09-22,ingreso,Ingreso,Deuda Carro Dolor,2500,,Efectivo,,Contabilidad v1/Transacciones/R293,alta,,
+2025-09-22,deuda,Deuda,Deuda Carro Dolor,500,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R294,media,,Q-FIN
+2025-09-22,gasto,Gasto,Deuda Carro Dolor,500,,,,Contabilidad v1/Transacciones/R295,alta,,
+2025-09-22,ingreso,Ingreso,Deuda Carro Dolor,500,,Efectivo,,Contabilidad v1/Transacciones/R296,alta,,
+2025-09-22,deuda,Deuda,Rappi Deuda,11500,,,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R297,media,,Q-FIN
+2025-09-22,gasto,Gasto,Transferencia Santiago Cash,14500,transferencia,,,Contabilidad v1/Transacciones/R298,alta,,
+2025-09-22,ingreso,Ingreso,Transferencia Santiago Cash,14500,transferencia,Efectivo,,Contabilidad v1/Transacciones/R299,alta,,
+2025-09-22,gasto,Gasto,Taller Stand,10000,,Efectivo,,Contabilidad v1/Transacciones/R300,alta,,
+2025-10-02,pago_deuda,Pago Deuda,Pago Deuda,9500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R301,media,,Q-FIN
+2025-10-04,ingreso,Ingreso,Edson Pago,39600,,,,Contabilidad v1/Transacciones/R302,alta,,
+2025-10-05,ingreso,Ingreso,Anticipo Miguel Dr Mamaguevo 1,1000,,,,Contabilidad v1/Transacciones/R303,alta,,
+2025-10-06,gasto,Gasto,Pago Fashion Show,4600,,,,Contabilidad v1/Transacciones/R304,alta,,
+2025-10-06,gasto,Gasto,Stand,15000,,,,Contabilidad v1/Transacciones/R305,alta,,
+2025-10-06,pago_deuda,Pago Deuda,Pago Deuda Santi,500,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R306,media,,Q-FIN
+2025-10-06,gasto,Gasto,Conversion cuenta a cash,500,efectivo,,,Contabilidad v1/Transacciones/R307,alta,,
+2025-10-06,ingreso,Ingreso,Conversion cuenta a cash,500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R308,alta,,
+2025-10-06,pago_deuda,Pago Deuda,Pago Deuda Fer,20000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R309,media,,Q-FIN
+2025-10-08,ingreso,Ingreso,Ingreso Jorge amigo Fer,10000,,Efectivo,,Contabilidad v1/Transacciones/R310,alta,,
+2025-10-10,deuda,Deuda,Impresiones,20,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R311,media,,Q-FIN
+2025-10-10,deuda,Deuda,Impresora papel,1928,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R312,media,,Q-FIN
+2025-10-10,deuda,Deuda,Impresora fotos,2838.65,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R313,media,,Q-FIN
+2025-10-10,gasto,Gasto,Impresiones,20,,,,Contabilidad v1/Transacciones/R314,alta,,
+2025-10-10,gasto,Gasto,Impresora papel,1928,,,,Contabilidad v1/Transacciones/R315,alta,,
+2025-10-10,gasto,Gasto,Impresora fotos,2838.65,,,,Contabilidad v1/Transacciones/R316,alta,,
+2025-10-11,ingreso,Ingreso,Liquidación Bocanegra,31089.76,,,,Contabilidad v1/Transacciones/R317,alta,,
+2025-10-11,gasto,Gasto,Impresiones Expo,1820,,Efectivo,,Contabilidad v1/Transacciones/R318,alta,,
+2025-10-11,gasto,Gasto,Estacionamiento,200,,Efectivo,,Contabilidad v1/Transacciones/R319,alta,,
+2025-10-11,gasto,Gasto,Jorge Stand,8000,,Efectivo,,Contabilidad v1/Transacciones/R320,alta,,
+2025-10-12,ingreso,Ingreso,Juan Vega,6000,,,,Contabilidad v1/Transacciones/R321,alta,,
+2025-10-15,ingreso,Ingreso,Eduardo zz,5000,,,,Contabilidad v1/Transacciones/R322,alta,,
+2025-10-15,gasto,Gasto,Conversión Cash a Renta,50000,efectivo,,,Contabilidad v1/Transacciones/R323,alta,,
+2025-10-15,ingreso,Ingreso,Conversión Cash a Renta,50000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R324,alta,,
+2025-10-15,deuda,Deuda,Deuda Máquinas,221138.15,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R325,media,,Q-FIN
+2025-10-15,gasto,Gasto,Gasto Máquinas,221138.15,,,,Contabilidad v1/Transacciones/R326,alta,,
+2025-10-15,gasto,Gasto,Ferretería,230,,Efectivo,,Contabilidad v1/Transacciones/R327,alta,,
+2025-10-15,gasto,Gasto,Gasto Interés,1359.0499999999993,,,,Contabilidad v1/Transacciones/R328,alta,,
+2025-10-15,deuda,Deuda,Deuda Fer interés,1359.0499999999993,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R329,media,,Q-FIN
+2025-10-17,gasto,Gasto,Renta,38500,,Efectivo,,Contabilidad v1/Transacciones/R330,alta,,
+2025-10-17,deuda,Deuda,Fer Deuda renta,9000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R331,media,,Q-FIN
+2025-10-17,gasto,Gasto,Fer Deuda renta,9000,,Efectivo,,Contabilidad v1/Transacciones/R332,alta,,
+2025-10-17,ingreso,Ingreso,Mamaguevo liquidación,44000,,Efectivo,,Contabilidad v1/Transacciones/R333,alta,,
+2025-10-17,gasto,Gasto,Stand liquidación,46500,,Efectivo,,Contabilidad v1/Transacciones/R334,alta,,
+2025-10-23,ingreso,Ingreso,Liquidación Adrián anillo,34000,,Efectivo,,Contabilidad v1/Transacciones/R335,alta,,
+2025-10-23,deuda,Deuda,Deuda Fer Ads,1000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R336,media,,Q-FIN
+2025-10-23,gasto,Gasto,Deuda Fer Ads,1000,,,,Contabilidad v1/Transacciones/R337,alta,,
+2025-10-24,gasto,Gasto,Expo liquidación,22500,,Efectivo,,Contabilidad v1/Transacciones/R338,alta,,
+2025-10-25,ingreso,Ingreso,Anticipo Argollas José Eduardo,7000,,Efectivo,,Contabilidad v1/Transacciones/R339,alta,,
+2025-10-25,gasto,Gasto,Parqueo,200,,Efectivo,,Contabilidad v1/Transacciones/R340,alta,,
+2025-10-26,ingreso,Ingreso,Ingreso Jorge Garcia Argollas,5372.64,,,,Contabilidad v1/Transacciones/R341,alta,,
+2025-10-26,ingreso,Ingreso,Ingreso Elías,6715.8,,,,Contabilidad v1/Transacciones/R342,alta,,
+2025-10-26,ingreso,Ingreso,Ingreso Maria de Lourdes A22,10000,,Efectivo,,Contabilidad v1/Transacciones/R343,alta,,
+2025-10-26,gasto,Costo,Agustin,15000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R344,alta,,
+2025-10-26,deuda,Deuda,Deuda A22,21000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R345,media,,Q-FIN
+2025-10-26,gasto,Gasto,Producción Anillo A22,21000,,,,Contabilidad v1/Transacciones/R346,alta,,
+2025-10-28,ingreso,Ingreso,Ingreso anillo Jonathan,5000,,,,Contabilidad v1/Transacciones/R347,alta,,
+2025-10-29,gasto,Costo,Argollas twisted y floral,17575.73,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R348,alta,,
+2025-10-29,gasto,Gasto,Etiquetas cinta,299.99,,,,Contabilidad v1/Transacciones/R349,alta,,
+2025-10-30,ingreso,Ingreso,Ingreso anillo Alejandro Morales Aguilera,8634.6,,,,Contabilidad v1/Transacciones/R350,alta,,
+2025-11-01,ingreso,Ingreso,Mensualidad David Velasco,10000,,Efectivo,,Contabilidad v1/Transacciones/R351,alta,,
+2025-11-01,ingreso,Ingreso,Ingreso Elías Argollas,37416.6,,,,Contabilidad v1/Transacciones/R352,alta,,
+2025-11-01,gasto,Costo,Churumbela Elias Argollas,9867.57,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R353,alta,,
+2025-11-04,gasto,Gasto,Gasto workspace,320.72,,,,Contabilidad v1/Transacciones/R354,alta,,
+2025-11-04,ingreso,Ingreso,Ingreso liquidacion Lourdes,25000,,Efectivo,,Contabilidad v1/Transacciones/R355,alta,,
+2025-11-04,pago_deuda,Pago Deuda,Pago Deuda Fer,19504.62,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R356,media,,Q-FIN
+2025-11-04,gasto,Gasto,USB y papel,189.99,,,,Contabilidad v1/Transacciones/R357,alta,,
+2025-11-06,gasto,Costo,Diamantes Sergio Compra,25000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R358,alta,,
+2025-11-07,ingreso,Ingreso,Reembolso Diamantes Sergio,15000,,,,Contabilidad v1/Transacciones/R359,alta,,
+2025-11-07,ingreso,Ingreso,Alejandra Churumbela liquidación parcial 1,4500,,,,Contabilidad v1/Transacciones/R360,alta,,
+2025-11-07,gasto,Gasto,Ads Facebook,5000,,,,Contabilidad v1/Transacciones/R361,alta,,
+2025-11-07,ingreso,Ingreso,Anticipo trenzado 3 oros,6800,,,,Contabilidad v1/Transacciones/R362,alta,,
+2025-11-09,ingreso,Ingreso,Liquidacion Alejandra,9000,,Efectivo,,Contabilidad v1/Transacciones/R363,alta,,
+2025-11-10,ingreso,Ingreso,Liquidación Elías,26863.2,,,,Contabilidad v1/Transacciones/R364,alta,,
+2025-11-10,gasto,Costo,Agustin,32000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R365,alta,,
+2025-11-10,gasto,Gasto,Modelo Luna,1500,,,,Contabilidad v1/Transacciones/R366,alta,,
+2025-11-11,ingreso,Ingreso,Jorge Flores Liquidacion,35000,,Efectivo,,Contabilidad v1/Transacciones/R367,alta,,
+2025-11-11,gasto,Costo,Zafiros,6197,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R368,alta,,
+2025-11-11,gasto,Gasto,Aduanas Crucibles,1500,,Efectivo,,Contabilidad v1/Transacciones/R369,alta,,
+2025-11-11,ingreso,Ingreso,Hilario Liquidación,16500,,,,Contabilidad v1/Transacciones/R370,alta,,
+2025-11-11,gasto,Gasto,Anticipo Fashion,4000,,,,Contabilidad v1/Transacciones/R371,alta,,
+2025-11-11,gasto,Gasto,Anticipo Expo,5000,,,,Contabilidad v1/Transacciones/R372,alta,,
+2025-11-13,ingreso,Ingreso,Anticipo Antonio Lupercio,7000,,Efectivo,,Contabilidad v1/Transacciones/R373,alta,,
+2025-11-13,gasto,Gasto,Ads,18000,,,,Contabilidad v1/Transacciones/R374,alta,,
+2025-11-13,ingreso,Ingreso,Anticipo Mauricio Treviño,8000,,Efectivo,,Contabilidad v1/Transacciones/R375,alta,,
+2025-11-14,gasto,Gasto,Renta,47500,,Efectivo,,Contabilidad v1/Transacciones/R376,alta,,
+2025-11-14,gasto,Gasto,Papeles,290,,,,Contabilidad v1/Transacciones/R377,alta,,
+2025-11-14,gasto,Gasto,Luna MKT Nov,7500,,,,Contabilidad v1/Transacciones/R378,alta,,
+2025-11-14,ingreso,Ingreso,Carlos Liquidación,25000,,,,Contabilidad v1/Transacciones/R379,alta,,
+2025-11-19,ingreso,Ingreso,Liquidación Rosciano,20000,,,,Contabilidad v1/Transacciones/R380,alta,,
+2025-11-20,ingreso,Ingreso,Anticipo Gerardo Reyes,9594,,,,Contabilidad v1/Transacciones/R381,alta,,
+2025-11-20,gasto,Costo,Wholesaler Radiantes 1,13818.99,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R382,alta,,
+2025-11-22,ingreso,Ingreso,Anticipo Alexandra,6000,,,,Contabilidad v1/Transacciones/R383,alta,,
+2025-11-22,gasto,Costo,Mercado Pago Alexandra,247.64,transferencia,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R384,alta,,
+2025-11-22,gasto,Costo,Wholesaler Radiantes 2,3639.19,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R385,alta,,
+2025-11-28,gasto,Costo,Sergio Diamantes 1,42700,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R386,alta,,
+2025-12-01,gasto,Gasto,Amazon pino,2990.54,,,,Contabilidad v1/Transacciones/R387,alta,,
+2025-12-01,gasto,Gasto,Google gasto,130.3,,,,Contabilidad v1/Transacciones/R388,alta,,
+2025-12-01,gasto,Gasto,Conversion cuenta a cash,6000,efectivo,,,Contabilidad v1/Transacciones/R389,alta,,
+2025-12-01,ingreso,Ingreso,Conversion cuenta a cash,6000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R390,alta,,
+2025-12-06,ingreso,Ingreso,Liquidación David Velasco,9000,,Efectivo,,Contabilidad v1/Transacciones/R391,alta,,
+2025-12-08,gasto,Costo,Pago agustin,29500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R392,alta,,
+2025-12-08,gasto,Costo,Pago agustin,16550,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R393,alta,,
+2025-12-08,gasto,Costo,Alibaba Gasto,929.73,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R394,alta,,
+2025-12-08,gasto,Costo,Twisted Alejandra Compra Wholesaler,9719.51,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R395,alta,,
+2025-12-08,ingreso,Ingreso,Liquidación Jonathan,29000,,,,Contabilidad v1/Transacciones/R396,alta,,
+2025-12-09,gasto,Gasto,Ellion Local primera mitad,65000,,,,Contabilidad v1/Transacciones/R397,alta,,
+2025-12-09,deuda,Deuda,Ellion Local primera mitad Deuda,65000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R398,media,,Q-FIN
+2025-12-10,ingreso,Ingreso,Pago upgrade Piedra Gerardo Reyes,4000,,Efectivo,,Contabilidad v1/Transacciones/R399,alta,,
+2025-12-10,deuda,Deuda,Deuda Amazon impresora,1447.74,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R400,media,,Q-FIN
+2025-12-10,gasto,Gasto,Deuda Amazon impresora,1447.74,,,,Contabilidad v1/Transacciones/R401,alta,,
+2025-12-10,gasto,Gasto,Conversion cash a cuenta,400,efectivo,Efectivo,,Contabilidad v1/Transacciones/R402,alta,,
+2025-12-10,ingreso,Ingreso,Conversion cash a cuenta,400,efectivo,,,Contabilidad v1/Transacciones/R403,alta,,
+2025-12-10,pago_deuda,Pago Deuda,Pago Deuda Santi,400,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R404,media,,Q-FIN
+2025-12-12,ingreso,Ingreso,Gerardo Martínez venta,9000,,Efectivo,,Contabilidad v1/Transacciones/R405,alta,,
+2025-12-12,gasto,Gasto,Modelo Luna,1500,,Efectivo,,Contabilidad v1/Transacciones/R406,alta,,
+2025-12-12,ingreso,Ingreso,Liquidación Elías,10553.4,,,,Contabilidad v1/Transacciones/R407,alta,,
+2025-12-12,ingreso,Ingreso,Mauricio Liquidación,37000,,Efectivo,,Contabilidad v1/Transacciones/R408,alta,,
+2025-12-12,gasto,Gasto,Renta pago,47500,,Efectivo,,Contabilidad v1/Transacciones/R409,alta,,
+2025-12-12,deuda,Deuda,Deuda ellion 2,65000,,Papá fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R410,media,,Q-FIN
+2025-12-12,gasto,Gasto,Ellion 2,65000,,,,Contabilidad v1/Transacciones/R411,alta,,
+2025-12-12,gasto,Gasto,Taller 1,15591.22,,,,Contabilidad v1/Transacciones/R412,alta,,
+2025-12-12,gasto,Gasto,Taller 2,6852.51,,,,Contabilidad v1/Transacciones/R413,alta,,
+2025-12-12,gasto,Gasto,Taller 3,14189.34,,,,Contabilidad v1/Transacciones/R414,alta,,
+2025-12-12,ingreso,Ingreso,Lupercio Liquidación,31660.1,,,,Contabilidad v1/Transacciones/R415,alta,,
+2025-12-12,gasto,Costo,Aduanas zafiros,759.54,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R416,alta,,
+2025-12-15,ingreso,Ingreso,Liquidacion Gerardo Martinez,36000,,Efectivo,,Contabilidad v1/Transacciones/R417,alta,,
+2025-12-16,gasto,Gasto,Diamantex Taller,22310.73,,,,Contabilidad v1/Transacciones/R418,alta,,
+2025-12-23,gasto,Gasto,Conversión cash a cuenta,20000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R419,alta,,
+2025-12-23,ingreso,Ingreso,Conversión cash a cuenta,20000,efectivo,,,Contabilidad v1/Transacciones/R420,alta,,
+2025-12-23,ingreso,Ingreso,Pago Gerardo Reyes,4500,,Efectivo,,Contabilidad v1/Transacciones/R421,alta,,
+2025-12-23,deuda,Deuda,Deuda Fer amazon,3658.6,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R422,media,,Q-FIN
+2025-12-23,gasto,Gasto,Gasto amazon pendejaditas,3658.6,,,,Contabilidad v1/Transacciones/R423,alta,,
+2025-12-23,deuda,Deuda,Deuda Fer amazon,319.99,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R424,media,,Q-FIN
+2025-12-23,gasto,Gasto,Gasto amazon pendejaditas,319.99,,,,Contabilidad v1/Transacciones/R425,alta,,
+2025-12-23,deuda,Deuda,Gasto diamantex pendejaditas,1016.94,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R426,media,,Q-FIN
+2025-12-23,gasto,Gasto,Gasto diamantex pendejaditas,1016.94,,,,Contabilidad v1/Transacciones/R427,alta,,
+2025-12-26,deuda,Deuda,Metales deuda,29663,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R428,media,,Q-FIN
+2025-12-26,gasto,Gasto,Metales gasto,29663,,,,Contabilidad v1/Transacciones/R429,alta,,
+2025-12-27,gasto,Gasto,Motor mágico alibaba,13763.75,,,,Contabilidad v1/Transacciones/R430,alta,,
+2025-12-27,gasto,Gasto,Gemas alibaba,6904.69,,,,Contabilidad v1/Transacciones/R431,alta,,
+2025-12-28,deuda,Deuda,Deuda Fer amazon,7393.94,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R432,media,,Q-FIN
+2025-12-28,gasto,Gasto,Gasto amazon pendejaditas,7393.94,,,,Contabilidad v1/Transacciones/R433,alta,,
+2025-12-31,deuda,Deuda,Pulidor de Banco,2113.38,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R434,media,,Q-FIN
+2025-12-31,gasto,Gasto,Pulidor de Banco,2113.38,,,,Contabilidad v1/Transacciones/R435,alta,,
+2025-12-31,deuda,Deuda,Google Dolor,150.34,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R436,media,,Q-FIN
+2026-01-01,gasto,Gasto,Google Dolor,150.34,,,,Contabilidad v1/Transacciones/R437,alta,,
+2026-01-01,ingreso,Ingreso,Pago Gerardo Reyes,7000,,Efectivo,,Contabilidad v1/Transacciones/R438,alta,,
+2026-01-02,deuda,Deuda,Ads deuda,1000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R439,media,,Q-FIN
+2026-01-02,gasto,Gasto,Ads deuda,1000,,,,Contabilidad v1/Transacciones/R440,alta,,
+2026-01-02,gasto,Gasto,Luna MKT Dic,7500,,Efectivo,,Contabilidad v1/Transacciones/R441,alta,,
+2026-01-02,gasto,Costo,Agustin Oro,12500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R442,alta,,
+2026-01-02,ingreso,Ingreso,Ingreso Michelle Martínez Anticipo,14391,,,,Contabilidad v1/Transacciones/R443,alta,,
+2026-01-02,gasto,Gasto,Rutenio y lámpara,2599.8,,,,Contabilidad v1/Transacciones/R444,alta,,
+2026-01-02,ingreso,Ingreso,Conversion cuenta a cash,200,efectivo,Efectivo,,Contabilidad v1/Transacciones/R445,alta,,
+2026-01-03,gasto,Gasto,Ads deuda,3000,,,,Contabilidad v1/Transacciones/R446,alta,,
+2026-01-06,gasto,Gasto,Meta Verificacion,459,,,,Contabilidad v1/Transacciones/R447,alta,,
+2026-01-06,gasto,Gasto,Gasto Wholesaler,3005.6,,,,Contabilidad v1/Transacciones/R448,alta,,
+2026-01-07,ingreso,Ingreso,Reembolso Wholesaler,3017.06,,,,Contabilidad v1/Transacciones/R449,alta,,
+2026-01-09,ingreso,Ingreso,Liquidación Gerardo,40000,,Efectivo,,Contabilidad v1/Transacciones/R450,alta,,
+2026-01-13,gasto,Gasto,Renta,46500,,Efectivo,,Contabilidad v1/Transacciones/R451,alta,,
+2026-01-15,deuda,Deuda,Deuda MKT (not),25000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R452,media,,Q-FIN
+2026-01-20,gasto,Gasto,Conversion a cash deuda,25000,efectivo,,,Contabilidad v1/Transacciones/R453,alta,,
+2026-01-20,ingreso,Ingreso,Conversion a cash deuda,25000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R454,alta,,
+2026-01-20,gasto,Gasto,Conversion cash a cuenta,11900,efectivo,Efectivo,,Contabilidad v1/Transacciones/R455,alta,,
+2026-01-20,ingreso,Ingreso,Conversion cash a cuenta,11900,efectivo,,,Contabilidad v1/Transacciones/R456,alta,,
+2026-01-20,gasto,Gasto,iPad Gasto,20592,,,,Contabilidad v1/Transacciones/R457,alta,,
+2026-01-20,pago_deuda,Pago Deuda,Pago deuda dolor,58.46,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R458,media,,Q-FIN
+2026-01-20,deuda,Deuda,Ads deuda,200,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R459,media,,Q-FIN
+2026-01-21,deuda,Deuda,Deuda MKT (not),15000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R460,media,,Q-FIN
+2026-01-21,gasto,Gasto,Conversion cuenta a cash,15200,efectivo,,,Contabilidad v1/Transacciones/R461,alta,,
+2026-01-21,gasto,Costo,Oro Costo,29500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R462,alta,,
+2026-01-22,ingreso,Ingreso,Conversion cuenta a cash,15000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R463,alta,,
+2026-01-22,ingreso,Ingreso,Alejandro Morales liquidación,34538.4,,,,Contabilidad v1/Transacciones/R464,alta,,
+2026-01-26,gasto,Gasto,Conversión Cash a cuenta,35000,efectivo,,,Contabilidad v1/Transacciones/R465,alta,,
+2026-01-26,deuda,Deuda,Deuda Santi MKT,500,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R466,media,,Q-FIN
+2026-01-26,deuda,Deuda,Deuda Fer MKT,100,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R467,media,,Q-FIN
+2026-01-26,ingreso,Ingreso,Conversión Cash a cuenta,35000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R468,alta,,
+2026-01-26,gasto,Gasto,Marketing 3P,35000,,Efectivo,,Contabilidad v1/Transacciones/R469,alta,,
+2026-01-26,ingreso,Ingreso,Liquidación Juan,23000,,Efectivo,,Contabilidad v1/Transacciones/R470,alta,,
+2026-01-26,ingreso,Ingreso,Liquidación Juan,1420,,,,Contabilidad v1/Transacciones/R471,alta,,
+2026-01-26,pago_deuda,Pago Deuda,Pago Deuda Santi,147.74,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R472,media,,Q-FIN
+2026-01-26,pago_deuda,Pago Deuda,Pago Deuda Fer,281.35,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R473,media,,Q-FIN
+2026-01-26,gasto,Gasto,Conversion Cash a cuenta,14500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R474,alta,,
+2026-01-26,ingreso,Ingreso,Conversion Cash a cuenta,14500,efectivo,,,Contabilidad v1/Transacciones/R475,alta,,
+2026-01-26,pago_deuda,Pago Deuda,Pago Deuda Santi,1000,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R476,media,,Q-FIN
+2026-01-26,pago_deuda,Pago Deuda,Pago Deuda Fer,13500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R477,media,,Q-FIN
+2026-01-26,deuda,Deuda,Deuda Nueva Fer Salva Negocio,43000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R478,media,,Q-FIN
+2026-01-27,gasto,Costo,Compra Oro Salva Negocio,43000,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R479,alta,,
+2026-01-27,gasto,Costo,Compra Oro Negocio,5000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R480,alta,,
+2026-01-27,ingreso,Ingreso,Liquidacion Jorge,25807.86,,,,Contabilidad v1/Transacciones/R481,alta,,
+2026-01-27,gasto,Costo,Reembolso anal,6800,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R482,alta,,
+2026-01-27,deuda,Deuda,Dinero Freddy Rayas LOCAL,9000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R483,media,,Q-FIN
+2026-01-28,gasto,Gasto,Gasto Freddy Rayas LOCAL,9000,,,,Contabilidad v1/Transacciones/R484,alta,,
+2026-01-28,deuda,Deuda,Caja Fuerte Deuda LOCAL,35000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R485,media,,Q-FIN
+2026-01-28,gasto,Gasto,Caja Fuerte Gasto LOCAL,35000,,,,Contabilidad v1/Transacciones/R486,alta,,
+2026-01-28,gasto,Gasto,FacetFlow,1723.22,,,,Contabilidad v1/Transacciones/R487,alta,,
+2026-01-29,gasto,Gasto,Meta,459,,,,Contabilidad v1/Transacciones/R488,alta,,
+2026-01-29,deuda,Deuda,Gastos Local,39000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R489,media,,Q-FIN
+2026-01-30,gasto,Gasto,Gastos Local,39000,,,,Contabilidad v1/Transacciones/R490,alta,,
+2026-01-30,gasto,Gasto,Gasto Amazon + Google + Ferretería,877.4,,,,Contabilidad v1/Transacciones/R491,alta,,
+2026-02-03,gasto,Gasto,Tanque Argón,7600,,,,Contabilidad v1/Transacciones/R492,alta,,
+2026-02-03,gasto,Gasto,Expo fashion,3000,,,,Contabilidad v1/Transacciones/R493,alta,,
+2026-02-03,gasto,Gasto,Freddy Home Depot,1000,,,,Contabilidad v1/Transacciones/R494,alta,,
+2026-02-03,deuda,Deuda,Freddy Home Depot,1000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R495,media,,Q-FIN
+2026-02-03,gasto,Gasto,Aceite Vacuum,375,,,,Contabilidad v1/Transacciones/R496,alta,,
+2026-02-04,deuda,Deuda,Fiverr indio 3 modelos,484.68,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R497,media,,Q-FIN
+2026-02-04,gasto,Gasto,Fiverr indio 3 modelos,484.68,,,,Contabilidad v1/Transacciones/R498,alta,,
+2026-02-04,deuda,Deuda,Pintura LOCAL,5400,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R499,media,,Q-FIN
+2026-02-04,gasto,Gasto,Pintura LOCAL,5400,,,,Contabilidad v1/Transacciones/R500,alta,,
+2026-02-04,deuda,Deuda,Fredy Dolor LOCAL (Rayas),9600,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R501,media,,Q-FIN
+2026-02-04,gasto,Gasto,Fredy Dolor LOCAL (Rayas),9600,,,,Contabilidad v1/Transacciones/R502,alta,,
+2026-02-06,gasto,Gasto,Amazon mamadas,1509.7,,,,Contabilidad v1/Transacciones/R503,alta,,
+2026-02-06,gasto,Gasto,Guantes,238,,,,Contabilidad v1/Transacciones/R504,alta,,
+2026-02-06,gasto,Gasto,Fanny,603,,,,Contabilidad v1/Transacciones/R505,alta,,
+2026-02-06,gasto,Gasto,Gas,603.2,,,,Contabilidad v1/Transacciones/R506,alta,,
+2026-02-06,deuda,Deuda,Piso Deuda LOCAL,60654,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R507,media,,Q-FIN
+2026-02-06,gasto,Gasto,Adaptador Gas AMZ,145.79,,,,Contabilidad v1/Transacciones/R508,alta,,
+2026-02-06,gasto,Gasto,Mulitmetro,419,,,,Contabilidad v1/Transacciones/R509,alta,,
+2026-02-06,gasto,Gasto,Piso Gasto LOCAL,60654,,,,Contabilidad v1/Transacciones/R510,alta,,
+2026-02-06,ingreso,Ingreso,Liquidacion Jose Eduardo,29100,,,,Contabilidad v1/Transacciones/R511,alta,,
+2026-02-06,pago_deuda,Pago Deuda,Banamex,10000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R512,media,,Q-FIN
+2026-02-06,gasto,Gasto,Churumbela Floral,8007.29,,,,Contabilidad v1/Transacciones/R513,alta,,
+2026-02-06,gasto,Gasto,Camaras,6299.99,,,,Contabilidad v1/Transacciones/R514,alta,,
+2026-02-06,gasto,Gasto,Plata,3400,,,,Contabilidad v1/Transacciones/R515,alta,,
+2026-02-10,deuda,Deuda,Rayas LOCAL,8800,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R516,media,,Q-FIN
+2026-02-10,gasto,Gasto,Gasto merlo,3800,,,,Contabilidad v1/Transacciones/R517,alta,,
+2026-02-10,gasto,Gasto,Felipe mamadas,3600,,,,Contabilidad v1/Transacciones/R518,alta,,
+2026-02-10,deuda,Deuda,Madera,25000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R519,media,,Q-FIN
+2026-02-10,gasto,Gasto,Madera,25000,,,,Contabilidad v1/Transacciones/R520,alta,,
+2026-02-11,deuda,Deuda,Cosas de tratamiento madera LOCAL,9000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R521,media,,Q-FIN
+2026-02-11,gasto,Gasto,Cosas de tratamiento madera LOCAL,9000,,,,Contabilidad v1/Transacciones/R522,alta,,
+2026-02-11,deuda,Deuda,Llaves,360,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R523,media,,Q-FIN
+2026-02-11,gasto,Gasto,Llaves,360,,,,Contabilidad v1/Transacciones/R524,alta,,
+2026-02-11,pago_deuda,Pago Deuda,Stand anticipo Fashion liquidación funky,5376.58,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R525,media,,Q-FIN
+2026-02-11,deuda,Deuda,Stand anticipo Fashion,15000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R526,media,,Q-FIN
+2026-02-11,gasto,Gasto,Stand anticipo Fashion,15000,,,,Contabilidad v1/Transacciones/R527,alta,,
+2026-02-13,deuda,Deuda,Deuda Rayas,33000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R528,media,,Q-FIN
+2026-02-13,deuda,Deuda,Deuda Cables,34000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R529,media,,Q-FIN
+2026-02-13,deuda,Deuda,Deuda Fredy Seguro,2000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R530,media,,Q-FIN
+2026-02-13,gasto,Gasto,Gasto Rayas,33000,,,,Contabilidad v1/Transacciones/R531,alta,,
+2026-02-14,ingreso,Ingreso,Ingreso Jefe Fer Al precio,17000,,Efectivo,,Contabilidad v1/Transacciones/R532,alta,,
+2026-02-14,gasto,Gasto,Liquidación Expo,5600,,Efectivo,,Contabilidad v1/Transacciones/R533,alta,,
+2026-02-14,gasto,Gasto,Estacionamiento,100,,Efectivo,,Contabilidad v1/Transacciones/R534,alta,,
+2026-02-14,ingreso,Ingreso,Conversion cash a cuenta,600,efectivo,,,Contabilidad v1/Transacciones/R535,alta,,
+2026-02-14,gasto,Gasto,Conversion cash a cuenta,600,efectivo,Efectivo,,Contabilidad v1/Transacciones/R536,alta,,
+2026-02-14,pago_deuda,Pago Deuda,Pago Deuda Santi Pollo,300,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R537,media,,Q-FIN
+2026-02-14,pago_deuda,Pago Deuda,Pago Deuda Fer Pollo,300,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R538,media,,Q-FIN
+2026-02-14,gasto,Gasto,Gasto Cables y Seguro Fredy,36000,,,,Contabilidad v1/Transacciones/R539,alta,,
+2026-02-16,gasto,Gasto,Estacionamiento,100,,Efectivo,,Contabilidad v1/Transacciones/R540,alta,,
+2026-02-16,gasto,Gasto,Conversión cash a cuenta,14000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R541,alta,,
+2026-02-16,ingreso,Ingreso,Estacionamiento,14000,,,,Contabilidad v1/Transacciones/R542,alta,,
+2026-02-16,gasto,Gasto,Pago stand Jorge,12300,,,,Contabilidad v1/Transacciones/R543,alta,,
+2026-02-16,deuda,Deuda,Deuda Ads Fer,15000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R544,media,,Q-FIN
+2026-02-16,gasto,Gasto,Gasto Ads,15000,,,,Contabilidad v1/Transacciones/R545,alta,,
+2026-02-16,gasto,Gasto,Renta Suchiate,48500,,,,Contabilidad v1/Transacciones/R546,alta,,
+2026-02-17,deuda,Deuda,Deuda Operación,68000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R547,media,,Q-FIN
+2026-02-18,deuda,Deuda,Láminas Oro,15451.2,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R548,media,,Q-FIN
+2026-02-18,gasto,Gasto,Láminas Oro,15451.2,,,,Contabilidad v1/Transacciones/R549,alta,,
+2026-02-20,ingreso,Ingreso,Conversion a cash,19500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R550,alta,,
+2026-02-20,gasto,Gasto,Conversion a cash,19500,efectivo,,,Contabilidad v1/Transacciones/R551,alta,,
+2026-02-20,deuda,Deuda,Deuda Local,55200,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R552,media,,Q-FIN
+2026-02-20,gasto,Gasto,Gasto Local,55200,,,,Contabilidad v1/Transacciones/R553,alta,,
+2026-02-20,deuda,Deuda,Jorge stand liquidacion,9100,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R554,media,,Q-FIN
+2026-02-20,gasto,Gasto,Jorge stand liquidacion,9100,,,,Contabilidad v1/Transacciones/R555,alta,,
+2026-02-22,ingreso,Ingreso,Ingreso Gabriel,1000,,Efectivo,,Contabilidad v1/Transacciones/R556,alta,,
+2026-02-22,ingreso,Ingreso,Ingreso Gabriel,4000,,,,Contabilidad v1/Transacciones/R557,alta,,
+2026-02-22,gasto,Gasto,Estacionamientos,250,,Efectivo,,Contabilidad v1/Transacciones/R558,alta,,
+2026-02-23,gasto,Gasto,Piso extra,4100,,,,Contabilidad v1/Transacciones/R559,alta,,
+2026-02-23,deuda,Deuda,Piso extra,4100,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R560,media,,Q-FIN
+2026-02-23,pago_deuda,Pago Deuda,Pago Deuda Fer (restaurante dolor anal),900,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R561,media,,Q-FIN
+2026-02-23,ingreso,Ingreso,Conversion cash a cuenta,1100,efectivo,,,Contabilidad v1/Transacciones/R562,alta,,
+2026-02-23,gasto,Gasto,Conversion cash a cuenta,1100,efectivo,Efectivo,,Contabilidad v1/Transacciones/R563,alta,,
+2026-02-23,gasto,Gasto,Estacionamientos Expo,250,,Efectivo,,Contabilidad v1/Transacciones/R564,alta,,
+2026-02-23,gasto,Gasto,Liquidación Expo,19500,,Efectivo,,Contabilidad v1/Transacciones/R565,alta,,
+2026-02-23,ingreso,Ingreso,Ingreso Fashion Show Anillo + Churumbela,500,,Efectivo,,Contabilidad v1/Transacciones/R566,alta,,
+2026-02-23,deuda,Deuda,Deuda Fer,329,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R567,media,,Q-FIN
+2026-02-23,gasto,Gasto,Cera,329,,,,Contabilidad v1/Transacciones/R568,alta,,
+2026-02-23,pago_deuda,Pago Deuda,Pago Deuda Fer,5900,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R569,media,,Q-FIN
+2026-02-26,ingreso,Ingreso,Ingreso Tortas 2 Rozen,10000,,,,Contabilidad v1/Transacciones/R570,alta,,
+2026-02-26,pago_deuda,Pago Deuda,Pago Deuda,10000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R571,media,,Q-FIN
+2026-02-28,ingreso,Ingreso,Ingreso Juan Diamante,25000,,,,Contabilidad v1/Transacciones/R572,alta,,
+2026-02-28,pago_deuda,Pago Deuda,Pago Deuda,25000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R573,media,,Q-FIN
+2026-03-03,deuda,Deuda,Plata,525,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R574,media,,Q-FIN
+2026-03-03,gasto,Gasto,Plata,525,,,,Contabilidad v1/Transacciones/R575,alta,,
+2026-03-04,deuda,Deuda,Tablarroca,26000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R576,media,,Q-FIN
+2026-03-04,gasto,Gasto,Tablarroca,26000,,,,Contabilidad v1/Transacciones/R577,alta,,
+2026-03-04,deuda,Deuda,Carpintería,23800,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R578,media,,Q-FIN
+2026-03-04,gasto,Gasto,Carpintería,23800,,,,Contabilidad v1/Transacciones/R579,alta,,
+2026-03-04,deuda,Deuda,Plafon,18200,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R580,media,,Q-FIN
+2026-03-04,gasto,Gasto,Plafon,18200,,,,Contabilidad v1/Transacciones/R581,alta,,
+2026-03-04,deuda,Deuda,Diamante Gabriel,3706.45,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R582,media,,Q-FIN
+2026-03-04,gasto,Gasto,Diamante Gabriel,3706.45,,,,Contabilidad v1/Transacciones/R583,alta,,
+2026-03-06,deuda,Deuda,Marmol,18853.3,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R584,media,,Q-FIN
+2026-03-06,gasto,Gasto,Marmol,18853.3,,,,Contabilidad v1/Transacciones/R585,alta,,
+2026-03-06,deuda,Deuda,Rayas viernes,21800,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R586,media,,Q-FIN
+2026-03-06,gasto,Gasto,Rayas Viernes,21800,,,,Contabilidad v1/Transacciones/R587,alta,,
+2026-03-06,deuda,Deuda,Ads deuda,2500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R588,media,,Q-FIN
+2026-03-06,gasto,Gasto,Ads deuda,2500,,,,Contabilidad v1/Transacciones/R589,alta,,
+2026-03-09,ingreso,Ingreso,Ingreso Marcos Reyes Anticipo anillo oval,10000,,,,Contabilidad v1/Transacciones/R590,alta,,
+2026-03-09,pago_deuda,Pago Deuda,Pago deuda fer,10000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R591,media,,Q-FIN
+2026-03-09,deuda,Deuda,Fiverr chino,242.26,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R592,media,,Q-FIN
+2026-03-09,gasto,Costo,Fiverr chino,242.26,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R593,alta,,
+2026-03-10,deuda,Deuda,Tablaroquero,17500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R594,media,,Q-FIN
+2026-03-10,gasto,Gasto,Tablaroquero,17500,,,,Contabilidad v1/Transacciones/R595,alta,,
+2026-03-10,deuda,Deuda,Verified,459,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R596,media,,Q-FIN
+2026-03-10,gasto,Gasto,Verified,459,,,,Contabilidad v1/Transacciones/R597,alta,,
+2026-03-10,deuda,Deuda,Ads deuda,1500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R598,media,,Q-FIN
+2026-03-10,gasto,Gasto,Ads deuda,1500,,,,Contabilidad v1/Transacciones/R599,alta,,
+2026-03-10,deuda,Deuda,Ads deuda,2072.74,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R600,media,,Q-FIN
+2026-03-10,gasto,Gasto,Ads deuda,2072.74,,,,Contabilidad v1/Transacciones/R601,alta,,
+2026-03-11,deuda,Deuda,Tablarroquero,12500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R602,media,,Q-FIN
+2026-03-11,gasto,Gasto,Tablarroquero,12500,,,,Contabilidad v1/Transacciones/R603,alta,,
+2026-03-11,deuda,Deuda,Fredy,5000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R604,media,,Q-FIN
+2026-03-11,gasto,Gasto,Fredy,5000,,,,Contabilidad v1/Transacciones/R605,alta,,
+2026-03-12,deuda,Deuda,Rayas y local,58000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R606,media,,Q-FIN
+2026-03-12,gasto,Gasto,Rayas y local,58000,,,,Contabilidad v1/Transacciones/R607,alta,,
+2026-03-12,deuda,Deuda,Rayas,59600,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R608,media,,Q-FIN
+2026-03-12,deuda,Deuda,Felipe mamadas,21000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R609,media,,Q-FIN
+2026-03-12,gasto,Gasto,Rayas,59600,,,,Contabilidad v1/Transacciones/R610,alta,,
+2026-03-12,gasto,Gasto,Felipe mamadas,21000,,,,Contabilidad v1/Transacciones/R611,alta,,
+2026-03-13,ingreso,Ingreso,Tortas Ingreso Rozen,3000,,,,Contabilidad v1/Transacciones/R612,alta,,
+2026-03-13,gasto,Gasto,Ads,3000,,,,Contabilidad v1/Transacciones/R613,alta,,
+2026-03-16,ingreso,Ingreso,Liquidación churumbela y argolla twisted fraude,26800,,,,Contabilidad v1/Transacciones/R614,alta,,
+2026-03-16,deuda,Deuda,Ads deuda,3000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R615,media,,Q-FIN
+2026-03-16,gasto,Gasto,Ads deuda,3000,,,,Contabilidad v1/Transacciones/R616,alta,,
+2026-03-21,deuda,Deuda,Dinero papá Fer salva business,80000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R617,media,,Q-FIN
+2026-03-21,gasto,Gasto,Renta,47500,,,,Contabilidad v1/Transacciones/R618,alta,,
+2026-03-21,gasto,Costo,Oro Costo,20000,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R619,alta,,
+2026-03-21,gasto,Costo,Agustin trabajo,800,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R620,alta,,
+2026-03-21,gasto,Gasto,Marketing,35000,,,,Contabilidad v1/Transacciones/R621,alta,,
+2026-03-21,pago_deuda,Pago Deuda,Liquidación anal,29000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R622,media,,Q-FIN
+2026-03-21,ingreso,Ingreso,Ingreso Jonathan Anticipo,25000,,,,Contabilidad v1/Transacciones/R623,alta,,
+2026-03-21,ingreso,Ingreso,Ingreso Sara Anticipo zafiro y rubi argollas señor de los anillos,22501,,,,Contabilidad v1/Transacciones/R624,alta,,
+2026-03-22,gasto,Gasto,Ads,4454.71,,,,Contabilidad v1/Transacciones/R625,alta,,
+2026-03-22,gasto,Gasto,Ads,545.29,,,,Contabilidad v1/Transacciones/R626,alta,,
+2026-03-23,deuda,Deuda,Vidrios 50%,68000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R627,media,,Q-FIN
+2026-03-23,gasto,Gasto,Vidrios 50%,68000,,,,Contabilidad v1/Transacciones/R628,alta,,
+2026-03-23,deuda,Deuda,Rozen compra,18084.86,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R629,media,,Q-FIN
+2026-03-23,gasto,Costo,Rozen compra,18084.86,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R630,alta,,
+2026-03-24,ingreso,Ingreso,Torta anticipo Rozen,3000,,,,Contabilidad v1/Transacciones/R631,alta,,
+2026-03-24,deuda,Deuda,Fashion Show Anticipo,3000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R632,media,,Q-FIN
+2026-03-24,gasto,Gasto,Fashion Show Anticipo,3000,,,,Contabilidad v1/Transacciones/R633,alta,,
+2026-03-25,deuda,Deuda,Fiverr Chino,386.32,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R634,media,,Q-FIN
+2026-03-25,gasto,Costo,Fiverr Chino,386.32,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R635,alta,,
+2026-03-26,gasto,Gasto,Expo tu Boda,3000,,,,Contabilidad v1/Transacciones/R636,alta,,
+2026-03-26,deuda,Deuda,Techo felipe,2000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R637,media,,Q-FIN
+2026-03-26,gasto,Gasto,Techo felipe,2000,,,,Contabilidad v1/Transacciones/R638,alta,,
+2026-03-27,deuda,Deuda,Rayas,22000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R639,media,,Q-FIN
+2026-03-27,gasto,Gasto,Rayas,22000,,,,Contabilidad v1/Transacciones/R640,alta,,
+2026-03-29,ingreso,Ingreso,Jonathan abono,5000,,,,Contabilidad v1/Transacciones/R641,alta,,
+2026-03-29,gasto,Gasto,Ads,5000,,,,Contabilidad v1/Transacciones/R642,alta,,
+2026-03-30,deuda,Deuda,Lambrin negro,2662,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R643,media,,Q-FIN
+2026-03-30,gasto,Gasto,Lambrin negro,2662,,,,Contabilidad v1/Transacciones/R644,alta,,
+2026-03-31,deuda,Deuda,Sergio Diam,4500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R645,media,,Q-FIN
+2026-03-31,gasto,Costo,Sergio Diam,4500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R646,alta,,
+1-Abr-26,deuda,Deuda,Rayas,22000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R647,media,,Q-FIN
+1-Abr-26,gasto,Gasto,Rayas,22000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R648,media,,
+10-Abr-26,deuda,Deuda,Rayas,25000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R649,media,,Q-FIN
+10-Abr-26,gasto,Gasto,Rayas,25000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R650,media,,
+10-Abr-26,deuda,Deuda,Canceles,46000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R651,media,,Q-FIN
+10-Abr-26,gasto,Gasto,Canceles,46000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R652,media,,
+13-Abr-26,ingreso,Ingreso,Jonathan abono,10000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R653,media,,
+13-Abr-26,deuda,Deuda,Agustin,11600,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R654,media,,Q-FIN
+13-Abr-26,gasto,Costo,Agustin,11600,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R655,media,,
+16-Abr-26,deuda,Deuda,Merlo Material,14800,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R656,media,,Q-FIN
+16-Abr-26,gasto,Gasto,Merlo Material,14800,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R657,media,,
+16-Abr-26,deuda,Deuda,Jorge letrero,10000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R658,media,,Q-FIN
+16-Abr-26,gasto,Costo,Jorge letrero,10000,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R659,media,,
+17-Abr-26,deuda,Deuda,Rayas y putas,30320,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R660,media,,Q-FIN
+17-Abr-26,gasto,Gasto,Rayas y putas,30320,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R661,media,,
+20-Abr-26,deuda,Deuda,Plata,5000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R662,media,,Q-FIN
+20-Abr-26,gasto,Costo,Plata,5000,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R663,media,,
+21-Abr-26,deuda,Deuda,Renta,47500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R664,media,,Q-FIN
+21-Abr-26,gasto,Gasto,Renta,47500,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R665,media,,
+22-Abr-26,deuda,Deuda,Fredy y Felipe,3770,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R666,media,,Q-FIN
+22-Abr-26,gasto,Gasto,Fredy y Felipe,3770,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R667,media,,
+24-Abr-26,deuda,Deuda,Rayas,19000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R668,media,,Q-FIN
+24-Abr-26,gasto,Gasto,Rayas,19000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R669,media,,
+24-Abr-26,pago_deuda,Pago Deuda,Pago Deuda Fer,17001,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R670,media,,Q-FIN
+24-Abr-26,pago_deuda,Pago Deuda,Pago Deuda Fer,15000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R671,media,,Q-FIN
+24-Abr-26,ingreso,Ingreso,Michelle Martinez,20000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R672,media,,
+24-Abr-26,gasto,Gasto,Mercado Pago Dolor,814.6399999999994,transferencia,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R673,media,,
+24-Abr-26,pago_deuda,Pago Deuda,Liquidación deuda fer,19185.36,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R674,media,,Q-FIN
+25-Abr-26,ingreso,Ingreso,Liquidacion Tortas,32000,,Efectivo,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R675,media,,
+26-Abr-26,ingreso,Ingreso,Ingreso Marcos Reyes Liquidación,25000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R676,media,,
+26-Abr-26,gasto,Gasto,Comision MP,126.13999999999987,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R677,media,,
+26-Abr-26,pago_deuda,Pago Deuda,Pago Deuda Fer,16000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R678,media,,Q-FIN
+26-Abr-26,deuda,Deuda,LTX,201.9,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R679,media,,Q-FIN
+26-Abr-26,gasto,Gasto,LTX,201.9,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R680,media,,
+26-Abr-26,ingreso,Ingreso,Gabriel Liquidación Diamante,5000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R681,media,,
+26-Abr-26,gasto,Gasto,Mercado Pago Dolor,475,transferencia,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R682,media,,
+26-Abr-26,ingreso,Ingreso,Gabriel Anticipo Anillo,10000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R683,media,,
+26-Abr-26,deuda,Deuda,Kling klang,90.49,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R684,media,,Q-FIN
+26-Abr-26,gasto,Gasto,Kling klang,90.49,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R685,media,,
+26-Abr-26,gasto,Gasto,Tele,8996.76,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R686,media,,
+29-Abr-26,deuda,Deuda,Felipe Fredy hoja,14000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R687,media,,Q-FIN
+29-Abr-26,gasto,Gasto,Felipe Fredy hoja,14000,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R688,media,,
+30-Abr-26,deuda,Deuda,Chino diseño,223.11,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino | Fecha en formato TEXTO en origen",Contabilidad v1/Transacciones/R689,media,,Q-FIN
+30-Abr-26,gasto,Gasto,Chino diseño,223.11,,,Fecha en formato TEXTO en origen,Contabilidad v1/Transacciones/R690,media,,
+2026-04-07,deuda,Deuda,Felipe,15500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R691,media,,Q-FIN
+2026-04-07,gasto,Gasto,Felipe,15500,,,,Contabilidad v1/Transacciones/R692,alta,,
+2026-04-07,ingreso,Ingreso,Jonathan abono,5000,,,,Contabilidad v1/Transacciones/R693,alta,,
+2026-04-07,deuda,Deuda,Ads,4321.66,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R694,media,,Q-FIN
+2026-04-07,gasto,Gasto,Ads,4321.66,,,,Contabilidad v1/Transacciones/R695,alta,,
+2026-04-07,deuda,Deuda,Anticipo sillas,10072,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R696,media,,Q-FIN
+2026-04-07,gasto,Gasto,Anticipo sillas,10072,,,,Contabilidad v1/Transacciones/R697,alta,,
+2026-05-07,deuda,Deuda,Lambrin,7746,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R698,media,,Q-FIN
+2026-05-07,gasto,Gasto,Lambrin,7746,,,,Contabilidad v1/Transacciones/R699,alta,,
+2026-05-01,gasto,Costo,Oro Costo,12500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R700,alta,,
+2026-05-01,gasto,Costo,Agustin,4500,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R701,alta,,
+2026-05-01,gasto,Gasto,Jorge,13500,,Efectivo,,Contabilidad v1/Transacciones/R702,alta,,
+2026-05-01,gasto,Gasto,Expo tu Boda,9600,,,,Contabilidad v1/Transacciones/R703,alta,,
+2026-05-02,gasto,Gasto,Apple Pay,459,,,,Contabilidad v1/Transacciones/R704,alta,,
+2026-05-08,deuda,Deuda,Nóminas,26000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R705,media,,Q-FIN
+2026-05-08,gasto,Gasto,Nóminas,26000,,,,Contabilidad v1/Transacciones/R706,alta,,
+2026-05-08,deuda,Deuda,Renta,70000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R707,media,,Q-FIN
+2026-05-08,gasto,Gasto,Renta,70000,,,,Contabilidad v1/Transacciones/R708,alta,,
+2026-05-08,deuda,Deuda,Lambrines y Techo,36643.71,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R709,media,,Q-FIN
+2026-05-08,gasto,Gasto,Lambrines y Techo,36643.71,,,,Contabilidad v1/Transacciones/R710,alta,,
+2026-05-08,ingreso,Ingreso,Liquidación Gabriel,5000,,,,Contabilidad v1/Transacciones/R711,alta,,
+2026-05-11,deuda,Deuda,Flete,1500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R712,media,,Q-FIN
+2026-05-11,gasto,Gasto,Flete,1500,,,,Contabilidad v1/Transacciones/R713,alta,,
+2026-05-12,deuda,Deuda,Fredy Cable,4000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R714,media,,Q-FIN
+2026-05-12,gasto,Gasto,Fredy Cable,4000,,,,Contabilidad v1/Transacciones/R715,alta,,
+2026-05-13,deuda,Deuda,Lambrin y Techo,20200,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R716,media,,Q-FIN
+2026-05-13,gasto,Gasto,Lambrin y Techo,20200,,,,Contabilidad v1/Transacciones/R717,alta,,
+2026-05-13,deuda,Deuda,Flete,1500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R718,media,,Q-FIN
+2026-05-13,gasto,Gasto,Flete,1500,,,,Contabilidad v1/Transacciones/R719,alta,,
+2026-05-13,ingreso,Ingreso,Luna Anticipo,7000,,,,Contabilidad v1/Transacciones/R720,alta,,
+2026-05-13,deuda,Deuda,Jorge,11200,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R721,media,,Q-FIN
+2026-05-13,gasto,Gasto,Jorge,11200,,,,Contabilidad v1/Transacciones/R722,alta,,
+2026-05-13,deuda,Deuda,Chino diseño,221.17,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R723,media,,Q-FIN
+2026-05-13,gasto,Gasto,Chino diseño,221.17,,,,Contabilidad v1/Transacciones/R724,alta,,
+2026-05-15,deuda,Deuda,Rayas,22220,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R725,media,,Q-FIN
+2026-05-15,gasto,Gasto,Rayas,22220,,,,Contabilidad v1/Transacciones/R726,alta,,
+2026-05-16,gasto,Gasto,Impresiones Centrika,1250,,,,Contabilidad v1/Transacciones/R727,alta,,
+2026-05-16,ingreso,Ingreso,Conversion cash a cuenta,1500,efectivo,,,Contabilidad v1/Transacciones/R728,alta,,
+2026-05-16,gasto,Gasto,Conversion cash a cuenta,1500,efectivo,Efectivo,,Contabilidad v1/Transacciones/R729,alta,,
+2026-05-16,pago_deuda,Pago Deuda,Pago Deuda Fer,16593.1,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R730,media,,Q-FIN
+2026-05-17,ingreso,Ingreso,Ingreso Oswaldo Expo,1000,,,,Contabilidad v1/Transacciones/R731,alta,,
+2026-05-17,gasto,Gasto,Mercado Pago,40.60000000000002,transferencia,,,Contabilidad v1/Transacciones/R732,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo,1000,,,,Contabilidad v1/Transacciones/R733,alta,,
+2026-05-17,gasto,Gasto,Mercado Pago,40.60000000000002,transferencia,,,Contabilidad v1/Transacciones/R734,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo,1000,,,,Contabilidad v1/Transacciones/R735,alta,,
+2026-05-17,gasto,Gasto,Mercado Pago,40.60000000000002,transferencia,,,Contabilidad v1/Transacciones/R736,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo,1000,,,,Contabilidad v1/Transacciones/R737,alta,,
+2026-05-17,gasto,Gasto,Mercado Pago,40.60000000000002,transferencia,,,Contabilidad v1/Transacciones/R738,alta,,
+2026-05-22,ingreso,Ingreso,Liquidación Luna,28000,,,,Contabilidad v1/Transacciones/R739,alta,,
+2026-05-22,gasto,Gasto,Gasto MP Luna,1136.7999999999993,,,,Contabilidad v1/Transacciones/R740,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo Luis Daniel Luna,1000,,,,Contabilidad v1/Transacciones/R741,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo,1000,,Efectivo,,Contabilidad v1/Transacciones/R742,alta,,
+2026-05-17,ingreso,Ingreso,Ingreso Separación Expo,1000,,Efectivo,,Contabilidad v1/Transacciones/R743,alta,,
+2026-05-19,gasto,Gasto,Expo tu Boda Jorge,12200,,,,Contabilidad v1/Transacciones/R744,alta,,
+2026-05-18,deuda,Deuda,Lambrin,4392,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R745,media,,Q-FIN
+2026-05-18,gasto,Gasto,Lambrin,4392,,,,Contabilidad v1/Transacciones/R746,alta,,
+2026-05-18,deuda,Deuda,Fredy mamadas,4693,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R747,media,,Q-FIN
+2026-05-18,gasto,Gasto,Fredy mamadas,4693,,,,Contabilidad v1/Transacciones/R748,alta,,
+2026-05-18,deuda,Deuda,Flete Lambrin,1500,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R749,media,,Q-FIN
+2026-05-18,gasto,Gasto,Flete Lambrin,1500,,,,Contabilidad v1/Transacciones/R750,alta,,
+2026-05-22,deuda,Deuda,Nominas,22400,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R751,media,,Q-FIN
+2026-05-22,gasto,Gasto,Nominas,22400,,,,Contabilidad v1/Transacciones/R752,alta,,
+2026-05-22,deuda,Deuda,Electricos y varios,44000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R753,media,,Q-FIN
+2026-05-22,gasto,Gasto,Electricos y varios,44000,,,,Contabilidad v1/Transacciones/R754,alta,,
+2026-05-27,deuda,Deuda,Merlo Varios,16000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R755,media,,Q-FIN
+2026-05-27,gasto,Gasto,Merlo Varios,16000,,,,Contabilidad v1/Transacciones/R756,alta,,
+2026-05-29,deuda,Deuda,Merlo sueldo y varios,34700,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R757,media,,Q-FIN
+2026-05-29,gasto,Gasto,Merlo sueldo y varios,34700,,,,Contabilidad v1/Transacciones/R758,alta,,
+2026-05-17,deuda,Deuda,Estacionamiento Expo,100,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R759,media,,Q-FIN
+2026-05-17,gasto,Gasto,Estacionamiento Expo,100,,,,Contabilidad v1/Transacciones/R760,alta,,
+2026-05-23,deuda,Deuda,Gemas,2500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R761,media,,Q-FIN
+2026-05-23,gasto,Gasto,Gemas,2500,,,,Contabilidad v1/Transacciones/R762,alta,,
+2026-06-03,deuda,Deuda,Renta,60000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R763,media,,Q-FIN
+2026-06-03,gasto,Gasto,Renta,60000,,,,Contabilidad v1/Transacciones/R764,alta,,
+2026-06-03,deuda,Deuda,Prisma Eventos,21500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R765,media,,Q-FIN
+2026-06-03,gasto,Gasto,Prisma Eventos,21500,,,,Contabilidad v1/Transacciones/R766,alta,,
+2026-06-04,deuda,Deuda,Transferencia vidrio test,21500,transferencia,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R767,media,,Q-FIN
+2026-06-04,gasto,Gasto,Transferencia vidrio test,21500,transferencia,,,Contabilidad v1/Transacciones/R768,alta,,
+2026-06-05,deuda,Deuda,Gemas China,5352.19,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R769,media,,Q-FIN
+2026-06-05,gasto,Gasto,Gemas China,5352.19,,,,Contabilidad v1/Transacciones/R770,alta,,
+2026-06-02,deuda,Deuda,Mesas Plegables,729,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R771,media,,Q-FIN
+2026-06-02,gasto,Gasto,Mesas Plegables,729,,,,Contabilidad v1/Transacciones/R772,alta,,
+2026-06-02,deuda,Deuda,Monitor seguridad,1399,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R773,media,,Q-FIN
+2026-06-02,gasto,Gasto,Monitor seguridad,1399,,,,Contabilidad v1/Transacciones/R774,alta,,
+2026-06-02,deuda,Deuda,Bases tele,512.8,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R775,media,,Q-FIN
+2026-06-02,gasto,Gasto,Bases tele,512.8,,,,Contabilidad v1/Transacciones/R776,alta,,
+2026-06-02,deuda,Deuda,Televisión 2,8397,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R777,media,,Q-FIN
+2026-06-02,gasto,Gasto,Televisión 2,8397,,,,Contabilidad v1/Transacciones/R778,alta,,
+2026-06-06,gasto,Gasto,Conversion cash a cuenta,2000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R779,alta,,
+2026-06-06,ingreso,Ingreso,Conversion cash a cuenta,2000,efectivo,,,Contabilidad v1/Transacciones/R780,alta,,
+2026-06-06,pago_deuda,Pago Deuda,Deuda Fer blanquear cuentas,21500.8,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R781,media,,Q-FIN
+2026-06-06,deuda,Deuda,Jorge Stand,15000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R782,media,,Q-FIN
+2026-06-06,gasto,Gasto,Jorge Stand,15000,,,,Contabilidad v1/Transacciones/R783,alta,,
+2026-06-06,ingreso,Ingreso,Anticipo Luis Saucedo argollas,1000,,,,Contabilidad v1/Transacciones/R784,alta,,
+2026-06-06,ingreso,Ingreso,Anticipo Negociadora Mariel Lopez,5000,,,,Contabilidad v1/Transacciones/R785,alta,,
+2026-06-06,ingreso,Ingreso,Anticipo Negociadora Mariel Lopez,5000,,,,Contabilidad v1/Transacciones/R786,alta,,
+2026-06-06,ingreso,Ingreso,Anticipo Negociadora Mariel Lopez,5000,,,,Contabilidad v1/Transacciones/R787,alta,,
+2026-06-06,gasto,Gasto,Pago Jorge Liquidación Expo,9000,,,,Contabilidad v1/Transacciones/R788,alta,,
+2026-06-07,ingreso,Ingreso,Ingreso Edson Argollas,12000,,,,Contabilidad v1/Transacciones/R789,alta,,
+2026-06-07,deuda,Deuda,Chino diseño,1079.39,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R790,media,,Q-FIN
+2026-06-07,gasto,Gasto,Chino diseño,1079.39,,,,Contabilidad v1/Transacciones/R791,alta,,
+2026-06-07,deuda,Deuda,Parkeo Expos,254,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R792,media,,Q-FIN
+2026-06-07,gasto,Gasto,Parkeo Expos,254,,,,Contabilidad v1/Transacciones/R793,alta,,
+2026-06-07,deuda,Deuda,Pilas Expos,100,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R794,media,,Q-FIN
+2026-06-07,gasto,Gasto,Pilas Expos,100,,,,Contabilidad v1/Transacciones/R795,alta,,
+2026-06-07,deuda,Deuda,Wifi Fer,125,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R796,media,,Q-FIN
+2026-06-07,gasto,Gasto,Wifi Fer,125,,,,Contabilidad v1/Transacciones/R797,alta,,
+2026-06-07,ingreso,Ingreso,Cecia Argollas separación,1000,,Efectivo,,Contabilidad v1/Transacciones/R798,alta,,
+2026-06-07,ingreso,Ingreso,Argolla zafiro,1000,,,,Contabilidad v1/Transacciones/R799,alta,,
+2026-06-07,gasto,Gasto,Gasto MP Argolla Zafiro,40.599999999999994,,,,Contabilidad v1/Transacciones/R800,alta,,
+2026-06-07,deuda,Deuda,OXXO Expos,836.9,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R801,media,,Q-FIN
+2026-06-07,gasto,Gasto,OXXO Expos,836.9,,,,Contabilidad v1/Transacciones/R802,alta,,
+2026-06-13,deuda,Deuda,Claude Creditos,344.14,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R803,media,,Q-FIN
+2026-06-13,gasto,Gasto,Claude Creditos,344.14,,,,Contabilidad v1/Transacciones/R804,alta,,
+2026-06-08,deuda,Deuda,Salva Negocio Oro,20000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R805,media,,Q-FIN
+2026-06-08,gasto,Costo,Gasto Oro,17525,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R806,alta,,
+2026-06-08,gasto,Costo,Agustin pago trabajo,6000,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R807,alta,,
+2026-06-08,deuda,Deuda,Deuda Fer,3525,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R808,media,,Q-FIN
+2026-06-13,deuda,Deuda,Vidriero,22100,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R809,media,,Q-FIN
+2026-06-13,deuda,Deuda,Rayas,15900,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R810,media,,Q-FIN
+2026-06-13,gasto,Gasto,Vidriero,22100,,,,Contabilidad v1/Transacciones/R811,alta,,
+2026-06-13,gasto,Gasto,Rayas,15900,,,,Contabilidad v1/Transacciones/R812,alta,,
+2026-06-30,deuda,Deuda,Hielo,380,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R813,media,,Q-FIN
+2026-06-30,deuda,Deuda,AI,900,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R814,media,,Q-FIN
+2026-06-30,deuda,Deuda,Muebles,4700,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R815,media,,Q-FIN
+2026-06-29,ingreso,Ingreso,Liqudación abogada funky,33625,,,,Contabilidad v1/Transacciones/R816,alta,,
+2026-06-30,ingreso,Ingreso,Churumbela Manolo,9750,,,,Contabilidad v1/Transacciones/R817,alta,,
+2026-06-30,pago_deuda,Pago Deuda,Pago deuda Santi,5000,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R818,media,,Q-FIN
+2026-06-30,ingreso,Ingreso,Ingreso Jorge tio fer,30000,,,,Contabilidad v1/Transacciones/R819,alta,,
+2026-06-16,deuda,Deuda,Máquinas,34499,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R820,media,,Q-FIN
+2026-06-16,deuda,Deuda,Placas y seguro fredy,22902,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R821,media,,Q-FIN
+2026-06-18,deuda,Deuda,sillas,10000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R822,media,,Q-FIN
+2026-06-19,deuda,Deuda,Varios,63551,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R823,media,,Q-FIN
+2026-06-16,gasto,Gasto,Máquinas,34499,,,,Contabilidad v1/Transacciones/R824,alta,,
+2026-06-16,gasto,Gasto,Placas y seguro fredy,22902,,,,Contabilidad v1/Transacciones/R825,alta,,
+2026-06-18,gasto,Gasto,sillas,10000,,,,Contabilidad v1/Transacciones/R826,alta,,
+2026-06-19,gasto,Gasto,Varios,63551,,,,Contabilidad v1/Transacciones/R827,alta,,
+2026-06-30,ingreso,Ingreso,Abono raritos zafiro,5000,,,,Contabilidad v1/Transacciones/R828,alta,,
+2026-06-30,gasto,Gasto,Gasto MP,207.14000000000033,,,,Contabilidad v1/Transacciones/R829,alta,,
+2026-06-25,deuda,Deuda,Placas,17000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R830,media,,Q-FIN
+2026-06-25,gasto,Gasto,Placas,17000,,,,Contabilidad v1/Transacciones/R831,alta,,
+2026-06-24,deuda,Deuda,Fredy,1320,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R832,media,,Q-FIN
+2026-06-24,gasto,Gasto,Fredy,1320,,,,Contabilidad v1/Transacciones/R833,alta,,
+2026-06-26,deuda,Deuda,Varios y sueldos,26700,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R834,media,,Q-FIN
+2026-06-26,gasto,Gasto,Varios y sueldos,26700,,,,Contabilidad v1/Transacciones/R835,alta,,
+2026-06-29,deuda,Deuda,El Norte,34220,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R836,media,,Q-FIN
+2026-06-29,gasto,Gasto,El Norte,34220,,,,Contabilidad v1/Transacciones/R837,alta,,
+2026-06-30,deuda,Deuda,dulces Mony,3000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R838,media,,Q-FIN
+2026-06-30,gasto,Gasto,dulces Mony,3000,,,,Contabilidad v1/Transacciones/R839,alta,,
+2026-06-30,deuda,Deuda,muebles,1280,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R840,media,,Q-FIN
+2026-06-30,gasto,Gasto,muebles,1280,,,,Contabilidad v1/Transacciones/R841,alta,,
+2026-06-30,deuda,Deuda,Amazon 2,200,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R842,media,,Q-FIN
+2026-06-30,gasto,Gasto,Amazon 2,200,,,,Contabilidad v1/Transacciones/R843,alta,,
+2026-06-30,deuda,Deuda,exhibidores 1,5642.63,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R844,media,,Q-FIN
+2026-06-30,gasto,Gasto,exhibidores 1,5642.63,,,,Contabilidad v1/Transacciones/R845,alta,,
+2026-06-30,deuda,Deuda,Costco 1,11000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R846,media,,Q-FIN
+2026-06-30,gasto,Gasto,Costco 1,11000,,,,Contabilidad v1/Transacciones/R847,alta,,
+2026-06-30,deuda,Deuda,fantasías Miguel,1300,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R848,media,,Q-FIN
+2026-06-30,gasto,Gasto,fantasías Miguel,1300,,,,Contabilidad v1/Transacciones/R849,alta,,
+2026-06-30,deuda,Deuda,props fotos,1000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R850,media,,Q-FIN
+2026-06-30,gasto,Gasto,props fotos,1000,,,,Contabilidad v1/Transacciones/R851,alta,,
+2026-06-30,deuda,Deuda,exhibidores 2,3500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R852,media,,Q-FIN
+2026-06-30,gasto,Gasto,exhibidores 2,3500,,,,Contabilidad v1/Transacciones/R853,alta,,
+2026-06-30,deuda,Deuda,Costco 2,5928.9,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R854,media,,Q-FIN
+2026-06-30,gasto,Gasto,Costco 2,5928.9,,,,Contabilidad v1/Transacciones/R855,alta,,
+2026-06-30,deuda,Deuda,tapiz,500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R856,media,,Q-FIN
+2026-06-30,gasto,Gasto,tapiz,500,,,,Contabilidad v1/Transacciones/R857,alta,,
+2026-06-30,deuda,Deuda,fashion show,3000,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R858,media,,Q-FIN
+2026-06-30,gasto,Gasto,fashion show,3000,,,,Contabilidad v1/Transacciones/R859,alta,,
+2026-06-30,deuda,Deuda,Amazon 3,339.99,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R860,media,,Q-FIN
+2026-06-30,gasto,Gasto,Amazon 3,339.99,,,,Contabilidad v1/Transacciones/R861,alta,,
+2026-06-30,deuda,Deuda,Amazon 4,1460.68,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R862,media,,Q-FIN
+2026-06-30,gasto,Gasto,Amazon 4,1460.68,,,,Contabilidad v1/Transacciones/R863,alta,,
+2026-06-30,deuda,Deuda,Fredy ??,5500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R864,media,,Q-FIN
+2026-06-30,gasto,Gasto,Fredy ??,5500,,,,Contabilidad v1/Transacciones/R865,alta,,
+2026-06-30,deuda,Deuda,Churumbelas Wholesaler,25328.42,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R866,media,,Q-FIN
+2026-06-30,gasto,Costo,Churumbelas Wholesaler,25328.42,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R867,alta,,
+2026-06-30,ingreso,Ingreso,Marquise liquidación,19000,,,,Contabilidad v1/Transacciones/R868,alta,,
+2026-06-19,ingreso,Ingreso,Manolo liquidación argollas,27500,,,,Contabilidad v1/Transacciones/R869,alta,,
+2026-06-30,gasto,Gasto,Cash a cuenta,1000,efectivo,Efectivo,,Contabilidad v1/Transacciones/R870,alta,,
+2026-06-30,ingreso,Ingreso,Cash a cuenta,1000,efectivo,,,Contabilidad v1/Transacciones/R871,alta,,
+2026-07-02,pago_deuda,Pago Deuda,Pago deuda fer,108115.45000000001,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R872,media,,Q-FIN
+2026-07-03,deuda,Deuda,Deuda Santi limpiadora,200,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R873,media,,Q-FIN
+2026-07-03,gasto,Gasto,Deuda Santi limpiadora,200,,,,Contabilidad v1/Transacciones/R874,alta,,
+2026-07-03,deuda,Deuda,Moche sillas,300,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R875,media,,Q-FIN
+2026-07-03,gasto,Gasto,Moche sillas,300,,,,Contabilidad v1/Transacciones/R876,alta,,
+2026-07-04,gasto,Gasto,Amazon para Mine,3564.84,,,,Contabilidad v1/Transacciones/R877,alta,,
+2026-07-04,gasto,Gasto,Renta cover,5000,,,,Contabilidad v1/Transacciones/R878,alta,,
+2026-07-04,gasto,Gasto,Vidriero,2300,,,,Contabilidad v1/Transacciones/R879,alta,,
+2026-07-04,deuda,Deuda,Renta,60000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R880,media,,Q-FIN
+2026-07-04,gasto,Gasto,Renta,60000,,,,Contabilidad v1/Transacciones/R881,alta,,
+2026-07-04,deuda,Deuda,Nóminas,23990,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R882,media,,Q-FIN
+2026-07-04,gasto,Gasto,Nóminas,23990,,,,Contabilidad v1/Transacciones/R883,alta,,
+2026-07-04,deuda,Deuda,Mine,6000,,Papá Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R884,media,,Q-FIN
+2026-07-04,gasto,Gasto,Mine,6000,,,,Contabilidad v1/Transacciones/R885,alta,,
+2026-07-04,pago_deuda,Pago Deuda,Deuda Fer liquidación,300,,Fer,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R886,media,,Q-FIN
+2026-07-04,pago_deuda,Pago Deuda,Deuda Santi liquidación,4423.390000000001,,Santi,"Flujo de financiamiento/capital (Clasif. 'Pago Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R887,media,,Q-FIN
+2026-07-04,gasto,Gasto,Aliexpress ching chong,4943.5,,,,Contabilidad v1/Transacciones/R888,alta,,
+2026-07-04,gasto,Gasto,Fanny lastra rielera y mesa,5630,,,,Contabilidad v1/Transacciones/R889,alta,,
+2026-07-04,gasto,Costo,Plata,3500,,,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R890,alta,,
+2026-07-04,gasto,Gasto,Vernier y pila reloj,281.06,,,,Contabilidad v1/Transacciones/R891,alta,,
+2026-07-04,gasto,Gasto,Gasto Ads Meta,7000,,,,Contabilidad v1/Transacciones/R892,alta,,
+2026-07-04,gasto,Gasto,amazon,294.9,,,,Contabilidad v1/Transacciones/R893,alta,,
+2026-07-04,gasto,Gasto,Vidriero,700,,,,Contabilidad v1/Transacciones/R894,alta,,
+2026-07-10,ingreso,Ingreso,Ingreso anticipo anillo radiant pavé,20000,,Efectivo,,Contabilidad v1/Transacciones/R895,alta,,
+2026-07-10,gasto,Costo,Agustin gasto,8000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R896,alta,,
+2026-07-10,gasto,Costo,Oro/Fanny,12000,,Efectivo,"Clasif. original 'Costo' (costo de venta), mapeado a gasto",Contabilidad v1/Transacciones/R897,alta,,
+2026-07-10,deuda,Deuda,Chino diseño,235.68,,Santi,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R898,media,,Q-FIN
+2026-07-10,gasto,Gasto,Chino diseño,235.68,,,,Contabilidad v1/Transacciones/R899,alta,,
+2026-07-11,ingreso,Ingreso,Ingreso Mau Rada Transf,12000,transferencia,,,Contabilidad v1/Transacciones/R900,alta,,
+2026-07-11,ingreso,Ingreso,Ingreso Mau Rada Tarjeta,1500,tarjeta,,,Contabilidad v1/Transacciones/R901,alta,,
+2026-07-11,gasto,Gasto,Comisiones MP,60.59999999999991,,,,Contabilidad v1/Transacciones/R902,alta,,
+2026-07-11,gasto,Gasto,Gasto Ads Meta,14000,,,,Contabilidad v1/Transacciones/R903,alta,,
+2026-07-11,deuda,Deuda,Deuda Fer Ads,500,,Fer,"Flujo de financiamiento/capital (Clasif. 'Deuda'), NO ingreso/gasto de operación: definir destino",Contabilidad v1/Transacciones/R904,media,,Q-FIN
