@@ -270,10 +270,10 @@ export default async function DineroPage() {
                     </div>
                     <span
                       className={`shrink-0 text-sm font-semibold ${
-                        signo >= 0 ? "text-success" : "text-foreground"
+                        signo > 0 ? "text-success" : signo < 0 ? "text-foreground" : "text-muted-foreground"
                       }`}
                     >
-                      {signo >= 0 ? "+" : "−"}
+                      {signo > 0 ? "+" : signo < 0 ? "−" : "±"}
                       {pesos(m.monto)}
                     </span>
                   </li>

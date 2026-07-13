@@ -8,7 +8,9 @@ asiento automático al pagar + P&L del mes + capital de trabajo. Falta el resto 
 
 ## Tablas
 - `movimiento_financiero` (0010) — **SOLO-ADMIN**. categoria (enum), concepto, monto (≥0; signo por categoría),
-  linea_negocio, origen (text: pago/manual/…), pedido_id/pago_id, folio_factura (CFDI fuera del ERP).
+  linea_negocio, origen (text: pago/manual/migracion/…), pedido_id/pago_id, folio_factura (CFDI fuera del ERP).
+  **0038 agregó la categoría `transferencia_interna`** (cash↔cuenta, signo 0: fuera del P&L y de netos);
+  también `migracion_lote`/`migracion_registro` + `revertir_lote_migracion()` (ver `docs/modulos/migracion-import.md`).
 - `cuenta_por_pagar` (0011) — **SOLO-ADMIN**. CxP a consignante (y futuros proveedores): consignante_id, item_id,
   pedido_id, concepto, monto, estado (enum pendiente/pagada/cancelada), fecha_vencimiento, pagada_at.
 

@@ -11,7 +11,7 @@ import { CXP_MUESTRA, MOVIMIENTOS_MUESTRA } from "@/lib/data/finanzas-muestra";
 export type ResultadoAccion = { ok: boolean; error?: string };
 
 const movimientoSchema = z.object({
-  categoria: z.enum(["deuda", "gasto", "capital", "ingreso", "costo", "pago_deuda"]),
+  categoria: z.enum(["deuda", "gasto", "capital", "ingreso", "costo", "pago_deuda", "transferencia_interna"]),
   concepto: z.string().trim().min(2, "El concepto es obligatorio."),
   monto: z.coerce.number().positive("El monto debe ser mayor a cero."),
   fecha: z.string().optional().nullable(),
