@@ -8,7 +8,8 @@ export type CategoriaMovimiento =
   | "capital"
   | "ingreso"
   | "costo"
-  | "pago_deuda";
+  | "pago_deuda"
+  | "transferencia_interna";
 
 export type MovimientoFinanciero = {
   id: string;
@@ -29,7 +30,7 @@ export type MovimientoFinanciero = {
 
 export const CATEGORIA_MOVIMIENTO: Record<
   CategoriaMovimiento,
-  { etiqueta: string; clase: string; signo: 1 | -1 }
+  { etiqueta: string; clase: string; signo: 1 | 0 | -1 }
 > = {
   ingreso: { etiqueta: "Ingreso", clase: "bg-success/15 text-success", signo: 1 },
   capital: { etiqueta: "Capital", clase: "bg-accent-soft text-accent", signo: 1 },
@@ -37,6 +38,8 @@ export const CATEGORIA_MOVIMIENTO: Record<
   gasto: { etiqueta: "Gasto", clase: "bg-warning/15 text-warning", signo: -1 },
   deuda: { etiqueta: "Deuda", clase: "bg-destructive/15 text-destructive", signo: 1 },
   pago_deuda: { etiqueta: "Pago de deuda", clase: "bg-muted text-muted-foreground", signo: -1 },
+  // Cash↔cuenta: no es P&L. Signo 0 = no cuenta en netos ni proyecciones.
+  transferencia_interna: { etiqueta: "Transferencia interna", clase: "bg-muted text-muted-foreground", signo: 0 },
 };
 
 /** Meta de ventas mensual (el trigger de la marca de plata, §3.9). */
@@ -49,6 +52,7 @@ export const CATEGORIAS: CategoriaMovimiento[] = [
   "capital",
   "deuda",
   "pago_deuda",
+  "transferencia_interna",
 ];
 
 /** Monto con signo según la naturaleza de la categoría (para P&L / neto). */
