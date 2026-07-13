@@ -1,0 +1,56 @@
+nombre,telefono,correo,instagram,otro_contacto,fuente,detalle_fuente,fecha_primer_contacto,etapa,interes,fecha_propuesta_boda,notas,_fila_origen,_confianza,_nota,_pregunta_pendiente
+Mónica Ramos,8137753537,,,,,,,,,,,Operaciones v1/Producción/R4,alta,,
+David Velasco,8116337996,,,,,,,,,,,Operaciones v1/Producción/R6,alta,,
+Adrian Alejandro Castro Cantu,8130958383,,,,,,,,,,8113012006 Esposa Anna Georgina Rodriguez Garza,Operaciones v1/Producción/R8,alta,,
+Alejandra Gamez,8442771968,,,,,,,,,,Vender argolla esposo,Operaciones v1/Producción/R10,alta,,
+Sergio Guadiana,8128249141,,,,,,,,,,,Operaciones v1/Producción/R11,alta,,
+Hilario Espindola Moreno,2214301853,,,,,,,,,,,Operaciones v1/Producción/R12,alta,,
+Edson Carrera,8121769314,,,,,,,,,,,Operaciones v1/Producción/R13,alta,,
+Miguel Bocanegra,8111229267,,,,,,,,,,,Operaciones v1/Producción/R14,alta,,
+Miguel Herrera,8117483978,,,,,,,,,,,Operaciones v1/Producción/R15,alta,,
+Jorge amigo Fer,8114954769,,,,,,,,,,,Operaciones v1/Producción/R16,alta,,
+Juan Vega,8117401849,,,,,,,,,,,Operaciones v1/Producción/R17,alta,,
+Eduardo Lozano Rosciano,8186828128,,,,,,,,,,,Operaciones v1/Producción/R19,alta,,
+José Eduardo Martínez,8111786223,,,,,,,,,,,Operaciones v1/Producción/R20,alta,,
+María de Lourdes Pérez Lozano,8182591412,,,,,,,,,,,Operaciones v1/Producción/R22,alta,,
+Elías Leal,8120406772,,,,,,,,,,10 gramos la pareja,Operaciones v1/Producción/R23,alta,,
+Jorge García Rodríguez,8126833393,,,,,,,,,,10 gramos la pareja,Operaciones v1/Producción/R24,alta,,
+Jonathan Guillermo Sanmiguel,8182722932,,,,,,,,,,,Operaciones v1/Producción/R26,alta,,
+Heber Acosta,8180810733,,,,,,,,,,,Operaciones v1/Producción/R30,alta,,
+Alejandro Morales Aguilera,8126291919,,,,,,,,,,,Operaciones v1/Producción/R32,alta,,
+Gerardo Rodolfo Reyes Acevedo,8999360598,,,,,,,,,,,Operaciones v1/Producción/R33,alta,,
+Mauricio Treviño Ñañez,8115307101,,,,,,,,,,,Operaciones v1/Producción/R34,alta,,
+Antonio de Jesús Lupercio Veléz,8119405744,,,,,,,,,,,Operaciones v1/Producción/R35,alta,,
+Carlos Andrés de los Santos Álvarez,8184624870,,,,,,,,,,,Operaciones v1/Producción/R36,alta,,
+Alexandra Garza,8124151604,,,,,,,,,,,Operaciones v1/Producción/R37,alta,,
+Gerardo Martínez,8112116696,,,,,,,,,,,Operaciones v1/Producción/R39,alta,,
+Michelle Martínez García,8127481448,,,,,,,,,,,Operaciones v1/Producción/R40,alta,,
+Modesto Gerardo,8291028015,,,,,,,,,,,Operaciones v1/Producción/R42,alta,,
+Ana Karen Martinez Medellin,8112363513,,,,,,,,,,,Operaciones v1/Producción/R43,alta,,
+PENDIENTE DE CONTRATO,,,,,,,,,,,,Operaciones v1/Producción/R45,baja,Sin teléfono en origen,Q-CLI
+Marcos Garza Ads,8114888688,,,,,,,,,,,Operaciones v1/Producción/R46,alta,,
+Jonathan González González,8121502382,,,,,,,,,,,Operaciones v1/Producción/R47,alta,,
+Sara,8180182368,,,,,,,,,,,Operaciones v1/Producción/R48,alta,,
+Juan PENDIENTE,,,,,,,,,,,,Operaciones v1/Producción/R50,baja,Sin teléfono en origen,Q-CLI
+Oswaldo Villarreal,8111865937,,,,,,,,,,,Operaciones v1/Producción/R51,alta,,
+Héctor Flores Durán,8186567399,,,,,,,,,,,Operaciones v1/Producción/R52,alta,,
+Luna Hermano,8261583398,,,,,,,,,,,Operaciones v1/Producción/R53,alta,,
+Claudio Flores,8115075647,,,,,,,,,,,Operaciones v1/Producción/R54,alta,,
+Daniel Luna,4423294455,,,,,,,,,,,Operaciones v1/Producción/R56,alta,,
+José Blas Correa Chapa,8121217794,,,,,,,,,,,Operaciones v1/Producción/R58,alta,,
+Hugo Alejandro Carral Ibarra,8116402398,,,,,,,,,,,Operaciones v1/Producción/R61,alta,,
+Luis Saucedo,5580125945,,,,,,,,,,,Operaciones v1/Producción/R62,alta,,
+Mariel Lopez,8123522930,,,,,,,,,,,Operaciones v1/Producción/R64,alta,,
+Cecia González,8132812487,,,,,,,,,,,Operaciones v1/Producción/R69,alta,,
+Montserrat Rodríguez,9196860098,,,,,,,,,,,Operaciones v1/Producción/R71,alta,,
+Manuel Flores,8119179044,,,,,,,,,,,Operaciones v1/Producción/R72,alta,,
+Jorge tio fer,,,,,,,,,,,,Operaciones v1/Producción/R74,baja,Sin teléfono en origen,Q-CLI
+???,,,,,,,,,,,,Operaciones v1/Producción/R75,baja,Sin teléfono en origen,Q-CLI
+Mauricio Rada Chau,,,,,,,,,,,,Operaciones v1/Producción/R76,baja,Sin teléfono en origen,Q-CLI
+Victor,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R3,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Eber,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R5,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Javier,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R7,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Merlo,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R11,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Manolo,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R12,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Catherine,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R13,baja,Posible duplicado de un cliente de Producción,Q-CLI
+Ezequiel,,,,,,,,,,,"Solo aparece en Ventas (nombre de pila), sin teléfono",Operaciones v1/Ventas/R20,baja,Posible duplicado de un cliente de Producción,Q-CLI

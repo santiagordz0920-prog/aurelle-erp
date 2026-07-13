@@ -1,0 +1,7 @@
+nombre,tipo,contacto,notas,_fila_origen,_confianza,_nota,_pregunta_pendiente
+La Jefa (mamá de Fer),consignante,,Consigna anillos A1–A27 (Inventario/Anillos Jefa). Verificar nombre y contacto reales,varias sheets,media,,Q-PROV
+Tío Fer (joyería local),consignante,,Consigna el batch Ar01–Ar126 (Inventario/Batch Jefa Local Joyeria). Verificar nombre/contacto,varias sheets,media,,Q-PROV
+Agustín,proveedor,,Joyero/maquila (columna 'Agustín' en Ventas y gastos en Contabilidad). Siendo reemplazado por Fer,varias sheets,media,,Q-PROV
+Chino (diseñador/render),proveedor,,"Diseño/render CAD ('mandar a chino', 'Chino diseño')",varias sheets,media,,Q-PROV
+Forte,proveedor,,Proveedor de diamantes (anticipos 'Forte' en Contabilidad),varias sheets,media,,Q-PROV
+Papá Fer,proveedor,,NO es proveedor de material: socio de capital/deuda (~$3.7M en 'Efectivo y deudas'). Su destino real es cuenta por pagar/capital,varias sheets,media,,Q-PROV
