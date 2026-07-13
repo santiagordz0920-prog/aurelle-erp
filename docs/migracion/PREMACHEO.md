@@ -248,3 +248,26 @@ Luis Saucedo (+35k: puede ser un macheo a otro "Luis" — revisar), Jonathan Gon
 La lectura de Drive desde esta sesión solo devuelve la primera pestaña del libro
 Inventario. Opciones: (a) Santiago pega aquí las ~13 filas de la pestaña Churumbelas,
 o (b) se extraen en una sesión de Cowork. Son pocas filas; con eso se completa el CSV.
+
+---
+
+## Resoluciones de Santiago (2026-07-13, sesión interactiva)
+
+**Decisiones generales:**
+1. **Transferencias internas: CONFIRMADO** — los 29 movimientos ($388,051) entran como tipo `transferencia_interna`, fuera del P&L.
+2. **Las 8 gemas sin match en el maestro: son piezas reales probablemente** — se dan de alta como items (sin ID de serie y con costo pendiente, marcadas `_pregunta_pendiente`).
+
+**Ambiguos resueltos:**
+- Sara "señor de los anillos" $22,501 → **Sara** (cierra su hueco de F-10). *(resuelto por Claude, contexto LOTR)*
+- "Ingreso piedra papá fer" / "Gasto Pago deuda Fer" / "Ingreso Jefe Fer Al precio" ($33,804) → **financiamiento familiar**, no pagos de cliente.
+- Mauricio Liquidación $37,000 (dic-25) → **Mauricio Treviño Ñañez**.
+- Luna anticipo+liquidación $35,000 → **Luna Hermano** (Daniel Luna sigue debiendo sus $21k).
+- Jonathan (7 movs, $84,000) → **repartir por cuadre** entre los dos Jonathans: asignación por monto/fecha de modo que cada pedido llegue a su precio; regla aprobada por Santiago ("si ya están liquidados repártelos").
+- Juan (~$100,420) → **es un solo Juan (prob. Juan Vega, 'Vera'=typo)**; misma regla de reparto por cuadre contra sus pedidos.
+- José Sandoval $35,000 → **cliente histórico nuevo** ("no se metió a los sheets de Producción"); se crea con su liquidación.
+
+**Quedan para Fer (no bloquean el import; entran sin ligar):**
+- "Jorge Flores Liquidacion" $35,000 + "Liquidacion Jorge" $25,808 (¿Claudio/Manuel Flores? ¿Jorge García?)
+- "Liquidación Gerardo" $40,000 (¿cuál de los 3 Gerardos?)
+- "Marcos Reyes" $35,000 (¿cliente nuevo?)
+- Los ~30 sin-match restantes (apodos tipo Mamaguevo/Zafiro Pitero/abogada funky, "Gabriel" ~$25k, "Tortas Rozen" ~$48k, "Estacionamiento" $14k, "Separación Expo" ×5) — revisar con las sheets/memoria de Fer; mientras, entran como ingresos sin cliente.
