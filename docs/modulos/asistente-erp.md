@@ -6,12 +6,13 @@
 > equipo y ejecuta acciones vía tool use.
 
 ## Estado
-Construido 2026-07-14 (Fase 5). **v1** (consultas + altas simples) y **v2**
-(acciones con confirmación: pagos + ediciones) el mismo día. Sin migración: reusa
-la capa de datos y las Server Actions existentes (v2 agregó una: `reprogramarCita`
-en `clientes/citas/actions.ts`, que reusa el candado anti doble-reserva).
-Requiere `ANTHROPIC_API_KEY` en Vercel (igual que el bot). Si no hay key, el widget
-responde que no está configurado (no rompe nada).
+Construido 2026-07-14 (Fase 5). **v1** (consultas + altas simples), **v2**
+(acciones con confirmación: pagos + ediciones) y **v2.1** (contexto de pantalla,
+conversión cotización→pedido, bitácora "vía asistente") el mismo día. v1 y v2 ya
+en el tronco (PRs #50, #51). Reusa la capa de datos y las Server Actions
+existentes; v2 agregó `reprogramarCita` y **v2.1 la migración 0039**
+(`asistente_accion`, bitácora). Requiere `ANTHROPIC_API_KEY` en Vercel (igual que
+el bot). Si no hay key, el widget responde que no está configurado (no rompe nada).
 
 ## Piezas
 - `src/lib/ia/asistente-herramientas.ts` — **catálogo de herramientas**. Cada una
@@ -46,6 +47,15 @@ responde que no está configurado (no rompe nada).
 **v2 — CON confirmación previa (dinero o edición de registros):** `registrar_pago`
 (solo-admin por RLS; Finanzas asienta por trigger), `cambiar_contacto`,
 `cambiar_etapa_pipeline`, `reprogramar_cita`, `cancelar_cita`.
+
+**v2.1:** `buscar_cotizacion` (consulta) + `convertir_cotizacion_en_pedido` (con
+confirmación; el pedido nace 'por_confirmar', el contrato se genera al confirmarlo
+con el anticipo). Además: **contexto de pantalla** (el widget manda el `path`; si
+el usuario está viendo un pedido/cliente/cotización/item, `contextoDePantalla` en
+`asistente.ts` lo inyecta al prompt y "regístrale un pago" / "súbele una nota"
+resuelven la entidad sin nombrarla) y **bitácora "vía asistente"**
+(`registrarAccionAsistente` escribe en `asistente_accion` tras cada mutación
+exitosa; corre con la sesión del usuario, RLS admin-read; migración 0039).
 
 ## El candado de confirmación (v2)
 Las herramientas de `HERRAMIENTAS_SENSIBLES` NO se ejecutan en el loop del modelo.
@@ -85,21 +95,22 @@ que algo quedó hecho hasta la confirmación.
 - La confirmación re-valida por RLS en el servidor: aunque el `pendiente` viaje al
   cliente y vuelva, `registrar_pago` sigue siendo solo-admin (lo impone la BD).
 
-## Pendientes conocidos de este módulo (v2.1+, ver Plan Maestro §3.19)
-- **Auditoría "vía asistente":** hoy la auditoría registra el usuario que ejecutó,
-  pero falta la etiqueta de canal. Requiere marcar el canal en la MISMA transacción
-  del cambio (GUC de Postgres `current_setting`), que no encaja limpio con el patrón
-  actual de supabase-js (cada `.insert/.update` es su propia transacción) → pendiente
-  de un mecanismo (RPC que setee el GUC y mute en una sola transacción, o wrapper).
-- Acciones encadenadas ("convierte la cotización de Ana en pedido y genera el
-  contrato") — hoy cada acción es individual.
-- Borrados desde el chat (clientes/pedidos): deliberadamente NO se hacen.
-- Contexto de pantalla (si estás viendo un pedido, "súbele una nota" entiende cuál).
-- Persona/tono editable sin tocar código (el prompt vive en `asistente.ts`).
+## Pendientes conocidos de este módulo (ver Plan Maestro §3.19)
+- **Auditoría "vía asistente" — RESUELTA en v2.1 con bitácora propia** (`asistente_accion`,
+  0039), NO tagueando el trigger genérico: marcar el canal exigiría fijar un GUC de
+  Postgres en la MISMA transacción del cambio, cosa que supabase-js no permite limpio
+  (cada `.insert/.update` es su propia transacción). La bitácora guarda el resumen
+  humano por acción, con la sesión del usuario. Si algún día se quiere el canal en la
+  tabla `auditoria` misma, haría falta ese mecanismo transaccional (RPC por acción).
+- Borrados desde el chat (clientes/pedidos): deliberadamente NO se hacen (regla dura §3.19).
+- **Persona/tono editable sin tocar código** (hoy el prompt vive en `asistente.ts`):
+  único pendiente funcional; necesita una pantalla en `/sistema` para el addendum del
+  prompt (patrón de `/sistema/contrato`). No bloquea nada.
 - Verificación real del loop de tool use (modelo decidiendo) = en prod con
-  `ANTHROPIC_API_KEY` (el sandbox no alcanza la API). Validado local con build+lint
-  + smoke de los ejecutores y del preparar→confirmar de las 5 acciones sensibles
-  contra datos de muestra (resúmenes correctos, `cambiar_contacto` no pisa otros
-  campos, validación de monto ≤ 0). Nota: en muestra los ids no son UUID v4, así que
-  `registrar_pago` (pagoSchema `.uuid()`) falla SOLO en local; en prod los ids son
-  v4 válidos.
+  `ANTHROPIC_API_KEY` (el sandbox no alcanza la API). Validado local con build+lint,
+  la cadena de migraciones 0001–0039 en Postgres (0039 aplica; RLS de la bitácora
+  probada: insert pone `usuario_id=auth.uid()`, el `with_check` bloquea escribir a
+  nombre de otro), y smoke de todos los ejecutores + preparar→confirmar de las 6
+  acciones sensibles + parser de contexto contra datos de muestra. Nota: en muestra
+  los ids no son UUID v4, así que `registrar_pago` (pagoSchema `.uuid()`) falla SOLO
+  en local; en prod los ids son v4 válidos.

@@ -34,10 +34,10 @@ CÓMO TRABAJAS:
 - Después de ejecutar una acción, confirma en una línea qué hiciste (con el nombre/dato clave). Si algo falla, di el motivo tal como lo devuelve la herramienta.
 - Para consultas, responde directo y claro; puedes usar listas cortas. Montos en pesos mexicanos.
 
-ACCIONES QUE PIDEN CONFIRMACIÓN (dinero o cosas delicadas): registrar un pago, cambiar el contacto de un cliente, mover su etapa de pipeline, reprogramar o cancelar una cita. Cuando uses una de estas herramientas, el sistema NO la ejecuta de inmediato: le muestra al usuario un botón para confirmar. Por eso, al proponer una de estas acciones, di en una frase qué vas a hacer (sin dar por hecho que ya está) y deja que confirme; NO afirmes que quedó registrada/cambiada. Si la herramienta devuelve un error de validación, explícalo y pide el dato que falte.
+ACCIONES QUE PIDEN CONFIRMACIÓN (dinero o cosas delicadas): registrar un pago, cambiar el contacto de un cliente, mover su etapa de pipeline, reprogramar o cancelar una cita, y convertir una cotización en pedido. Cuando uses una de estas herramientas, el sistema NO la ejecuta de inmediato: le muestra al usuario un botón para confirmar. Por eso, al proponer una de estas acciones, di en una frase qué vas a hacer (sin dar por hecho que ya está) y deja que confirme; NO afirmes que quedó registrada/cambiada. Si la herramienta devuelve un error de validación, explícalo y pide el dato que falte.
 
 LÍMITES (respétalos):
-- Solo puedes hacer lo que tus herramientas permiten: consultas, altas simples (cliente, tarea, nota, cita) y las acciones con confirmación de arriba (pago, contacto, etapa, reprogramar/cancelar cita).
+- Solo puedes hacer lo que tus herramientas permiten: consultas, altas simples (cliente, tarea, nota, cita) y las acciones con confirmación de arriba (pago, contacto, etapa, reprogramar/cancelar cita, convertir cotización en pedido).
 - No borras clientes ni pedidos, no tocas producción ni migraciones, y no editas nada para lo que no tengas una herramienta específica.
 - La información de Finanzas/márgenes es solo-admin: si una consulta vuelve vacía por permisos, dilo con naturalidad. Registrar pagos también es solo-admin (la base lo impone por RLS).
 
@@ -55,12 +55,40 @@ export type RespuestaAsistente = {
 /** Cuántas rondas de herramientas permitimos antes de cortar (evita bucles). */
 const MAX_RONDAS = 6;
 
+/*
+  Contexto de pantalla (§3.19 v2): si el usuario está viendo la ficha de algo,
+  el asistente entiende "este pedido / este cliente" sin que lo nombre. Del path
+  actual extrae la entidad y su id, y lo inyecta al prompt para que las
+  herramientas (registrar_pago, agregar_nota, …) usen ese id directo.
+*/
+const UUID = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+const PANTALLAS: { re: RegExp; texto: (id: string) => string }[] = [
+  { re: new RegExp(`^/ventas/pedidos/(${UUID})`), texto: (id) => `el PEDIDO con id=${id}` },
+  { re: new RegExp(`^/ventas/cotizaciones/(${UUID})`), texto: (id) => `la COTIZACIÓN con id=${id}` },
+  { re: new RegExp(`^/taller/inventario/(${UUID})`), texto: (id) => `el ITEM de inventario con id=${id}` },
+  { re: new RegExp(`^/clientes/(${UUID})`), texto: (id) => `la ficha del CLIENTE con id=${id}` },
+];
+
+export function contextoDePantalla(path?: string): string | null {
+  if (!path) return null;
+  for (const { re, texto } of PANTALLAS) {
+    const m = path.match(re);
+    if (m) return texto(m[1]);
+  }
+  return null;
+}
+
 /**
  * Corre una vuelta del asistente sobre el historial del chat. Ejecuta el loop de
  * tool use (Claude pide herramienta → la ejecutamos → le devolvemos el resultado)
  * hasta que Claude responde en texto o se agotan las rondas.
+ *
+ * `path` = ruta que el usuario está viendo (para el contexto de pantalla).
  */
-export async function correrAsistente(historial: TurnoChat[]): Promise<RespuestaAsistente> {
+export async function correrAsistente(
+  historial: TurnoChat[],
+  path?: string,
+): Promise<RespuestaAsistente> {
   if (!iaConfigurada()) {
     return {
       respuesta:
@@ -80,14 +108,25 @@ export async function correrAsistente(historial: TurnoChat[]): Promise<Respuesta
   const enlaces: Enlace[] = [];
   let pendiente: AccionPendiente | undefined;
 
+  const hoy = new Date().toLocaleDateString("es-MX", {
+    timeZone: "America/Monterrey",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const pantalla = contextoDePantalla(path);
+  const system =
+    `${SISTEMA}\n\nContexto: hablas con ${usuario.nombre} (rol: ${usuario.rol}). Hoy es ${hoy}.` +
+    (pantalla
+      ? `\nEl usuario está viendo ahora ${pantalla}. Si dice "este/esta" o "aquí" (p. ej. "regístrale un pago", "súbele una nota"), se refiere a eso: usa ese id directo, sin volver a buscarlo.`
+      : "");
+
   for (let ronda = 0; ronda < MAX_RONDAS; ronda++) {
     const resp = await anthropic.messages.create({
       model: MODELO_IA,
       max_tokens: 1024,
-      system: `${SISTEMA}\n\nContexto: hablas con ${usuario.nombre} (rol: ${usuario.rol}). Hoy es ${new Date().toLocaleDateString(
-        "es-MX",
-        { timeZone: "America/Monterrey", weekday: "long", day: "numeric", month: "long", year: "numeric" },
-      )}.`,
+      system,
       tools: HERRAMIENTAS,
       messages,
     });

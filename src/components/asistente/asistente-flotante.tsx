@@ -58,8 +58,10 @@ export function AsistenteFlotante() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Solo mandamos role+content (los enlaces son de la UI, no del modelo).
+        // `path` = pantalla actual, para el contexto ("este pedido", "súbele...").
         body: JSON.stringify({
           mensajes: nuevos.map((t) => ({ role: t.role, content: t.content })),
+          path: pathname,
         }),
       });
       const data = (await res.json()) as {
