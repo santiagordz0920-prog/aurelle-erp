@@ -2,7 +2,14 @@ import "server-only";
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAnthropic, iaConfigurada, MODELO_IA } from "./anthropic";
 import { getUsuarioActual } from "@/lib/session";
-import { HERRAMIENTAS, ejecutarHerramienta, type Enlace } from "./asistente-herramientas";
+import {
+  HERRAMIENTAS,
+  HERRAMIENTAS_SENSIBLES,
+  ejecutarHerramienta,
+  prepararAccionSensible,
+  type Enlace,
+  type AccionPendiente,
+} from "./asistente-herramientas";
 
 /*
   Asistente interno del ERP (Plan Maestro §3.19). Un copiloto de Claude DENTRO
@@ -27,10 +34,12 @@ CÓMO TRABAJAS:
 - Después de ejecutar una acción, confirma en una línea qué hiciste (con el nombre/dato clave). Si algo falla, di el motivo tal como lo devuelve la herramienta.
 - Para consultas, responde directo y claro; puedes usar listas cortas. Montos en pesos mexicanos.
 
-LÍMITES (v1, respétalos):
-- Solo puedes hacer lo que tus herramientas permiten: consultas y altas simples (cliente, tarea, nota, cita). NO registras pagos ni tocas Finanzas todavía; si te lo piden, di que esa parte (dinero) llega en la siguiente versión y que por ahora se captura a mano en Dinero.
-- No borras ni editas registros existentes en esta versión (salvo lo que una herramienta explícitamente permita).
-- La información de Finanzas/márgenes es solo-admin: si una consulta vuelve vacía por permisos, dilo con naturalidad.
+ACCIONES QUE PIDEN CONFIRMACIÓN (dinero o cosas delicadas): registrar un pago, cambiar el contacto de un cliente, mover su etapa de pipeline, reprogramar o cancelar una cita. Cuando uses una de estas herramientas, el sistema NO la ejecuta de inmediato: le muestra al usuario un botón para confirmar. Por eso, al proponer una de estas acciones, di en una frase qué vas a hacer (sin dar por hecho que ya está) y deja que confirme; NO afirmes que quedó registrada/cambiada. Si la herramienta devuelve un error de validación, explícalo y pide el dato que falte.
+
+LÍMITES (respétalos):
+- Solo puedes hacer lo que tus herramientas permiten: consultas, altas simples (cliente, tarea, nota, cita) y las acciones con confirmación de arriba (pago, contacto, etapa, reprogramar/cancelar cita).
+- No borras clientes ni pedidos, no tocas producción ni migraciones, y no editas nada para lo que no tengas una herramienta específica.
+- La información de Finanzas/márgenes es solo-admin: si una consulta vuelve vacía por permisos, dilo con naturalidad. Registrar pagos también es solo-admin (la base lo impone por RLS).
 
 TONO: cálido, breve, directo. Sin emojis. Sin muletillas de asistente ("¡Claro!", "con gusto"). Ve al punto.`;
 
@@ -39,6 +48,8 @@ export type TurnoChat = { role: "user" | "assistant"; content: string };
 export type RespuestaAsistente = {
   respuesta: string;
   enlaces: Enlace[];
+  /** Acción sensible propuesta que espera el "sí" del usuario (§3.19 v2). */
+  pendiente?: AccionPendiente;
 };
 
 /** Cuántas rondas de herramientas permitimos antes de cortar (evita bucles). */
@@ -67,6 +78,7 @@ export async function correrAsistente(historial: TurnoChat[]): Promise<Respuesta
     .map((t) => ({ role: t.role, content: t.content.slice(0, 4000) }));
 
   const enlaces: Enlace[] = [];
+  let pendiente: AccionPendiente | undefined;
 
   for (let ronda = 0; ronda < MAX_RONDAS; ronda++) {
     const resp = await anthropic.messages.create({
@@ -87,9 +99,35 @@ export async function correrAsistente(historial: TurnoChat[]): Promise<Respuesta
       const resultados: Anthropic.ToolResultBlockParam[] = [];
       for (const bloque of resp.content) {
         if (bloque.type !== "tool_use") continue;
+        const entrada = bloque.input as Record<string, unknown>;
+
+        // Acción sensible (dinero/edición): NO se ejecuta aquí. Se prepara y se
+        // deja pendiente de confirmación del usuario (botón en el widget).
+        if (HERRAMIENTAS_SENSIBLES.has(bloque.name)) {
+          let contenido: string;
+          if (pendiente) {
+            // Solo una propuesta a la vez: pide hacerlas de una en una.
+            contenido =
+              "Ya hay una acción esperando confirmación. Propón las acciones delicadas de una en una.";
+          } else {
+            const prep: { pendiente?: AccionPendiente; error?: string } =
+              await prepararAccionSensible(bloque.name, entrada).catch(() => ({
+                error: "No se pudo preparar la acción.",
+              }));
+            if (prep.pendiente) {
+              pendiente = prep.pendiente;
+              contenido = `Propuesta lista y mostrada al usuario para que confirme: "${prep.pendiente.resumen}". AÚN NO se ejecuta; no digas que ya quedó hecho.`;
+            } else {
+              contenido = prep.error ?? "No se pudo preparar la acción.";
+            }
+          }
+          resultados.push({ type: "tool_result", tool_use_id: bloque.id, content: contenido });
+          continue;
+        }
+
         let salida: { texto: string; enlace?: Enlace };
         try {
-          salida = await ejecutarHerramienta(bloque.name, bloque.input as Record<string, unknown>);
+          salida = await ejecutarHerramienta(bloque.name, entrada);
         } catch {
           salida = { texto: "Ocurrió un error al ejecutar esa acción." };
         }
@@ -111,8 +149,9 @@ export async function correrAsistente(historial: TurnoChat[]): Promise<Respuesta
       .join("\n")
       .trim();
     return {
-      respuesta: texto || "Listo.",
+      respuesta: texto || (pendiente ? "¿Confirmo esto?" : "Listo."),
       enlaces,
+      pendiente,
     };
   }
 
@@ -120,5 +159,6 @@ export async function correrAsistente(historial: TurnoChat[]): Promise<Respuesta
     respuesta:
       "Me enredé haciendo esto en varios pasos. ¿Me lo dices de otra forma o lo partimos en pedazos más chicos?",
     enlaces,
+    pendiente,
   };
 }

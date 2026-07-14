@@ -359,3 +359,57 @@ export async function registrarResultado(
   }
   return { ok: true };
 }
+
+/**
+ * Reprograma una cita a una nueva fecha/hora (misma sala y duración). Reusa el
+ * candado anti doble-reserva (excluyéndose a sí misma). `cuando` es hora local
+ * de Monterrey ('YYYY-MM-DDTHH:mm'). Lo usa el asistente interno (§3.19 v2:
+ * "mueve la cita al viernes") y sirve para reprogramar desde la agenda.
+ */
+export async function reprogramarCita(
+  id: string,
+  cuando: string,
+): Promise<ResultadoAccion> {
+  if (!cuando || cuando.length < 10) return { ok: false, error: "Elige fecha y hora." };
+  const inicio = new Date(`${cuando}:00${OFFSET_MTY}`).toISOString();
+  if (Number.isNaN(new Date(inicio).getTime())) return { ok: false, error: "Fecha no válida." };
+
+  if (!supabaseConfigurado()) {
+    const c = CITAS_MUESTRA.find((x) => x.id === id);
+    if (!c) return { ok: false, error: "Cita no encontrada." };
+    const choca = CITAS_MUESTRA.some(
+      (o) =>
+        o.id !== id &&
+        o.sala === c.sala &&
+        o.estado !== "cancelada" &&
+        seTraslapan(inicio, c.duracion_min, o.inicio, o.duracion_min),
+    );
+    if (choca) return { ok: false, error: "Esa sala ya está ocupada a esa hora. Elige otro horario." };
+    c.inicio = inicio;
+    revalidar(c.cliente_id);
+    return { ok: true };
+  }
+
+  const supabase = await createClient();
+  const { data: cita } = await supabase
+    .from("cita")
+    .select("sala, duracion_min, estado, cliente_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!cita) return { ok: false, error: "Cita no encontrada." };
+  if (cita.estado === "cancelada") return { ok: false, error: "La cita está cancelada; agenda una nueva." };
+
+  const mismaSala = await citasDeSala(cita.sala, inicio);
+  const choca = mismaSala.some(
+    (o) =>
+      o.id !== id &&
+      o.estado !== "cancelada" &&
+      seTraslapan(inicio, cita.duracion_min, o.inicio, o.duracion_min),
+  );
+  if (choca) return { ok: false, error: "Esa sala ya está ocupada a esa hora. Elige otro horario." };
+
+  const { error } = await supabase.from("cita").update({ inicio }).eq("id", id);
+  if (error) return { ok: false, error: "No se pudo reprogramar la cita." };
+  revalidar(cita.cliente_id ?? undefined);
+  return { ok: true };
+}
