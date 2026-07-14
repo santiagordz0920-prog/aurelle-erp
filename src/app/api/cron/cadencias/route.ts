@@ -4,12 +4,14 @@ import { supabaseConfigurado } from "@/lib/supabase/config";
 import { ESTADOS_ACTIVOS, type EstadoCadencia } from "@/lib/cadencias";
 
 /*
-  Cron HORARIO de cadencias (F1). Re-arma la cadencia de los leads que quedaron
-  PAUSADOS por la regla de oro cuando su conversación se enfrió: si el último
-  mensaje del hilo tiene ≥24 h y no hay borrador de IA pendiente, se reanuda el
-  seguimiento programando el próximo toque del estado actual. Protegido por
-  CRON_SECRET; usa service_role (sin sesión). Idempotente: solo toca pausados.
-  (Los toques anclados a cita —CITADO T2/T3— se calculan al vuelo en la vista.)
+  Cron DIARIO de cadencias (F1; Vercel Hobby solo permite crons diarios). Re-arma
+  la cadencia de los leads que quedaron PAUSADOS por la regla de oro cuando su
+  conversación se enfrió: si el último mensaje del hilo tiene ≥24 h y no hay
+  borrador de IA pendiente, se reanuda el seguimiento programando el próximo
+  toque del estado actual. Protegido por CRON_SECRET; usa service_role (sin
+  sesión). Idempotente: solo toca pausados. La lista "Toques de hoy" se calcula
+  al vuelo (proximo_toque_at <= now), así que no depende de la frecuencia del
+  cron; solo el re-armado de pausados corre una vez al día.
 */
 export async function GET(request: Request) {
   const auth = request.headers.get("authorization");
