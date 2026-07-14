@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/ads",
       "schedule": "30 8 * * *"
+    },
+    {
+      "path": "/api/cron/cadencias",
+      "schedule": "0 * * * *"
     }
   ]
 }

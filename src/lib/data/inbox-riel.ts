@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizarTelefono } from "@/lib/clientes";
+import { estadoTrasEntrante, type EstadoCadencia } from "@/lib/cadencias";
 import type { MensajeEntrante, EstadoSaliente } from "@/lib/whatsapp";
 
 /*
@@ -77,6 +78,12 @@ export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEn
           contacto_preferido: "telefono",
           fuente_canal: "organico",
           sucursal_id: SUCURSAL_DEFAULT,
+          // Entra al funnel de follow-ups: estado NUEVO. El bot da T1 (inmediato);
+          // el próximo toque manual (T2) cae en 24 h. La regla de oro (paso 5) lo
+          // pausa de una porque este mismo mensaje es un entrante.
+          estado_cadencia: "nuevo",
+          cadencia_toque_n: 1,
+          proximo_toque_at: new Date(Date.now() + 24 * 3_600_000).toISOString(),
         })
         .select("id, nombre")
         .maybeSingle();
@@ -131,6 +138,45 @@ export async function registrarEntrante(m: MensajeEntrante): Promise<ResultadoEn
     cuerpo: m.cuerpo,
     wa_id: m.wa_id,
   });
+
+  // 5) REGLA DE ORO (§ DISENO_FUNNEL_MENSAJES): todo entrante PAUSA la cadencia
+  //    (nunca un toque automático encima de una conversación viva) y reactiva a
+  //    un lead frío/no-asistió → caliente. Además atribuye la respuesta al último
+  //    toque sin contestar (medición §3). El bot conversa aparte, como siempre.
+  if (clienteId) {
+    try {
+      const { data: cli } = await supabase
+        .from("cliente")
+        .select("estado_cadencia")
+        .eq("id", clienteId)
+        .maybeSingle();
+      if (cli?.estado_cadencia) {
+        const reactivado = estadoTrasEntrante(cli.estado_cadencia as EstadoCadencia);
+        await supabase
+          .from("cliente")
+          .update({
+            cadencia_pausada: true,
+            proximo_toque_at: null,
+            estado_cadencia: reactivado,
+          })
+          .eq("id", clienteId);
+      }
+      // Atribución: marca respondido el último toque sin respuesta de este lead.
+      const { data: ult } = await supabase
+        .from("toque")
+        .select("id")
+        .eq("cliente_id", clienteId)
+        .is("respondido_at", null)
+        .order("enviado_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (ult) {
+        await supabase.from("toque").update({ respondido_at: new Date().toISOString() }).eq("id", ult.id);
+      }
+    } catch {
+      // La cadencia es secundaria al registro del mensaje: si falla, no rompe el riel.
+    }
+  }
 
   return { duplicado: false, conversacionId, clienteId, clienteNombre, esNuevoCliente };
 }
