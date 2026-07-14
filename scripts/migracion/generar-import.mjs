@@ -73,11 +73,17 @@ const exposCsv = leer("expos.csv");
 
 const LOTE = randomUUID();
 const sql = [];
+// Secciones para poder partir el SQL en archivos chicos (el editor de Supabase
+// no aguanta el archivo completo). El orden de FKs se respeta entre partes.
+const secciones = { base: [], items: [], pedidos: [], pagos: [], movs: [], expos: [] };
+let seccionActual = "base";
 const reporte = [];
 const bloques = { proveedor: 0, consignante: 0, cliente: 0, item: 0, pedido: 0, pago: 0, movimiento: 0, expo: 0, nota: 0 };
 
 function bloque(cuerpo) {
-  sql.push(`do $mig$\ndeclare\n  v_id uuid;\n  v_existente uuid;\nbegin\n${cuerpo}\nend $mig$;`);
+  const b = `do $mig$\ndeclare\n  v_id uuid;\n  v_existente uuid;\nbegin\n${cuerpo}\nend $mig$;`;
+  sql.push(b);
+  secciones[seccionActual].push(b);
 }
 const yaImportado = (tabla, llave) =>
   `  if exists (select 1 from public.migracion_registro where tabla = '${tabla}' and llave = ${lit(llave)}) then return; end if;\n`;
@@ -156,6 +162,7 @@ for (const cl of clientes) {
 }
 
 /* ── 3. items de inventario (+ item_costo solo-admin) ──────────────────── */
+seccionActual = "items";
 const skusUsados = new Map();
 let sinSerie = 0;
 const itemsGenerados = []; // para el reporte
@@ -237,6 +244,7 @@ for (const g of R.GEMAS_SIN_MAESTRO) {
 }
 
 /* ── 4. pedidos (+ cotización con la descripción de la pieza) ──────────── */
+seccionActual = "pedidos";
 // Índice cliente por teléfono y por fila de origen (los 5 sin tel, F-02).
 const clientePorTel = new Map(clientes.filter((c) => c.telefono).map((c) => [c.telefono, c]));
 const clientePorFila = new Map(clientes.map((c) => [filaN(c.fila), c]));
@@ -307,6 +315,9 @@ const pagosGenerados = [];
 const pools = R.REPARTO_POR_CUADRE.map((r) => ({ ...r, movs: [] }));
 
 function asignarPago(cliente, monto, fecha, metodo, concepto, filaOrigen) {
+  const seccionPrevia = seccionActual;
+  seccionActual = "pagos";
+  try {
   // llena los pedidos del cliente (por orden de fila) hasta su precio
   let restante = monto;
   const propios = pedidos.filter((p) => p.clienteNombre === cliente).sort((a, b) => a.orden - b.orden);
@@ -335,9 +346,11 @@ function asignarPago(cliente, monto, fecha, metodo, concepto, filaOrigen) {
     pagosGenerados.push({ cliente, pedido: p.fila, monto: aplica, fecha, concepto });
   }
   return restante; // lo que no cupo en ningún pedido
+  } finally { seccionActual = seccionPrevia; }
 }
 
 // Recorre el ledger completo (902) y decide categoría + liga.
+seccionActual = "movs";
 const totalesLedger = {};
 let transferencias = 0, transferenciasSuma = 0;
 const ingresosSinLigar = [];
@@ -407,6 +420,7 @@ if (transferencias !== R.TOTAL_TRANSFERENCIAS.filas)
   throw new Error(`transferencias internas: esperaba ${R.TOTAL_TRANSFERENCIAS.filas}, detecté ${transferencias}`);
 
 /* ── 6. expos ──────────────────────────────────────────────────────────── */
+seccionActual = "expos";
 for (const e of exposCsv) {
   const llave = `expo:${e._fila_origen}`;
   const estado = /confirmado/.test(e.estado) ? "contratada" : /ya_paso/.test(e.estado) ? "cancelada" : "candidata";
@@ -465,6 +479,41 @@ select tabla, count(*) filas, count(*) filter (where creado) creados
   from public.migracion_registro where lote_id = '${LOTE}' group by tabla order by tabla;
 `;
 writeFileSync(join(OUT, "import_sheets.sql"), cabecera + "\n" + sql.join("\n\n") + "\n" + pie);
+
+/* ── partes chicas para el SQL editor de Supabase (no aguanta 1.2 MB) ──── */
+// Cada parte es su propia transacción y los bloques son idempotentes: si una
+// parte falla, se puede re-correr sola. El ORDEN entre partes es obligatorio.
+const CHUNK_MOVS = 320;
+const trozosMovs = [];
+for (let i = 0; i < secciones.movs.length; i += CHUNK_MOVS) trozosMovs.push(secciones.movs.slice(i, i + CHUNK_MOVS));
+
+const partes = [
+  {
+    nombre: "proveedores, consignante, clientes e inventario",
+    cuerpo:
+      `insert into public.migracion_lote (id, nombre, notas)\nvalues ('${LOTE}', 'sheets-2026-07', 'Import de las 4 sheets + expos (docs/migracion). Generado ${new Date().toISOString().slice(0, 10)}')\non conflict (id) do nothing;\n\n` +
+      [...secciones.base, ...secciones.items].join("\n\n"),
+  },
+  { nombre: "pedidos (con su cotización)", cuerpo: secciones.pedidos.join("\n\n") },
+  {
+    nombre: "pagos (con el asiento automático apagado)",
+    cuerpo:
+      `-- El ledger ya viene completo de Contabilidad: el trigger duplicaría ingresos.\nalter table public.pago disable trigger trg_pago_asiento;\n\n` +
+      secciones.pagos.join("\n\n") +
+      `\n\nalter table public.pago enable trigger trg_pago_asiento;`,
+  },
+  ...trozosMovs.map((t, i) => ({ nombre: `movimientos financieros (${i + 1} de ${trozosMovs.length})`, cuerpo: t.join("\n\n") })),
+  { nombre: "expos", cuerpo: secciones.expos.join("\n\n") },
+];
+partes.forEach((p, i) => {
+  const encabezado =
+    `-- IMPORT DE LAS SHEETS — PARTE ${i + 1} de ${partes.length}: ${p.nombre}\n` +
+    `-- Lote: ${LOTE} — correr las partes EN ORDEN (1, 2, 3…). Re-correr una parte no duplica.\n` +
+    (i === partes.length - 1 ? `-- Al terminar esta parte, correr verificacion.sql.\n` : "") +
+    `\nbegin;\n\n`;
+  writeFileSync(join(OUT, `import_parte${i + 1}.sql`), encabezado + p.cuerpo + "\n\ncommit;\n");
+});
+console.log(`partes: ${partes.length} archivos out/import_parteN.sql`);
 
 /* ── reporte ───────────────────────────────────────────────────────────── */
 const esperado = {
