@@ -9,6 +9,7 @@ import { LogOut } from "lucide-react";
 import { BrandWordmark } from "./brand-wordmark";
 import { GlobalSearch } from "./global-search";
 import { InboxFlotante } from "./inbox/inbox-flotante";
+import { AsistenteFlotante } from "./asistente/asistente-flotante";
 import { cn } from "@/lib/utils";
 
 /*
@@ -132,8 +133,10 @@ export function AppShell({
         })}
       </nav>
 
-      {/* ── Inbox flotante (todas las pantallas) ───────────────────── */}
+      {/* ── Flotantes (todas las pantallas): Inbox a la derecha,
+             asistente del ERP a la izquierda ──────────────────────── */}
       <InboxFlotante />
+      <AsistenteFlotante />
     </div>
   );
 }
