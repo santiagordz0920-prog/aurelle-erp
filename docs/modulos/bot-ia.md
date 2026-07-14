@@ -30,9 +30,11 @@ bot (el humano responde desde el Inbox).
   sección EJEMPLOS DE TONO (bien/mal, incluye casos reales) como few-shot de
   estilo; se marca "nunca los copies literal" para que no se vuelvan plantilla.
 - **Vetos puntuales de vocabulario (iteración en prod):** "te late" y
-  coloquialismos de compa ("va que va", "de una") — para invitar: "¿te
-  gustaría...?" / "si quieres...", variando. Los vetos nuevos se agregan a esta
-  lista conforme Fer/Santiago reporten frases que rechinen.
+  coloquialismos de compa ("va que va", "de una"); **"andar" como verbo de
+  "estar/ir"** ("¿andas buscando?", "por dónde andaría") → usar "estar/ir"
+  ("¿estás buscando?", "por ahí estaría"). Para invitar: "¿te gustaría...?" /
+  "si quieres...", variando. Los vetos nuevos se agregan a esta lista conforme
+  Fer/Santiago reporten frases que rechinen.
 - **Datos del negocio en el prompt (2026-07-11, tercer caso real de Fer):** el bot
   alucinó "showroom Ellion, en Monterrey" y preguntó "¿por qué zona te queda
   mejor?". Ahora el prompt fija los ÚNICOS hechos afirmables: Plaza Ellion, Av.
