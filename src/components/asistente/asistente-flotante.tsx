@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Send, Sparkles, X } from "lucide-react";
+import { Check, Send, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /*
@@ -15,7 +15,16 @@ import { cn } from "@/lib/utils";
 */
 
 type Enlace = { href: string; etiqueta: string };
-type Turno = { role: "user" | "assistant"; content: string; enlaces?: Enlace[] };
+type AccionPendiente = { herramienta: string; args: Record<string, unknown>; resumen: string };
+type Turno = {
+  role: "user" | "assistant";
+  content: string;
+  enlaces?: Enlace[];
+  /** Acción sensible propuesta; se resuelve con el botón de la tarjeta. */
+  pendiente?: AccionPendiente;
+  /** Ya se confirmó o canceló: la tarjeta deja de mostrarse. */
+  resuelta?: boolean;
+};
 
 const SALUDO: Turno = {
   role: "assistant",
@@ -38,7 +47,9 @@ export function AsistenteFlotante() {
   const enviar = async () => {
     const mensaje = texto.trim();
     if (!mensaje || cargando) return;
-    const nuevos: Turno[] = [...turnos, { role: "user", content: mensaje }];
+    // Mandar un mensaje nuevo descarta cualquier propuesta sin confirmar.
+    const previos = turnos.map((t) => (t.pendiente && !t.resuelta ? { ...t, resuelta: true } : t));
+    const nuevos: Turno[] = [...previos, { role: "user", content: mensaje }];
     setTurnos(nuevos);
     setTexto("");
     setCargando(true);
@@ -54,6 +65,7 @@ export function AsistenteFlotante() {
       const data = (await res.json()) as {
         respuesta?: string;
         enlaces?: Enlace[];
+        pendiente?: AccionPendiente;
         error?: string;
       };
       setTurnos((prev) => [
@@ -61,6 +73,42 @@ export function AsistenteFlotante() {
         {
           role: "assistant",
           content: data.respuesta ?? data.error ?? "No pude responder.",
+          enlaces: dedupeEnlaces(data.enlaces ?? []),
+          pendiente: data.pendiente,
+        },
+      ]);
+    } catch {
+      setTurnos((prev) => [
+        ...prev,
+        { role: "assistant", content: "No hay conexión ahora. Intenta de nuevo en un momento." },
+      ]);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  /** Confirmar o cancelar una acción sensible propuesta (tarjeta). */
+  const resolver = async (indice: number, pendiente: AccionPendiente, confirmar: boolean) => {
+    if (cargando) return;
+    // Marca la propuesta como resuelta (oculta la tarjeta) pase lo que pase.
+    setTurnos((prev) => prev.map((t, i) => (i === indice ? { ...t, resuelta: true } : t)));
+    if (!confirmar) {
+      setTurnos((prev) => [...prev, { role: "assistant", content: "Listo, no lo hice." }]);
+      return;
+    }
+    setCargando(true);
+    try {
+      const res = await fetch("/api/asistente", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmar: pendiente }),
+      });
+      const data = (await res.json()) as { respuesta?: string; enlaces?: Enlace[]; error?: string };
+      setTurnos((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.respuesta ?? data.error ?? "No se pudo ejecutar.",
           enlaces: dedupeEnlaces(data.enlaces ?? []),
         },
       ]);
@@ -123,6 +171,31 @@ export function AsistenteFlotante() {
                           {e.etiqueta} →
                         </Link>
                       ))}
+                    </div>
+                  ) : null}
+                  {t.pendiente && !t.resuelta ? (
+                    <div className="mt-2 rounded-md border border-border bg-card p-2.5">
+                      <p className="text-xs text-foreground">{t.pendiente.resumen}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={cargando}
+                          onClick={() => resolver(i, t.pendiente!, true)}
+                          className="inline-flex items-center gap-1 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-50"
+                        >
+                          <Check className="size-3.5" />
+                          Confirmar
+                        </button>
+                        <button
+                          type="button"
+                          disabled={cargando}
+                          onClick={() => resolver(i, t.pendiente!, false)}
+                          className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+                        >
+                          <X className="size-3.5" />
+                          Cancelar
+                        </button>
+                      </div>
                     </div>
                   ) : null}
                 </div>

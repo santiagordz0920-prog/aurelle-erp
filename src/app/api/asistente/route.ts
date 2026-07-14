@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { correrAsistente, type TurnoChat } from "@/lib/ia/asistente";
+import {
+  confirmarAccion,
+  HERRAMIENTAS_SENSIBLES,
+  type AccionPendiente,
+} from "@/lib/ia/asistente-herramientas";
 
 /*
   Endpoint del asistente interno del ERP (§3.19). El widget flotante manda el
@@ -12,11 +17,37 @@ import { correrAsistente, type TurnoChat } from "@/lib/ia/asistente";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  let cuerpo: { mensajes?: TurnoChat[] };
+  let cuerpo: { mensajes?: TurnoChat[]; confirmar?: AccionPendiente };
   try {
     cuerpo = await req.json();
   } catch {
     return NextResponse.json({ error: "Cuerpo no válido." }, { status: 400 });
+  }
+
+  // Confirmación de una acción sensible: la ejecuta de forma determinista (el
+  // usuario ya apretó "Confirmar"; no vuelve a pasar por el modelo). Corre con
+  // la sesión del usuario, así que RLS re-valida los permisos (p.ej. pagos =
+  // solo-admin) aunque el payload venga del cliente.
+  if (cuerpo.confirmar) {
+    const p = cuerpo.confirmar;
+    if (
+      !p ||
+      typeof p.herramienta !== "string" ||
+      !HERRAMIENTAS_SENSIBLES.has(p.herramienta) ||
+      typeof p.args !== "object" ||
+      p.args == null
+    ) {
+      return NextResponse.json({ error: "Acción a confirmar no válida." }, { status: 400 });
+    }
+    try {
+      const r = await confirmarAccion(p);
+      return NextResponse.json({ respuesta: r.texto, enlaces: r.enlace ? [r.enlace] : [] });
+    } catch {
+      return NextResponse.json(
+        { error: "No pude ejecutar la acción. Intenta de nuevo." },
+        { status: 500 },
+      );
+    }
   }
 
   const mensajes = Array.isArray(cuerpo.mensajes) ? cuerpo.mensajes : [];
@@ -34,8 +65,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { respuesta, enlaces } = await correrAsistente(limpios);
-    return NextResponse.json({ respuesta, enlaces });
+    const { respuesta, enlaces, pendiente } = await correrAsistente(limpios);
+    return NextResponse.json({ respuesta, enlaces, pendiente });
   } catch {
     return NextResponse.json(
       { error: "No pude procesar eso ahora. Intenta de nuevo en un momento." },

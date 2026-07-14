@@ -3,16 +3,21 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/config";
 import { getUsuarioActual } from "@/lib/session";
-import { clienteSchema } from "@/lib/validaciones";
-import { listarClientes, contarPorEstado } from "@/lib/data/clientes";
-import { citasDeHoy } from "@/lib/data/citas";
+import { clienteSchema, contactoCampos } from "@/lib/validaciones";
+import { listarClientes, contarPorEstado, getCliente } from "@/lib/data/clientes";
+import { citasDeHoy, listarCitas } from "@/lib/data/citas";
 import { metricasMes, resumenFinanciero } from "@/lib/data/finanzas";
 import { listarPedidos } from "@/lib/data/pedidos";
 import { crearTarea } from "@/app/(app)/hoy/tareas/actions";
-import { agregarNota } from "@/app/(app)/clientes/actions";
-import { agendarCita } from "@/app/(app)/clientes/citas/actions";
-import { ESTADO_PIPELINE } from "@/lib/clientes";
-import type { MetodoContacto } from "@/lib/clientes";
+import { agregarNota, cambiarEstado as cambiarEstadoCliente } from "@/app/(app)/clientes/actions";
+import {
+  agendarCita,
+  reprogramarCita,
+  cambiarEstadoCita,
+} from "@/app/(app)/clientes/citas/actions";
+import { registrarPago } from "@/app/(app)/ventas/pedidos/actions";
+import { ESTADO_PIPELINE, PIPELINE_ORDEN } from "@/lib/clientes";
+import type { MetodoContacto, EstadoPipeline } from "@/lib/clientes";
 import { ESTADO_PEDIDO } from "@/lib/pedidos";
 import { TIPO_CITA, SALA_CITA, ESTADO_CITA } from "@/lib/citas";
 import { pesos } from "@/lib/inventario";
@@ -172,7 +177,111 @@ export const HERRAMIENTAS: Anthropic.Tool[] = [
       required: ["cliente_id", "tipo", "sala", "cuando"],
     },
   },
+  {
+    name: "citas_de_cliente",
+    description:
+      "Lista las citas de un cliente (con su id, fecha, tipo, sala y estado). Úsalo para encontrar el id de una cita antes de reprogramarla o cancelarla.",
+    input_schema: {
+      type: "object",
+      properties: { cliente_id: { type: "string" } },
+      required: ["cliente_id"],
+    },
+  },
+  // ── Herramientas SENSIBLES (piden confirmación antes de ejecutar, §3.19 v2) ──
+  {
+    name: "registrar_pago",
+    description:
+      "Registra un pago a un pedido (dinero: SIEMPRE se confirma antes de ejecutar). Necesitas el id del pedido (búscalo con buscar_pedido), el monto, el método y el tipo de pago. Al registrarse, Finanzas asienta el ingreso automáticamente.",
+    input_schema: {
+      type: "object",
+      properties: {
+        pedido_id: { type: "string" },
+        monto: { type: "number" },
+        metodo: { type: "string", enum: ["efectivo", "transferencia", "tarjeta", "otro"] },
+        tipo: {
+          type: "string",
+          enum: ["anticipo_1", "anticipo_2", "parcialidad", "liquidacion"],
+          description:
+            "anticipo_1 = primer anticipo; anticipo_2 = anticipo del 30% que desbloquea producción; parcialidad = abono; liquidacion = saldo final.",
+        },
+        notas: { type: "string" },
+      },
+      required: ["pedido_id", "monto", "metodo", "tipo"],
+    },
+  },
+  {
+    name: "cambiar_contacto",
+    description:
+      "Cambia uno o más datos de contacto de un cliente (teléfono, correo o Instagram). Se confirma antes de ejecutar. Solo toca los campos que indiques; los demás quedan igual. Necesitas el id del cliente.",
+    input_schema: {
+      type: "object",
+      properties: {
+        cliente_id: { type: "string" },
+        telefono: { type: "string" },
+        correo: { type: "string" },
+        instagram: { type: "string" },
+      },
+      required: ["cliente_id"],
+    },
+  },
+  {
+    name: "cambiar_etapa_pipeline",
+    description:
+      "Mueve a un cliente a otra etapa del pipeline. Se confirma antes de ejecutar. Necesitas el id del cliente y la etapa destino. Si es 'perdido', puedes dar un motivo.",
+    input_schema: {
+      type: "object",
+      properties: {
+        cliente_id: { type: "string" },
+        estado: {
+          type: "string",
+          enum: [
+            "nuevo",
+            "conversando",
+            "cita_agendada",
+            "visito",
+            "cotizado",
+            "cerrado",
+            "perdido",
+          ],
+        },
+        motivo: { type: "string", description: "Motivo de pérdida (solo si estado='perdido')." },
+      },
+      required: ["cliente_id", "estado"],
+    },
+  },
+  {
+    name: "reprogramar_cita",
+    description:
+      "Cambia la fecha/hora de una cita existente (misma sala y duración). Se confirma antes de ejecutar. Valida choques de horario. Necesitas el id de la cita (búscalo con citas_de_cliente) y la nueva fecha/hora local de Monterrey ('YYYY-MM-DDTHH:mm').",
+    input_schema: {
+      type: "object",
+      properties: {
+        cita_id: { type: "string" },
+        cuando: { type: "string", description: "Nueva fecha y hora local: 'YYYY-MM-DDTHH:mm'." },
+      },
+      required: ["cita_id", "cuando"],
+    },
+  },
+  {
+    name: "cancelar_cita",
+    description:
+      "Cancela una cita. Se confirma antes de ejecutar. Necesitas el id de la cita (búscalo con citas_de_cliente).",
+    input_schema: {
+      type: "object",
+      properties: { cita_id: { type: "string" } },
+      required: ["cita_id"],
+    },
+  },
 ];
+
+/** Herramientas que MUTAN algo delicado: no se ejecutan sin confirmación. */
+export const HERRAMIENTAS_SENSIBLES = new Set<string>([
+  "registrar_pago",
+  "cambiar_contacto",
+  "cambiar_etapa_pipeline",
+  "reprogramar_cita",
+  "cancelar_cita",
+]);
 
 /* ── Ejecutores: cada uno llama código de dominio existente ──────────────── */
 
@@ -312,9 +421,21 @@ export async function ejecutarHerramienta(
         const est = ESTADO_CITA[c.estado]?.etiqueta ?? c.estado;
         return `- ${dia(c.inicio)} · ${c.cliente_nombre ?? "sin cliente"} · ${
           TIPO_CITA[c.tipo]?.etiqueta ?? c.tipo
-        } · ${SALA_CITA[c.sala] ?? c.sala} · ${est}`;
+        } · ${SALA_CITA[c.sala] ?? c.sala} · ${est} · id=${c.id}`;
       });
       return { texto: `Citas de hoy (${citas.length}):\n${lineas.join("\n")}` };
+    }
+
+    case "citas_de_cliente": {
+      const citas = await listarCitas({ cliente_id: String(input.cliente_id ?? "") });
+      if (citas.length === 0) return { texto: "Ese cliente no tiene citas." };
+      const lineas = citas.map((c) => {
+        const est = ESTADO_CITA[c.estado]?.etiqueta ?? c.estado;
+        return `- ${dia(c.inicio)} · ${TIPO_CITA[c.tipo]?.etiqueta ?? c.tipo} · ${
+          SALA_CITA[c.sala] ?? c.sala
+        } · ${est} · id=${c.id}`;
+      });
+      return { texto: `Citas del cliente (${citas.length}):\n${lineas.join("\n")}` };
     }
 
     case "ventas_del_mes": {
@@ -406,5 +527,237 @@ export async function ejecutarHerramienta(
 
     default:
       return { texto: `Herramienta desconocida: ${nombre}.` };
+  }
+}
+
+/* ── Acciones sensibles: preparar (sin mutar) → confirmar (ejecutar) ─────────
+   Las herramientas que mueven dinero o editan/cancelan registros NO se ejecutan
+   en el loop del modelo. Primero se PREPARAN (se validan y se arma un resumen
+   legible) y se le muestra al usuario un botón de confirmar; solo con el "sí"
+   se EJECUTA, de forma determinista (sin volver a pasar por el modelo). Así el
+   humano es el gatillo real, no la disciplina del prompt (§3.19 v2). */
+
+export type AccionPendiente = {
+  herramienta: string;
+  args: Record<string, unknown>;
+  resumen: string; // lo que verá el usuario en la tarjeta de confirmación
+};
+
+const TIPO_PAGO: Record<string, string> = {
+  anticipo_1: "Anticipo 1",
+  anticipo_2: "Anticipo 2 (30%)",
+  parcialidad: "Parcialidad",
+  liquidacion: "Liquidación",
+};
+
+/** Cita por id (para resúmenes y validación de reprogramar/cancelar). */
+async function getCitaBasica(
+  id: string,
+): Promise<{ inicio: string; cliente_nombre: string | null; estado: string } | null> {
+  const c = (await listarCitas({})).find((x) => x.id === id);
+  return c ? { inicio: c.inicio, cliente_nombre: c.cliente_nombre ?? null, estado: c.estado } : null;
+}
+
+/** Formatea 'YYYY-MM-DDTHH:mm' (local Monterrey) para el resumen. */
+const cuandoLegible = (cuando: string) => dia(`${cuando}:00-06:00`);
+
+export async function prepararAccionSensible(
+  nombre: string,
+  input: Input,
+): Promise<{ pendiente?: AccionPendiente; error?: string }> {
+  switch (nombre) {
+    case "registrar_pago": {
+      const monto = Number(input.monto);
+      if (!(monto > 0)) return { error: "El monto debe ser mayor a cero." };
+      if (!["efectivo", "transferencia", "tarjeta", "otro"].includes(input.metodo))
+        return { error: "Método de pago no válido." };
+      if (!["anticipo_1", "anticipo_2", "parcialidad", "liquidacion"].includes(input.tipo))
+        return { error: "Tipo de pago no válido." };
+      const p = (await listarPedidos()).find((x) => x.id === input.pedido_id);
+      if (!p) return { error: "No encontré ese pedido." };
+      const saldo = p.saldo ?? p.total - (p.pagado ?? 0);
+      return {
+        pendiente: {
+          herramienta: "registrar_pago",
+          args: {
+            pedido_id: p.id,
+            monto,
+            metodo: input.metodo,
+            tipo: input.tipo,
+            notas: input.notas ?? null,
+          },
+          resumen: `Registrar ${TIPO_PAGO[input.tipo]} de ${pesos(monto)} (${input.metodo}) al pedido de ${
+            p.cliente_nombre ?? "cliente"
+          }. Saldo actual ${pesos(saldo)} → quedaría ${pesos(saldo - monto)}.`,
+        },
+      };
+    }
+
+    case "cambiar_contacto": {
+      const cid = String(input.cliente_id ?? "");
+      const cambios: Record<string, string> = {};
+      const etiquetas: string[] = [];
+      if (input.telefono != null && input.telefono !== "") {
+        const t = contactoCampos.telefono.safeParse(String(input.telefono));
+        if (!t.success) return { error: t.error.issues[0]?.message ?? "Teléfono no válido." };
+        cambios.telefono = t.data as string;
+        etiquetas.push(`teléfono → ${cambios.telefono}`);
+      }
+      if (input.correo != null && input.correo !== "") {
+        const c = contactoCampos.correo.safeParse(String(input.correo));
+        if (!c.success) return { error: c.error.issues[0]?.message ?? "Correo no válido." };
+        cambios.correo = c.data as string;
+        etiquetas.push(`correo → ${cambios.correo}`);
+      }
+      if (input.instagram != null && input.instagram !== "") {
+        cambios.instagram = String(input.instagram).trim();
+        etiquetas.push(`Instagram → ${cambios.instagram}`);
+      }
+      if (Object.keys(cambios).length === 0)
+        return { error: "Dime qué dato de contacto cambiar (teléfono, correo o Instagram)." };
+      const cli = await getCliente(cid);
+      if (!cli) return { error: "No encontré ese cliente." };
+      return {
+        pendiente: {
+          herramienta: "cambiar_contacto",
+          args: { cliente_id: cid, cambios },
+          resumen: `Actualizar contacto de ${cli.nombre}: ${etiquetas.join(", ")}.`,
+        },
+      };
+    }
+
+    case "cambiar_etapa_pipeline": {
+      const cid = String(input.cliente_id ?? "");
+      const estado = String(input.estado ?? "") as EstadoPipeline;
+      if (!PIPELINE_ORDEN.includes(estado) && estado !== "perdido")
+        return { error: "Etapa de pipeline no válida." };
+      const cli = await getCliente(cid);
+      if (!cli) return { error: "No encontré ese cliente." };
+      const actual = ESTADO_PIPELINE[cli.estado_pipeline]?.etiqueta ?? cli.estado_pipeline;
+      const destino = ESTADO_PIPELINE[estado]?.etiqueta ?? estado;
+      return {
+        pendiente: {
+          herramienta: "cambiar_etapa_pipeline",
+          args: { cliente_id: cid, estado, motivo: input.motivo ?? null },
+          resumen: `Mover a ${cli.nombre} de "${actual}" a "${destino}"${
+            estado === "perdido" && input.motivo ? ` (motivo: ${input.motivo})` : ""
+          }.`,
+        },
+      };
+    }
+
+    case "reprogramar_cita": {
+      const cuando = String(input.cuando ?? "");
+      if (cuando.length < 10) return { error: "Dame la nueva fecha y hora (YYYY-MM-DDTHH:mm)." };
+      const cita = await getCitaBasica(String(input.cita_id ?? ""));
+      if (!cita) return { error: "No encontré esa cita." };
+      if (cita.estado === "cancelada")
+        return { error: "Esa cita está cancelada; mejor agenda una nueva." };
+      return {
+        pendiente: {
+          herramienta: "reprogramar_cita",
+          args: { cita_id: input.cita_id, cuando },
+          resumen: `Mover la cita de ${cita.cliente_nombre ?? "cliente"} del ${dia(
+            cita.inicio,
+          )} al ${cuandoLegible(cuando)}.`,
+        },
+      };
+    }
+
+    case "cancelar_cita": {
+      const cita = await getCitaBasica(String(input.cita_id ?? ""));
+      if (!cita) return { error: "No encontré esa cita." };
+      if (cita.estado === "cancelada") return { error: "Esa cita ya está cancelada." };
+      return {
+        pendiente: {
+          herramienta: "cancelar_cita",
+          args: { cita_id: input.cita_id },
+          resumen: `Cancelar la cita de ${cita.cliente_nombre ?? "cliente"} del ${dia(cita.inicio)}.`,
+        },
+      };
+    }
+
+    default:
+      return { error: `Acción no reconocida: ${nombre}.` };
+  }
+}
+
+/** Ejecuta una acción sensible YA CONFIRMADA por el usuario (re-valida al vuelo). */
+export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerramienta> {
+  const a = p.args;
+  switch (p.herramienta) {
+    case "registrar_pago": {
+      const r = await registrarPago(
+        OK,
+        form({
+          pedido_id: String(a.pedido_id),
+          monto: String(a.monto),
+          metodo: String(a.metodo),
+          tipo: String(a.tipo),
+          notas: a.notas ? String(a.notas) : undefined,
+        }),
+      );
+      return r.ok
+        ? {
+            texto: `Pago registrado. Finanzas asentó el ingreso.`,
+            enlace: { href: `/ventas/pedidos/${a.pedido_id}`, etiqueta: "Ver pedido" },
+          }
+        : { texto: `No se pudo registrar el pago: ${r.error ?? "error."}` };
+    }
+
+    case "cambiar_contacto": {
+      const cid = String(a.cliente_id);
+      const cambios = a.cambios as Record<string, string>;
+      if (!supabaseConfigurado()) {
+        const c = CLIENTES_MUESTRA.find((x) => x.id === cid);
+        if (c) Object.assign(c, cambios);
+      } else {
+        const supabase = await createClient();
+        const { error } = await supabase.from("cliente").update(cambios).eq("id", cid);
+        if (error) {
+          return {
+            texto:
+              error.code === "23505"
+                ? "Ya existe otro cliente con ese teléfono."
+                : "No se pudo actualizar el contacto.",
+          };
+        }
+      }
+      return {
+        texto: "Contacto actualizado.",
+        enlace: { href: `/clientes/${cid}`, etiqueta: "Abrir ficha" },
+      };
+    }
+
+    case "cambiar_etapa_pipeline": {
+      const r = await cambiarEstadoCliente(
+        String(a.cliente_id),
+        a.estado as EstadoPipeline,
+        a.motivo ? String(a.motivo) : undefined,
+      );
+      return r.ok
+        ? {
+            texto: "Etapa actualizada.",
+            enlace: { href: `/clientes/${a.cliente_id}`, etiqueta: "Abrir ficha" },
+          }
+        : { texto: `No se pudo cambiar la etapa: ${r.error ?? "error."}` };
+    }
+
+    case "reprogramar_cita": {
+      const r = await reprogramarCita(String(a.cita_id), String(a.cuando));
+      return r.ok
+        ? { texto: "Cita reprogramada.", enlace: { href: "/clientes/citas", etiqueta: "Ver agenda" } }
+        : { texto: `No se pudo reprogramar: ${r.error ?? "error."}` };
+    }
+
+    case "cancelar_cita": {
+      const r = await cambiarEstadoCita(String(a.cita_id), "cancelada");
+      return r.ok
+        ? { texto: "Cita cancelada.", enlace: { href: "/clientes/citas", etiqueta: "Ver agenda" } }
+        : { texto: `No se pudo cancelar: ${r.error ?? "error."}` };
+    }
+
+    default:
+      return { texto: "Acción no reconocida." };
   }
 }
