@@ -34,6 +34,15 @@ export type Cliente = {
   etiquetas: string[];
   estado_pipeline: EstadoPipeline;
   motivo_perdida: string | null;
+  // Follow-ups / cadencias (0040): estado del motor de seguimiento. null = fuera
+  // de cadencia. Opcionales para no romper filas/muestras previas a 0040.
+  estado_cadencia?: import("./cadencias").EstadoCadencia | null;
+  cadencia_toque_n?: number;
+  proximo_toque_at?: string | null;
+  cadencia_pausada?: boolean;
+  escalado?: boolean;
+  fecha_propuesta?: string | null;
+  es_simulacion?: boolean;
   sucursal_id: string;
   created_at: string;
   updated_at: string;
