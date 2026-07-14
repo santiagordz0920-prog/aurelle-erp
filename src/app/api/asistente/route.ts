@@ -17,7 +17,7 @@ import {
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  let cuerpo: { mensajes?: TurnoChat[]; confirmar?: AccionPendiente };
+  let cuerpo: { mensajes?: TurnoChat[]; confirmar?: AccionPendiente; path?: string };
   try {
     cuerpo = await req.json();
   } catch {
@@ -64,8 +64,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Falta el mensaje del usuario." }, { status: 400 });
   }
 
+  const path = typeof cuerpo.path === "string" ? cuerpo.path : undefined;
   try {
-    const { respuesta, enlaces, pendiente } = await correrAsistente(limpios);
+    const { respuesta, enlaces, pendiente } = await correrAsistente(limpios, path);
     return NextResponse.json({ respuesta, enlaces, pendiente });
   } catch {
     return NextResponse.json(

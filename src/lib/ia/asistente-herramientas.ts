@@ -8,6 +8,8 @@ import { listarClientes, contarPorEstado, getCliente } from "@/lib/data/clientes
 import { citasDeHoy, listarCitas } from "@/lib/data/citas";
 import { metricasMes, resumenFinanciero } from "@/lib/data/finanzas";
 import { listarPedidos } from "@/lib/data/pedidos";
+import { listarCotizaciones, getCotizacion } from "@/lib/data/cotizaciones";
+import { ESTADO_COTIZACION } from "@/lib/cotizaciones";
 import { crearTarea } from "@/app/(app)/hoy/tareas/actions";
 import { agregarNota, cambiarEstado as cambiarEstadoCliente } from "@/app/(app)/clientes/actions";
 import {
@@ -187,6 +189,15 @@ export const HERRAMIENTAS: Anthropic.Tool[] = [
       required: ["cliente_id"],
     },
   },
+  {
+    name: "buscar_cotizacion",
+    description:
+      "Lista cotizaciones con su id, cliente, total, estado y si ya se volvió pedido. Sin filtro trae las más recientes; con 'cliente' filtra por nombre. Úsalo para encontrar la cotización a convertir en pedido.",
+    input_schema: {
+      type: "object",
+      properties: { cliente: { type: "string", description: "Nombre del cliente (opcional)." } },
+    },
+  },
   // ── Herramientas SENSIBLES (piden confirmación antes de ejecutar, §3.19 v2) ──
   {
     name: "registrar_pago",
@@ -272,6 +283,16 @@ export const HERRAMIENTAS: Anthropic.Tool[] = [
       required: ["cita_id"],
     },
   },
+  {
+    name: "convertir_cotizacion_en_pedido",
+    description:
+      "Convierte una cotización aceptada en un pedido. Se confirma antes de ejecutar. Necesitas el id de la cotización (búscalo con buscar_cotizacion). El pedido nace 'por confirmar'; el contrato se genera automáticamente cuando el pedido se confirma con el anticipo.",
+    input_schema: {
+      type: "object",
+      properties: { cotizacion_id: { type: "string" } },
+      required: ["cotizacion_id"],
+    },
+  },
 ];
 
 /** Herramientas que MUTAN algo delicado: no se ejecutan sin confirmación. */
@@ -281,6 +302,7 @@ export const HERRAMIENTAS_SENSIBLES = new Set<string>([
   "cambiar_etapa_pipeline",
   "reprogramar_cita",
   "cancelar_cita",
+  "convertir_cotizacion_en_pedido",
 ]);
 
 /* ── Ejecutores: cada uno llama código de dominio existente ──────────────── */
@@ -376,6 +398,10 @@ async function crearClienteAsistente(input: Input): Promise<ResultadoHerramienta
     const dup = error.code === "23505";
     return { texto: dup ? "Ya existe un cliente con ese teléfono." : "No se pudo crear el cliente." };
   }
+  await registrarAccionAsistente("crear_cliente", `Creó al cliente ${d.nombre}.`, {
+    tipo: "cliente",
+    id: data.id,
+  });
   return {
     texto: `Cliente creado: ${d.nombre}.`,
     enlace: { href: `/clientes/${data.id}`, etiqueta: `Abrir ficha de ${d.nombre}` },
@@ -387,6 +413,32 @@ function form(campos: Record<string, string | undefined>): FormData {
   const fd = new FormData();
   for (const [k, v] of Object.entries(campos)) if (v != null && v !== "") fd.set(k, v);
   return fd;
+}
+
+/*
+  Bitácora "vía asistente" (§3.19 regla dura): toda acción que EJECUTA el
+  asistente queda registrada con su resumen legible, con la sesión del usuario
+  (usuario_id = auth.uid() por default). Es secundaria: si la tabla aún no
+  existe (migración 0039 sin aplicar) o falla, la acción ya ocurrió y no la
+  rompemos — se traga el error, igual que la ficha del bot.
+*/
+async function registrarAccionAsistente(
+  accion: string,
+  resumen: string,
+  entidad?: { tipo?: string; id?: string },
+): Promise<void> {
+  if (!supabaseConfigurado()) return; // en local no hay a dónde escribir
+  try {
+    const supabase = await createClient();
+    await supabase.from("asistente_accion").insert({
+      accion,
+      resumen,
+      entidad_tipo: entidad?.tipo ?? null,
+      entidad_id: entidad?.id ?? null,
+    });
+  } catch {
+    // la bitácora es secundaria; no rompe la acción
+  }
 }
 
 export async function ejecutarHerramienta(
@@ -478,6 +530,22 @@ export async function ejecutarHerramienta(
       return { texto: `Pedidos:\n${lineas.join("\n")}` };
     }
 
+    case "buscar_cotizacion": {
+      const cliente = input.cliente ? String(input.cliente).toLowerCase() : null;
+      let cots = await listarCotizaciones();
+      if (cliente)
+        cots = cots.filter((c) => (c.cliente_nombre ?? "").toLowerCase().includes(cliente));
+      cots = cots.slice(0, 10);
+      if (cots.length === 0)
+        return { texto: cliente ? `No encontré cotizaciones de "${input.cliente}".` : "No hay cotizaciones." };
+      const lineas = cots.map((c) => {
+        const est = ESTADO_COTIZACION[c.estado]?.etiqueta ?? c.estado;
+        const ped = c.pedido_id ? " · YA es pedido" : "";
+        return `- ${c.cliente_nombre ?? "sin cliente"} · ${pesos(c.total)} · ${est}${ped} · id=${c.id}`;
+      });
+      return { texto: `Cotizaciones:\n${lineas.join("\n")}` };
+    }
+
     case "crear_cliente":
       return crearClienteAsistente(input);
 
@@ -491,6 +559,11 @@ export async function ejecutarHerramienta(
           entidad_tipo: input.cliente_id ? "cliente" : undefined,
           entidad_id: input.cliente_id,
         }))) ?? OK;
+      if (r.ok)
+        await registrarAccionAsistente("crear_tarea", `Creó la tarea "${input.titulo}".`, {
+          tipo: input.cliente_id ? "cliente" : undefined,
+          id: input.cliente_id,
+        });
       return r.ok
         ? { texto: `Tarea creada: "${input.titulo}".`, enlace: { href: "/hoy/tareas", etiqueta: "Ver tareas" } }
         : { texto: `No se pudo crear la tarea: ${r.error ?? "error."}` };
@@ -498,6 +571,11 @@ export async function ejecutarHerramienta(
 
     case "agregar_nota": {
       const r = await agregarNota(OK, form({ cliente_id: input.cliente_id, texto: input.texto }));
+      if (r.ok)
+        await registrarAccionAsistente("agregar_nota", "Agregó una nota a la ficha del cliente.", {
+          tipo: "cliente",
+          id: String(input.cliente_id),
+        });
       return r.ok
         ? {
             texto: "Nota agregada a la ficha del cliente.",
@@ -517,9 +595,15 @@ export async function ejecutarHerramienta(
           notas: input.notas,
         }),
       );
+      const etiqueta = TIPO_CITA[input.tipo as keyof typeof TIPO_CITA]?.etiqueta ?? input.tipo;
+      if (r.ok)
+        await registrarAccionAsistente("agendar_cita", `Agendó una cita (${etiqueta}).`, {
+          tipo: "cliente",
+          id: String(input.cliente_id),
+        });
       return r.ok
         ? {
-            texto: `Cita agendada (${TIPO_CITA[input.tipo as keyof typeof TIPO_CITA]?.etiqueta ?? input.tipo}).`,
+            texto: `Cita agendada (${etiqueta}).`,
             enlace: { href: "/clientes/citas", etiqueta: "Ver agenda" },
           }
         : { texto: `No se pudo agendar: ${r.error ?? "error."}` };
@@ -677,6 +761,27 @@ export async function prepararAccionSensible(
       };
     }
 
+    case "convertir_cotizacion_en_pedido": {
+      const cot = await getCotizacion(String(input.cotizacion_id ?? ""));
+      if (!cot) return { error: "No encontré esa cotización." };
+      if (cot.pedido_id) return { error: "Esa cotización ya se convirtió en pedido." };
+      if (!cot.cliente_id) return { error: "La cotización necesita un cliente para volverse pedido." };
+      return {
+        pendiente: {
+          herramienta: "convertir_cotizacion_en_pedido",
+          args: {
+            cotizacion_id: cot.id,
+            cliente_id: cot.cliente_id,
+            cliente_nombre: cot.cliente_nombre ?? null,
+            total: cot.total,
+          },
+          resumen: `Convertir la cotización de ${cot.cliente_nombre ?? "cliente"} (${pesos(
+            cot.total,
+          )}) en pedido. El contrato se genera al confirmar el pedido con el anticipo.`,
+        },
+      };
+    }
+
     default:
       return { error: `Acción no reconocida: ${nombre}.` };
   }
@@ -697,6 +802,11 @@ export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerr
           notas: a.notas ? String(a.notas) : undefined,
         }),
       );
+      if (r.ok)
+        await registrarAccionAsistente("registrar_pago", p.resumen, {
+          tipo: "pedido",
+          id: String(a.pedido_id),
+        });
       return r.ok
         ? {
             texto: `Pago registrado. Finanzas asentó el ingreso.`,
@@ -723,6 +833,7 @@ export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerr
           };
         }
       }
+      await registrarAccionAsistente("cambiar_contacto", p.resumen, { tipo: "cliente", id: cid });
       return {
         texto: "Contacto actualizado.",
         enlace: { href: `/clientes/${cid}`, etiqueta: "Abrir ficha" },
@@ -735,6 +846,11 @@ export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerr
         a.estado as EstadoPipeline,
         a.motivo ? String(a.motivo) : undefined,
       );
+      if (r.ok)
+        await registrarAccionAsistente("cambiar_etapa_pipeline", p.resumen, {
+          tipo: "cliente",
+          id: String(a.cliente_id),
+        });
       return r.ok
         ? {
             texto: "Etapa actualizada.",
@@ -745,6 +861,11 @@ export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerr
 
     case "reprogramar_cita": {
       const r = await reprogramarCita(String(a.cita_id), String(a.cuando));
+      if (r.ok)
+        await registrarAccionAsistente("reprogramar_cita", p.resumen, {
+          tipo: "cita",
+          id: String(a.cita_id),
+        });
       return r.ok
         ? { texto: "Cita reprogramada.", enlace: { href: "/clientes/citas", etiqueta: "Ver agenda" } }
         : { texto: `No se pudo reprogramar: ${r.error ?? "error."}` };
@@ -752,9 +873,63 @@ export async function confirmarAccion(p: AccionPendiente): Promise<ResultadoHerr
 
     case "cancelar_cita": {
       const r = await cambiarEstadoCita(String(a.cita_id), "cancelada");
+      if (r.ok)
+        await registrarAccionAsistente("cancelar_cita", p.resumen, {
+          tipo: "cita",
+          id: String(a.cita_id),
+        });
       return r.ok
         ? { texto: "Cita cancelada.", enlace: { href: "/clientes/citas", etiqueta: "Ver agenda" } }
         : { texto: `No se pudo cancelar: ${r.error ?? "error."}` };
+    }
+
+    case "convertir_cotizacion_en_pedido": {
+      const cotId = String(a.cotizacion_id);
+      const clienteId = String(a.cliente_id);
+      const total = Number(a.total) || 0;
+      const usuario = await getUsuarioActual();
+      let pedidoId: string;
+
+      // Espeja `crearPedidoDesdeCotizacion` (que redirige y rompería el flujo):
+      // crea el pedido 'por_confirmar' y liga la cotización. El contrato lo
+      // genera la confirmación del pedido (crearContratoSiNoExiste), no aquí.
+      if (!supabaseConfigurado()) {
+        pedidoId = `f2000000-0000-0000-0000-0000000009${Date.now().toString().slice(-2)}`;
+      } else {
+        const supabase = await createClient();
+        const { data: cot } = await supabase
+          .from("cotizacion")
+          .select("pedido_id")
+          .eq("id", cotId)
+          .maybeSingle();
+        if (cot?.pedido_id)
+          return {
+            texto: "Esa cotización ya tenía un pedido.",
+            enlace: { href: `/ventas/pedidos/${cot.pedido_id}`, etiqueta: "Ver pedido" },
+          };
+        const { data: nuevo, error } = await supabase
+          .from("pedido")
+          .insert({
+            cliente_id: clienteId,
+            cotizacion_id: cotId,
+            linea_negocio: "bridal",
+            total,
+            sucursal_id: usuario.sucursalId,
+          })
+          .select("id")
+          .single();
+        if (error || !nuevo) return { texto: "No se pudo crear el pedido." };
+        pedidoId = nuevo.id;
+        await supabase.from("cotizacion").update({ pedido_id: pedidoId }).eq("id", cotId);
+      }
+      await registrarAccionAsistente("convertir_cotizacion_en_pedido", p.resumen, {
+        tipo: "pedido",
+        id: pedidoId,
+      });
+      return {
+        texto: "Pedido creado desde la cotización (queda 'por confirmar'; el contrato se genera al confirmarlo con el anticipo).",
+        enlace: { href: `/ventas/pedidos/${pedidoId}`, etiqueta: "Ver pedido" },
+      };
     }
 
     default:
