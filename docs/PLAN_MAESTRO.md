@@ -369,6 +369,32 @@ Formato por módulo: **qué hace → funciones granulares → recibe de → alim
 - Vinculable desde tareas ("lee el SOP de QC antes de tu primer checklist").
 - Editable por admins sin tocar código.
 
+### 3.19 Asistente interno del ERP (copiloto de Santiago y Fer)
+
+**Qué hace:** un chat de Claude DENTRO del ERP (botón flotante, como el widget del Inbox) para operar el sistema con texto en lenguaje natural. No es el bot de WhatsApp (ese habla con clientes); este habla con Santiago y Fer y ejecuta acciones en el módulo correcto: "regístrale un pago de $10,000 al pedido de Rodrigo", "agenda cita con Mariana el jueves 5 pm", "¿cuánto llevamos vendido este mes?", "crea una tarea para Fer de pulir el anillo de Sofía".
+
+**Cómo funciona (simple):** el asistente usa la misma API de Anthropic que el bot de WhatsApp, pero con **herramientas** (tool use): cada herramienta es una acción que el ERP ya sabe hacer (crear cliente, agendar cita, registrar pago, mover etapa de producción, consultar ventas…). Claude lee el mensaje, decide qué herramienta usar y con qué datos, y el ERP la ejecuta con el mismo código de siempre. No hay caminos nuevos a la base de datos: el asistente es otra "mano" que aprieta los mismos botones.
+
+**Funciones (v1):**
+- **Consultas:** ventas del mes, pipeline, citas de hoy, stock, saldo de un pedido — respuesta con datos reales del ERP y liga a la pantalla correspondiente.
+- **Altas simples:** cliente, tarea, nota en la ficha, cita (validando choque de horario).
+- **Confirmación previa SIEMPRE que hay dinero o algo difícil de deshacer:** el asistente muestra "Voy a registrar pago de $10,000 al pedido PED-023 de Rodrigo — ¿confirmas?" y solo ejecuta con el sí. Consultas y altas triviales no piden confirmación.
+
+**Funciones (v2):**
+- Acciones encadenadas ("convierte la cotización de Ana en pedido y genera el contrato").
+- Ediciones/correcciones ("cámbiale el teléfono a Mariana", "mueve la cita al viernes").
+- Pagos y movimientos de Finanzas (solo-admin, siempre con confirmación).
+- Contexto de pantalla: si estás viendo un pedido, "súbele una nota" entiende a cuál.
+
+**Reglas duras (no negociables):**
+- Corre con la **sesión del usuario logueado** (no con permisos de sistema): RLS manda. Si un rol no puede ver Finanzas, su asistente tampoco.
+- Toda acción del asistente queda en la **auditoría** marcada como "vía asistente".
+- El asistente **nunca ejecuta SQL libre**: solo el catálogo de herramientas definido, una por una.
+- Nada de borrar registros ni tocar producción/migraciones desde el chat.
+
+**Recibe de:** todos los módulos (lectura según rol).
+**Alimenta a:** el módulo que corresponda a cada orden; las reacciones de la matriz §4 se disparan igual que si se hubiera capturado a mano.
+
 ---
 
 ## 4. Matriz de interconexiones
@@ -398,6 +424,7 @@ Cada evento del sistema y quién reacciona. Esta matriz es contrato: si un módu
 | Cotización/conversación fría | Cron + IA | Tareas sugiere acción; Notificación agrupada diaria |
 | Contrato sin firmar 48 h | Cron | Notificación; Tarea; recordatorio opcional al cliente |
 | Lead capturado en expo | Expos | CRM crea cliente con fuente; bot inicia seguimiento el mismo día |
+| Orden ejecutada vía asistente interno | Asistente (§3.19) | El módulo destino reacciona idéntico a una captura manual (aplican los eventos de esta matriz); Auditoría registra "vía asistente" |
 
 ---
 
@@ -462,7 +489,7 @@ Kanban de producción completo (etapas, fotos, QC, costos, atascos); Biblioteca 
 *Desbloquea: Fer opera 100 % desde el ERP; cero Word manual.*
 
 **Fase 5 — Inteligencia** *(tamaño: mediano)*
-Capa IA sobre el CRM: respuestas automáticas de rutina + cola de aprobación para lo sensible; motor de lifecycle completo (post-visita, avances, cumpleaños, aniversarios); tareas sugeridas por IA.
+Capa IA sobre el CRM: respuestas automáticas de rutina + cola de aprobación para lo sensible; motor de lifecycle completo (post-visita, avances, cumpleaños, aniversarios); tareas sugeridas por IA; **Asistente interno del ERP (§3.19)** — chat con herramientas para operar y consultar el sistema en lenguaje natural (v1: consultas + altas simples con confirmación en lo sensible).
 *Requiere: Fase 3 operando y con historial de conversaciones para calibrar tono.*
 *Desbloquea: la experiencia de cliente deliberada y automatizada que es la visión central.*
 
