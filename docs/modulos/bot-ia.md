@@ -1,8 +1,24 @@
 # Módulo: Bot de WhatsApp con IA (Fase 3/5)
 
-> La capa de IA sobre el riel de WhatsApp (§4, §capa de IA). Al llegar un mensaje
-> del cliente, Claude clasifica y redacta una respuesta en tono Aurelle; lo seguro
-> se envía solo, lo sensible va a una cola de aprobación humana.
+> La capa de IA sobre el riel de WhatsApp (§4, §capa de IA). **MODELO ASISTIDO
+> (2026-07-18, decisión de Santiago + socio):** al llegar un mensaje del cliente,
+> Claude clasifica, redacta una respuesta sugerida en tono Aurelle, mantiene la
+> ficha del lead y propone una tarea accionable — pero **NUNCA responde solo**:
+> toda respuesta queda como BORRADOR que un socio aprueba/edita/manda desde el
+> Inbox. El equipo mantiene la voz con el cliente; la IA hace el trabajo pesado.
+
+## Modelo asistido + tareas inteligentes (2026-07-18)
+- **El bot NO auto-envía.** `RESPUESTAS_REQUIEREN_APROBACION = true` en
+  `bot-whatsapp.ts` fuerza que TODA respuesta se guarde como `borrador_ia` (antes,
+  lo "seguro" se enviaba solo). Poner la llave en false regresa al auto-envío.
+- **Tarea inteligente:** el structured output trae `tarea_sugerida` — si la
+  conversación implica una acción del equipo ("Mandar cotización a Ana", "Agendar
+  cita con…", "Mandar ubicación/render", "Llamar a confirmar"), `sugerirTareaLead`
+  la deja como **tarea sugerida** ligada al lead (aparece en /hoy con badge
+  Sugerida, aceptar/descartar en un toque). Idempotente por (cliente, título,
+  pendiente) para no duplicar en cada mensaje.
+- Sigue vigente todo lo demás (ficha viva, escalamiento a sensible, regla de oro
+  de cadencias). La diferencia es que ahora TODO pasa por el humano antes de salir.
 
 ## Estado
 Construido 2026-07-08 junto con el riel vivo; **operando en prod desde 2026-07-11**
@@ -100,11 +116,13 @@ bot (el humano responde desde el Inbox).
   `MODELO_IA` (default `claude-opus-4-8`, override con `ANTHROPIC_MODEL`).
 - `src/lib/ia/bot-whatsapp.ts`: `responderConBot(entrada)`. Lee el hilo reciente,
   llama a Claude con **structured output** (esquema `{intencion, sensible, motivo,
-  respuesta}`) y system prompt con la persona Aurelle + reglas duras, y decide:
-  - **sensible=true** (2ct+, queja, negociación, compromiso de precio/fecha, duda) →
-    guarda `respuesta` como borrador (`estado_entrega='borrador_ia'`), NO envía.
-  - **sensible=false** → envía por `enviarTextoWa` y guarda el saliente (`es_ia=true`,
-    `estado_entrega='enviado'` + `wa_id`).
+  respuesta, horario_sugerido, resumen_interes, nombre_cliente, tarea_sugerida}`) y
+  system prompt con la persona Aurelle + reglas duras. **Modelo asistido:** con
+  `RESPUESTAS_REQUIEREN_APROBACION=true`, TODA respuesta (sensible o no) se guarda
+  como borrador (`estado_entrega='borrador_ia'`) — el bot no envía. `sensible=true`
+  sigue marcándose (para priorizar y para reglas de horario), pero ya no cambia el
+  hecho de que todo pasa por aprobación. El bloque de auto-envío por `enviarTextoWa`
+  queda tras la llave por si se reactiva.
 - Disparo: el webhook llama `responderConBot` dentro de `after()` (tras responder 200).
 
 ## Reglas duras (en el system prompt)

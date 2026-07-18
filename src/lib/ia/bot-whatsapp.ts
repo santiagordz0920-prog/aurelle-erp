@@ -5,15 +5,16 @@ import { enviarTextoWa, indicarEscribiendoWa } from "@/lib/whatsapp";
 import { proximosHorarios, apartarHorario } from "@/lib/data/agenda-bot";
 
 /*
-  Bot de WhatsApp con IA (§4: "Mensaje entrante → IA clasifica; si sensible →
-  cola humana"). Al llegar un mensaje del cliente:
+  Copiloto de WhatsApp con IA — MODELO ASISTIDO (decisión Santiago + socio,
+  2026-07-18): el bot NUNCA responde solo al cliente; hace el trabajo pesado y
+  deja todo listo para que un socio lo apruebe/mande. Al llegar un mensaje:
    1. Lee el hilo reciente como contexto.
-   2. Pide a Claude que clasifique + redacte una respuesta en tono Aurelle.
-   3. Si es SENSIBLE (2ct+, queja, negociación, compromiso, o duda) → guarda la
-      respuesta como BORRADOR (estado 'borrador_ia') para que un humano la apruebe;
-      NO la envía.
-   4. Si es segura → la envía por la Cloud API y la guarda como mensaje saliente
-      de IA (es_ia).
+   2. Pide a Claude que clasifique + redacte una respuesta sugerida en tono Aurelle,
+      mantenga la ficha del lead y proponga una TAREA accionable si aplica.
+   3. La respuesta SIEMPRE se guarda como BORRADOR ('borrador_ia') para aprobar/
+      editar/enviar desde el Inbox (`RESPUESTAS_REQUIEREN_APROBACION`).
+   4. La `tarea_sugerida` se deja como tarea sugerida en /hoy (ligada al lead).
+  El auto-envío de lo "seguro" queda tras una llave por si algún día lo reactivan.
   Corre en background desde el webhook (Next `after`), así el webhook responde
   200 rápido a Meta.
 */
@@ -69,6 +70,9 @@ REGLAS DE NEGOCIO (duras):
 FICHA DEL CRM (además de responder, mantienes al día la ficha del lead):
 - resumen_interes: en cada mensaje devuelve un resumen corto y concreto de qué busca este cliente con TODO lo aprendido en el hilo hasta ahora (tipo de pieza, estilo, piedra, metal, para quién, para cuándo, presupuesto si él lo mencionó, y cualquier detalle útil para venderle). Escríbelo para que un vendedor lo entienda de un vistazo, p. ej. "Anillo de compromiso, oro blanco con diamante ovalado, propone en septiembre, novia de estilo minimalista". Actualízalo si este mensaje agrega información; si aún no se sabe nada, cadena vacía.
 - nombre_cliente: SOLO si el cliente ha dicho su propio nombre en la conversación (p. ej. "soy Ana García"), ponlo tal cual lo dijo (completo si lo dio completo). NUNCA pongas el nombre de la pareja ni un nombre supuesto; si no lo ha dicho, cadena vacía.
+- tarea_sugerida: si de la conversación se desprende una ACCIÓN concreta que el equipo debería hacer, proponla en una frase corta que empiece con verbo ("Mandar cotización a {nombre}", "Agendar cita con {nombre}", "Mandar render a {nombre}", "Mandar ubicación a {nombre}", "Llamar a {nombre} para confirmar cita"). Una sola, la más importante. Si aún no hay una acción clara (apenas saludó, pregunta general), cadena vacía. No inventes acciones que el cliente no haya insinuado.
+
+TU RESPUESTA ES UNA SUGERENCIA PARA EL EQUIPO: nunca se envía sola. Un socio la revisa, la edita si hace falta y la manda. Aun así, redáctala lista para enviarse tal cual (no como instrucción para el equipo, sino como el mensaje que recibiría el cliente).
 
 Marca sensible=true cuando el mensaje implique: piedra central grande o de alto valor (2 quilates o más), negociación de precio o descuento, una queja/inconformidad/reclamo, algo que requiera un compromiso (precio, fecha, garantía), datos legales, que pregunten con quién hablan o si es un bot, o cualquier caso donde una persona del equipo deba decidir. En esos casos igual redacta la respuesta propuesta (para que el humano la use o la edite), pero no se enviará automáticamente.`;
 
@@ -109,6 +113,11 @@ function esquemaBot(horariosIso: string[]) {
         description:
           "El nombre del cliente SOLO si él mismo lo dijo en la conversación, tal como lo dijo. Vacío si no lo ha dicho.",
       },
+      tarea_sugerida: {
+        type: "string",
+        description:
+          "Si la conversación implica una ACCIÓN concreta del equipo (mandar cotización, agendar cita, mandar render/fotos, mandar ubicación, llamar para confirmar), propónla en una frase corta y accionable que empiece con verbo, p. ej. 'Mandar cotización a {nombre}' o 'Agendar cita con {nombre}'. Vacío si no hay una acción clara todavía.",
+      },
     },
     required: [
       "intencion",
@@ -118,6 +127,7 @@ function esquemaBot(horariosIso: string[]) {
       "horario_sugerido",
       "resumen_interes",
       "nombre_cliente",
+      "tarea_sugerida",
     ],
   };
 }
@@ -130,6 +140,7 @@ type SalidaBot = {
   horario_sugerido?: string;
   resumen_interes?: string;
   nombre_cliente?: string;
+  tarea_sugerida?: string;
 };
 
 export type EntradaBot = {
@@ -227,6 +238,54 @@ async function actualizarFichaLead(
   }
 }
 
+/*
+  Tarea inteligente (modelo asistido, 2026-07-18): cuando la conversación implica
+  una acción del equipo (mandar cotización, agendar, mandar render/ubicación,
+  llamar), la IA la propone en `tarea_sugerida` y aquí se deja como TAREA SUGERIDA
+  ligada al lead (aparece en /hoy con badge "Sugerida", aceptar/descartar en un
+  toque). Idempotente: no duplica una tarea sugerida pendiente con el mismo título
+  para el mismo cliente (el bot corre en cada mensaje).
+*/
+async function sugerirTareaLead(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  entrada: EntradaBot,
+  salida: SalidaBot,
+): Promise<void> {
+  if (!entrada.clienteId) return;
+  const titulo = sinEmojis((salida.tarea_sugerida || "").trim()).slice(0, 120);
+  if (titulo.length < 4) return;
+  try {
+    const { data: existentes } = await supabase
+      .from("tarea")
+      .select("id")
+      .eq("entidad_tipo", "cliente")
+      .eq("entidad_id", entrada.clienteId)
+      .eq("estado", "pendiente")
+      .eq("origen", "sugerida")
+      .ilike("titulo", titulo)
+      .limit(1);
+    if (existentes && existentes.length > 0) return; // ya existe esa sugerencia
+
+    const { data: cli } = await supabase
+      .from("cliente")
+      .select("sucursal_id")
+      .eq("id", entrada.clienteId)
+      .maybeSingle();
+
+    await supabase.from("tarea").insert({
+      titulo,
+      detalle: "Sugerida por la IA a partir de la conversación de WhatsApp.",
+      entidad_tipo: "cliente",
+      entidad_id: entrada.clienteId,
+      origen: "sugerida",
+      sucursal_id: cli?.sucursal_id ?? "00000000-0000-0000-0000-000000000001",
+    });
+  } catch {
+    // La tarea sugerida es secundaria: si falla, no rompe el riel.
+  }
+}
+
 export async function responderConBot(entrada: EntradaBot): Promise<void> {
   if (!iaConfigurada()) return; // sin IA, el humano responde desde el Inbox
   const supabase = createAdminClient();
@@ -298,6 +357,10 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
   // termine en borrador, la ficha ya aprendió lo de este mensaje).
   await actualizarFichaLead(supabase, entrada, salida);
 
+  // Tarea inteligente: si la conversación implica una acción del equipo
+  // (mandar cotización, agendar, etc.), déjala como tarea sugerida en /hoy.
+  await sugerirTareaLead(supabase, entrada, salida);
+
   const respuesta = sinEmojis((salida.respuesta || "").trim());
   if (!respuesta) return;
 
@@ -312,14 +375,21 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
   }
 
   /*
-    Human-in-the-loop (Fer 2026-07-11): TODA propuesta de horario pasa por
-    aprobación de un socio antes de enviarse (cola de borradores; se aprueba
-    at-a-glance desde el widget flotante). Cuando el ranking de horarios esté
-    calibrado y agarren confianza, poner esto en false regresa al envío directo.
+    MODELO ASISTIDO (decisión de Santiago + socio, 2026-07-18): el bot NUNCA
+    responde solo al cliente. TODA respuesta se guarda como BORRADOR sugerido
+    para que un socio la apruebe/edite/mande desde el Inbox. La IA sigue haciendo
+    el trabajo pesado (entender, redactar el borrador, mantener la ficha, sugerir
+    la tarea), pero la voz con el cliente es del equipo. Para regresar al
+    auto-envío de lo seguro, poner RESPUESTAS_REQUIEREN_APROBACION en false.
   */
+  const RESPUESTAS_REQUIEREN_APROBACION = true;
   const HORARIOS_REQUIEREN_APROBACION = true;
 
-  if (salida.sensible || (proponeHorario && HORARIOS_REQUIEREN_APROBACION)) {
+  if (
+    RESPUESTAS_REQUIEREN_APROBACION ||
+    salida.sensible ||
+    (proponeHorario && HORARIOS_REQUIEREN_APROBACION)
+  ) {
     // Cola humana: guardar como borrador para aprobar/editar, NO enviar.
     // Sin "escribiendo..." aquí: prometería una respuesta que tardará en llegar.
     await supabase.from("mensaje").insert({
@@ -333,7 +403,7 @@ export async function responderConBot(entrada: EntradaBot): Promise<void> {
     return;
   }
 
-  // Respuesta segura: ritmo humano (leído → "escribiendo..." → pausa) y enviar.
+  // (Solo si el auto-envío está activado) respuesta segura: ritmo humano y enviar.
   if (entrada.waIdEntrante) await indicarEscribiendoWa(entrada.waIdEntrante);
   await dormir(delayHumanoMs(esPrimerContacto));
   const envio = await enviarTextoWa(entrada.telefono, respuesta);
